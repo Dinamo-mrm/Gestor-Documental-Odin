@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ===================== SIDEBAR ===================== -->
+<div th:fragment="sidebar(activeMenu)"
+     class="w-64 bg-white border-r border-slate-200 min-h-screen flex flex-col">
+
+    <!-- LOGO -->
+    <div class="h-16 flex items-center justify-center border-b border-slate-200">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-green-700 rounded-lg flex items-center justify-center text-white font-bold">
+                🏛
+            </div>
+            <span class="font-bold text-slate-800 text-lg">ODIN</span>
+        </div>
+    </div>
+
+    <!-- MENU -->
+    <nav class="flex-1 px-3 py-4 space-y-1 text-sm">
+
+        <a th:href="@{/}"
+           th:classappend="${activeMenu == 'inicio'} ? 'bg-green-100 text-green-700 font-semibold' : 'text-slate-600'"
+           class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 transition">
+            🏠 Inicio
+        </a>
+
+        <a th:href="@{/view/usuarios}"
+           th:classappend="${activeMenu == 'usuarios'} ? 'bg-green-100 text-green-700 font-semibold' : 'text-slate-600'"
+           class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 transition">
+            👤 Usuarios
+        </a>
+
+        <a href="#"
+           class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 transition">
+            🏢 Dependencias
+        </a>
+
+        <a href="#"
+           class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 transition">
+            📄 Radicación
+        </a>
+
+        <a href="#"
+           th:classappend="${activeMenu == 'consulta'} ? 'bg-green-100 text-green-700 font-semibold' : 'text-slate-600'"
+           class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 transition">
+            📊 Consulta y Seguimiento
+        </a>
+
+        <a href="#"
+           class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 transition">
+            ⚙️ Gestión de Trámites
+        </a>
+
+        <a href="#"
+           class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 transition">
+            📈 Reportes
+        </a>
+
+    </nav>
+
+</div>
+
+
+<!-- ===================== TOPBAR ===================== -->
+<div th:fragment="topbar(title)"
+     class="h-16 bg-green-700 text-white flex items-center justify-between px-6 shadow-sm">
+
+    <!-- IZQUIERDA -->
+    <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="md:hidden text-white text-xl">
+            ☰
+        </button>
+
+        <span class="font-bold text-lg" th:text="${title}">ODIN</span>
+    </div>
+
+    <!-- DERECHA -->
+    <div class="flex items-center gap-4">
+
+        <button class="relative">
+            🔔
+            <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+        </button>
+
+        <div class="w-9 h-9 rounded-full bg-white text-green-700 flex items-center justify-center font-bold">
+            U
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================== SCRIPT ===================== -->
+<script>
+    function toggleSidebar() {
+        const sidebar = document.querySelector('[th\\:fragment="sidebar"]');
+        const overlay = document.getElementById('overlay');
+
+        if (sidebar) {
+            sidebar.classList.toggle('-translate-x-full');
+        }
+
+        if (overlay) {
+            overlay.classList.toggle('hidden');
+        }
+    }
+</script>
+
+</body>
+</html>

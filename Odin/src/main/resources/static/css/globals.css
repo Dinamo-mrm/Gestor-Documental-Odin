@@ -1,0 +1,84 @@
+@import url("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css");
+* {
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0px;
+  height: 100%;
+}
+/* a blue color as a generic focus style */
+button:focus-visible {
+  outline: 2px solid #4a90e2 !important;
+  outline: -webkit-focus-ring-color auto 5px !important;
+}
+a {
+  text-decoration: none;
+}
+/* @FONTWARNING[{"type": "restricted", "family": "Inter", "weight": "var(--h1-TITLE-font-weight)", "style": "normal", "allowsCrossOrigin": false}] */
+
+@font-face {
+  font-family: "Inter";
+  src: local("Inter");
+}
+/* @FONTWARNING[{"type": "restricted", "family": "Roboto-Bold", "weight": "700", "style": "normal", "allowsCrossOrigin": false}] */
+
+@font-face {
+  font-family: "Roboto-Bold";
+  src: local("Roboto-Bold");
+}
+/* @FONTWARNING[{"type": "restricted", "family": "Material Symbols Outlined-Thin", "weight": "100", "style": "normal", "allowsCrossOrigin": false}] */
+
+@font-face {
+  font-family: "Material Symbols Outlined-Thin";
+  src: local("Material Symbols Outlined-Thin");
+}
+/* @FONTWARNING[{"type": "restricted", "family": "Roboto", "weight": "var(--h2-TITLE-font-weight)", "style": "normal", "allowsCrossOrigin": false}] */
+
+@font-face {
+  font-family: "Roboto";
+  src: local("Roboto");
+}
+/* @FONTWARNING[{"type": "restricted", "family": "Public Sans", "weight": "var(--label-font-weight)", "style": "normal", "allowsCrossOrigin": false}] */
+
+@font-face {
+  font-family: "Public Sans";
+  src: local("Public Sans");
+}
+/* @FONTWARNING[{"type": "restricted", "family": "Work Sans-Bold", "weight": "700", "style": "normal", "allowsCrossOrigin": false}] */
+
+@font-face {
+  font-family: "Work Sans-Bold";
+  src: local("Work Sans-Bold");
+}
+/* @FONTWARNING[{"type": "restricted", "family": "Work Sans-Regular", "weight": "400", "style": "normal", "allowsCrossOrigin": false}] */
+
+@font-face {
+  font-family: "Work Sans-Regular";
+  src: local("Work Sans-Regular");
+}
+/* @FONTWARNING[{"type": "restricted", "family": "Inter-SemiBold", "weight": "600", "style": "normal", "allowsCrossOrigin": false}] */
+
+@font-face {
+  font-family: "Inter-SemiBold";
+  src: local("Inter-SemiBold");
+}
+/* @FONTWARNING[{"type": "restricted", "family": "Inter-Medium", "weight": "500", "style": "normal", "allowsCrossOrigin": false}] */
+
+@font-face {
+  font-family: "Inter-Medium";
+  src: local("Inter-Medium");
+}
+/* @FONTWARNING[{"type": "restricted", "family": "Inter-ExtraBold", "weight": "800", "style": "normal", "allowsCrossOrigin": false}] */
+
+@font-face {
+  font-family: "Inter-ExtraBold";
+  src: local("Inter-ExtraBold");
+}
+/* @FONTWARNING[{"type": "restricted", "family": "Work Sans", "weight": "var(--paragraph-font-weight)", "style": "normal", "allowsCrossOrigin": false}] */
+
+@font-face {
+  font-family: "Work Sans";
+  src: local("Work Sans");
+}
