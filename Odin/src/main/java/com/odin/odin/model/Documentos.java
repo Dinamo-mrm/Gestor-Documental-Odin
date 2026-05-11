@@ -12,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class documentos
+public class Documentos
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

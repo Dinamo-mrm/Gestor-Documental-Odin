@@ -28,7 +28,7 @@ public class BitacorasController
     @PutMapping("/{id}")
     public Bitacoras update(@PathVariable long id, @RequestBody Bitacoras bitacoras)
     {
-        bitacoras.setId_evento(id);
+        bitacoras.setId_bitacora(id);
         return bitacorasRepository.save(bitacoras);
     }
 

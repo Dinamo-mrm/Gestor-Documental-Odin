@@ -1,7 +1,7 @@
 package com.odin.odin.controller;
 
-import com.odin.odin.model.documentos;
-import com.odin.odin.repository.documentosRepository;
+import com.odin.odin.model.Documentos;
+import com.odin.odin.repository.DocumentosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,35 +10,34 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/documentos")
-
-public class documentosController
+public class DocumentosController
 {
 
     @Autowired
-    private documentosRepository documentosRepository;
+    private DocumentosRepository documentosRepository;
 
     @GetMapping
-    public List<documentos> getAll()
+    public List<Documentos> getAll()
     {
         return documentosRepository.findAll();
 
     }
 
     @GetMapping("/{id}")
-    public documentos getById(Long id)
+    public Documentos getById(@PathVariable Long id)
     {
         return documentosRepository.findById(id).orElse(null);
 
     }
 
     @PostMapping
-    public documentos create(@RequestBody documentos Documentos)
+    public Documentos create(@RequestBody Documentos Documentos)
     {
         return documentosRepository.save(Documentos);
     }
 
     @PostMapping("/id")
-    public documentos update(@PathVariable Long id, @RequestBody documentos documentos)
+    public Documentos update(@PathVariable Long id, @RequestBody Documentos documentos)
     {
         documentos.setId_documento(id);
         return documentosRepository.save(documentos);

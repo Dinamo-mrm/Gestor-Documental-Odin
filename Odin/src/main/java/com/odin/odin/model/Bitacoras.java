@@ -13,13 +13,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
-
 public class Bitacoras
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id_evento;
+    private long id_bitacora;
 
     @NotBlank(message = "El radicado es obligatorio")
     private Integer id_radicado;
