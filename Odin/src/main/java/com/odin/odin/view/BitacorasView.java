@@ -20,7 +20,7 @@ public class BitacorasView
     {
         model.addAttribute("bitacoras", bitacorasRepository.findAll());
 
-        return "Bitacoras/Bitacoras";
+        return "bitacoras/bitacoras";
     }
 
     // FORMULARIO
@@ -29,7 +29,7 @@ public class BitacorasView
     {
         model.addAttribute("bitacora", new Bitacoras());
 
-        return "Bitacoras/BitacorasForm";
+        return "bitacoras/bitacorasForm";
     }
 
     // GUARDAR
@@ -55,7 +55,7 @@ public class BitacorasView
 
         model.addAttribute("bitacora", bitacora);
 
-        return "Bitacoras/BitacorasForm";
+        return "bitacoras/bitacorasForm";
     }
 
     // ELIMINAR

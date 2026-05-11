@@ -1,0 +1,15 @@
+# IntelliJ
+.idea/
+*.iml
+
+# Maven
+target/
+
+# Logs
+*.log
+
+# Application properties sensibles
+src/main/resources/application.properties
+
+# Mac
+.DS_Store
