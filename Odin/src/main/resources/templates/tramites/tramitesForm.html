@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario tramites</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+
+<body class="bg-[#f5f6f8] text-slate-800">
+
+<div class="min-h-screen flex">
+
+    <div th:replace="fragments/layout :: sidebar('tramites')"></div>
+
+    <div id="overlay" class="fixed inset-0 bg-black/40 z-20 hidden"></div>
+
+    <div class="flex-1 min-w-0">
+
+        <div th:replace="fragments/layout :: topbar('ODIN')"></div>
+
+        <main class="px-4 md:px-8 py-6">
+
+            <section class="mb-5">
+                <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 uppercase">
+                    Módulo de tramites
+                </h1>
+                <p class="text-sm text-slate-500 mt-1">
+                    Gestión institucional de tramites del sistema ODIN
+                </p>
+            </section>
+
+            <form th:action="@{/view/tramites/save}"
+                  th:object="${tramites}"
+                  method="post"
+                  novalidate>
+
+                <input type="hidden" th:field="*{id_tramite}" />
+
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+
+                    <!-- INFORMACIÓN PRINCIPAL -->
+                    <section class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+
+                        <div class="px-5 py-4 border-b border-slate-100">
+                            <h2 class="text-sm font-extrabold text-slate-900 uppercase flex items-center gap-2">
+                                👤 Información del Usuario
+                            </h2>
+                        </div>
+
+                        <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                            <div class="md:col-span-2">
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Nombre completo
+                                </label>
+                                <input type="text" th:field="*{nombre}" required
+                                       placeholder="Nombre / Razón social"
+                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Rol
+                                </label>
+                                <input type="number" th:field="*{id_rol}" required
+                                       placeholder="ID rol"
+                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Dependencia
+                                </label>
+                                <input type="number" th:field="*{id_dependencia}" required
+                                       placeholder="ID dependencia"
+                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Tipo de identificación
+                                </label>
+                                <select th:field="*{tipo_identificacion}" required
+                                        class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                                    <option value="">Seleccione</option>
+                                    <option value="CC">CC</option>
+                                    <option value="CE">CE</option>
+                                    <option value="NIT">NIT</option>
+                                    <option value="TI">TI</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Número de identificación
+                                </label>
+                                <input type="text" th:field="*{num_identificacion}" required
+                                       placeholder="Número de identificación"
+                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                            </div>
+
+                        </div>
+                    </section>
+
+                    <!-- CONTACTO Y ACCESO -->
+                    <section class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+
+                        <div class="px-5 py-4 border-b border-slate-100">
+                            <h2 class="text-sm font-extrabold text-slate-900 uppercase flex items-center gap-2">
+                                🔐 Contacto y Acceso
+                            </h2>
+                        </div>
+
+                        <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                            <div class="md:col-span-2">
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Correo electrónico
+                                </label>
+                                <input type="email" th:field="*{correo}" required
+                                       placeholder="correo@ejemplo.com"
+                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Clave
+                                </label>
+                                <input type="password" th:field="*{clave}" required
+                                       placeholder="Contraseña"
+                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Estado
+                                </label>
+                                <select th:field="*{estado}" required
+                                        class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                                    <option value="">Seleccione</option>
+                                    <option value="Activo">Activo</option>
+                                    <option value="Inactivo">Inactivo</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Teléfono
+                                </label>
+                                <input type="text" th:field="*{telefono}" required
+                                       placeholder="Email o teléfono"
+                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Dirección
+                                </label>
+                                <input type="text" th:field="*{direccion}" required
+                                       placeholder="Dirección física"
+                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                            </div>
+
+                        </div>
+                    </section>
+
+                </div>
+
+                <!-- BOTONES -->
+                <div class="flex justify-end gap-3 mt-5">
+                    <a th:href="@{/view/usuarios}"
+                       class="rounded-lg border border-green-600 bg-white px-6 py-2.5 text-sm font-semibold text-green-700 hover:bg-green-50 transition">
+                        Limpiar / Volver
+                    </a>
+
+                    <button type="submit"
+                            class="rounded-lg bg-[#168500] px-7 py-2.5 text-sm font-bold text-white hover:bg-[#0f6d00] transition">
+                        ▶ Guardar Usuario
+                    </button>
+                </div>
+
+            </form>
+
+        </main>
+    </div>
+</div>
+
+<script th:src="@{/js/script.js}" defer></script>
+
+</body>
+</html>
