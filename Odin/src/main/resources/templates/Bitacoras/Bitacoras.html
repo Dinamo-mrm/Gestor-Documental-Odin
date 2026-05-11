@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta y Seguimiento</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        body{
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-[#f5f6f8] text-slate-800">
+
+<div class="min-h-screen flex">
+
+    <!-- SIDEBAR -->
+    <div th:replace="fragments/layout :: sidebar('bitacoras')"></div>
+
+    <div id="overlay" class="fixed inset-0 bg-black/40 z-20 hidden"></div>
+
+    <!-- CONTENIDO -->
+    <div class="flex-1 min-w-0">
+
+        <!-- TOPBAR -->
+        <div th:replace="fragments/layout :: topbar('ODIN')"></div>
+
+        <main class="px-4 md:px-8 py-6">
+
+            <!-- ENCABEZADO -->
+            <section class="mb-6">
+
+                <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight uppercase">
+                            Consulta y <br class="hidden md:block">
+                            Seguimiento
+                        </h1>
+
+                        <p class="text-sm text-slate-500 mt-2">
+                            Administre y rastree el estado de sus documentos en tiempo real.
+                        </p>
+                    </div>
+
+                    <div>
+                        <a href="#"
+                           class="inline-flex items-center justify-center rounded-lg bg-[#2fa300] px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#248400] transition">
+                            nuevo documento
+                        </a>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- BUSCADOR -->
+            <section class="mb-5">
+
+                <div class="relative">
+
+                    <span class="absolute inset-y-0 left-4 flex items-center text-slate-400">
+                        🔍
+                    </span>
+
+                    <input type="text"
+                           placeholder="Buscar radicado, asunto o responsable..."
+                           class="w-full rounded-lg border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-600 shadow-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100">
+
+                </div>
+
+            </section>
+
+            <!-- TABLA -->
+            <section class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+
+                <!-- FILTROS -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 px-5 py-4 border-b border-slate-100">
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                            Tipo de documento
+                        </label>
+
+                        <select class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 outline-none focus:border-green-500">
+                            <option>Todos los tipos</option>
+                            <option>Oficio</option>
+                            <option>Factura</option>
+                            <option>Circular</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                            Estado de gestión
+                        </label>
+
+                        <select class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 outline-none focus:border-green-500">
+                            <option>Estado</option>
+                            <option>En trámite</option>
+                            <option>Finalizado</option>
+                            <option>Pendiente</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                            Fecha
+                        </label>
+
+                        <input type="date"
+                               class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 outline-none focus:border-green-500">
+                    </div>
+
+                </div>
+
+                <!-- TABLA -->
+                <div class="overflow-x-auto">
+
+                    <table class="min-w-full text-sm">
+
+                        <thead>
+
+                        <tr class="bg-[#fafafa] border-b border-slate-100 text-[11px] uppercase tracking-wide text-slate-500">
+
+                            <th class="px-5 py-4 text-left font-bold">
+                                Radicado
+                            </th>
+
+                            <th class="px-5 py-4 text-left font-bold">
+                                Tipo de documento
+                            </th>
+
+                            <th class="px-5 py-4 text-left font-bold">
+                                Fecha registro
+                            </th>
+
+                            <th class="px-5 py-4 text-left font-bold">
+                                Estado
+                            </th>
+
+                            <th class="px-5 py-4 text-left font-bold">
+                                Responsable
+                            </th>
+
+                            <th class="px-5 py-4 text-center font-bold">
+                                Acciones
+                            </th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody class="divide-y divide-slate-100">
+
+                        <!-- FILA -->
+                        <tr th:each="bitacora : ${bitacoras}"
+                            class="hover:bg-slate-50 transition">
+
+                            <td class="px-5 py-4">
+                                <span class="font-bold text-[#2fa300]"
+                                      th:text="${bitacora.radicado}">
+                                </span>
+                            </td>
+
+                            <td class="px-5 py-4">
+                                <div class="font-semibold text-slate-700"
+                                     th:text="${bitacora.tipoDocumento}">
+                                </div>
+                            </td>
+
+                            <td class="px-5 py-4 text-slate-600"
+                                th:text="${bitacora.fechaRegistro}">
+                            </td>
+
+                            <td class="px-5 py-4">
+
+                                <span th:if="${bitacora.estado == 'En trámite'}"
+                                      class="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
+                                    En trámite
+                                </span>
+
+                                <span th:if="${bitacora.estado == 'Finalizado'}"
+                                      class="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">
+                                    Finalizado
+                                </span>
+
+                                <span th:if="${bitacora.estado == 'Pendiente'}"
+                                      class="inline-flex rounded-full bg-yellow-100 px-3 py-1 text-xs font-bold text-yellow-700">
+                                    Pendiente
+                                </span>
+
+                            </td>
+
+                            <td class="px-5 py-4">
+                                <div class="font-semibold text-slate-700"
+                                     th:text="${bitacora.responsable}">
+                                </div>
+                            </td>
+
+                            <!-- OJO -->
+                            <td class="px-5 py-4">
+
+                                <div class="flex items-center justify-center">
+
+                                    <a th:href="@{'/view/bitacoras/detalle/' + ${bitacora.id_bitacora}}"
+                                       class="text-slate-500 hover:text-[#2fa300] transition text-lg"
+                                       title="Ver detalle">
+
+                                        👁️
+
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        <!-- VACÍO -->
+                        <tr th:if="${#lists.isEmpty(bitacoras)}">
+
+                            <td colspan="6"
+                                class="px-6 py-10 text-center text-slate-500">
+
+                                No hay registros disponibles.
+
+                            </td>
+
+                        </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <!-- FOOTER -->
+                <div class="flex items-center justify-between px-5 py-4 border-t border-slate-100 text-xs text-slate-500">
+
+                    <span th:text="'Mostrando ' + ${#lists.size(bitacoras)} + ' resultados'">
+                        Mostrando resultados
+                    </span>
+
+                    <div class="flex items-center gap-2">
+
+                        <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-slate-100">
+                            ‹
+                        </button>
+
+                        <button class="w-8 h-8 rounded-md bg-[#2fa300] text-white font-bold">
+                            1
+                        </button>
+
+                        <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-slate-100">
+                            2
+                        </button>
+
+                        <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-slate-100">
+                            3
+                        </button>
+
+                        <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-slate-100">
+                            ›
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+</div>
+
+<script th:src="@{/js/script.js}" defer></script>
+
+</body>
+</html>
