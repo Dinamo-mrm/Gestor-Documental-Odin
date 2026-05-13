@@ -79,6 +79,8 @@ class Persona {
     }
 
     
+
+    
 } // fin de la clase persona
 
 $miPersona=new Persona();

@@ -16,7 +16,7 @@ class controladorUsuario {
     }
 
     public function registrar($cedula, $nombre, $apellidos, $direccion, $correo, $telefono, $password) {
-    // Los nombres de los atributos aquí deben coincidir con los "private $" del modelo
+    
     $this->persona->set("cedula", $cedula);
     $this->persona->set("nombre", $nombre);
     $this->persona->set("apellidos", $apellidos);
@@ -38,4 +38,18 @@ class controladorUsuario {
         $this->persona->set("id", $usuario_id); 
         $this->persona->eliminar();
     }
+
+    public function procesarEdicion($datos) {
+    
+    $this->persona->set("id", $datos['id_usuario']);
+    $this->persona->set("cedula", $datos['cedula']);
+    $this->persona->set("nombre", $datos['nombre']);
+    $this->persona->set("apellidos", $datos['apellidos']);
+    $this->persona->set("direccion", $datos['direccion']);
+    $this->persona->set("correo", $datos['correo']);
+    $this->persona->set("telefono", $datos['telefono']);
+    $this->persona->set("password", $datos['clave']);
+
+    $this->persona->editar();
+}
 } // fin de la clase controladorUsuario

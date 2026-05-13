@@ -8,12 +8,16 @@ if (isset($_GET["id"])) {
     }
 
     if (isset($_POST["Eliminar"])){
-        $controlador->eliminar($_GET["id"]);
-        header('location:index.php')
-}
+        $controlador->eliminar($_POST["id"]);
+        header('location:index.php');
+    }
 ?>
 
 <form action="" method="POST">
+
+    <input type="hidden" name="id_usuario" 
+           value="<?php echo $reg['id_usuario']; ?>">
+           
    <table border= 1>
         <thead>
             <tr>

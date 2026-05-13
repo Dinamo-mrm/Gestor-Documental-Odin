@@ -23,7 +23,7 @@
     <?php
 
         $enrutador = new Enrutador();
-        //echo "<h1>hola desde php</h1>";
+        
         if (isset($_GET['cargar'])){
             $cargar=$_GET['cargar'];
         }else{
@@ -33,7 +33,6 @@
             $enrutador->cargarVista($cargar);
         };
     ?>
-
 
 </body>
 </html>

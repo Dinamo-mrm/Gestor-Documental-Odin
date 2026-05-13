@@ -18,7 +18,8 @@
             <th>Correo</th>
             <th>Telefono</th>
             <th>Password</th>
-            <th>Estado</th>        
+            <th>Estado</th>
+            <th>Acciones</th>          
         </tr>
     </thead>
     <tbody>
@@ -43,18 +44,6 @@
                     echo "</td>";    
                 echo "</tr>";
         }
-        ?>
-        <tr>
-            <td>1</td>
-            <td>755</td>
-            <td>Carlos</td>
-            <td>Barahona</td>
-            <td>carlx</td>
-            <td>13246548</td>
-            <td>
-                <a href= "#"> "consultar"</a>
-                <a href= "#"> "editar"</a>
-                <a href= "#"> "eliminar"</a>
-        </tr>
+        ?>        
     </tbody>
 </table>
