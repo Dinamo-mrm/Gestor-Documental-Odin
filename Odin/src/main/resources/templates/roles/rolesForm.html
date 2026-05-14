@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- El operador ?. evita el error si el objeto es null al cargar -->
+    <title th:text="${roles?.id_rol != null} ? 'Editar Rol' : 'Nuevo Rol'">Formulario de Rol</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+
+<body class="bg-[#f5f6f8] text-slate-800">
+
+<div class="min-h-screen flex">
+
+    <!-- SIDEBAR -->
+    <div th:replace="fragments/layout :: sidebar('roles')"></div>
+
+    <!-- CONTENIDO -->
+    <div class="flex-1 min-w-0">
+
+        <!-- TOPBAR -->
+        <div th:replace="fragments/layout :: topbar('ODIN')"></div>
+
+        <main class="px-4 md:px-8 py-10">
+
+            <div class="max-w-2xl mx-auto">
+
+                <!-- BOTÓN REGRESAR -->
+                <a th:href="@{/view/roles}" class="inline-flex items-center text-sm text-slate-500 hover:text-[#2fa300] mb-6 transition">
+                    <span class="mr-2">←</span> Volver al listado
+                </a>
+
+                <!-- CARD FORMULARIO -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+
+                    <div class="px-8 py-6 border-b border-slate-100 bg-[#fafafa]">
+                        <h1 class="text-xl font-extrabold text-slate-900 uppercase tracking-tight"
+                            th:text="${roles?.id_rol != null} ? 'Actualizar Rol' : 'Crear Nuevo Rol'">
+                            Formulario de Rol
+                        </h1>
+                        <p class="text-sm text-slate-500 mt-1">Complete la información del perfil de usuario en el sistema.</p>
+                    </div>
+
+                    <!-- th:object="${roles}" coincide con tu Controller -->
+                    <form th:action="@{/view/roles/save}" th:object="${roles}" method="post" class="p-8 space-y-6">
+
+                        <!-- ID OCULTO PARA EDICIÓN -->
+                        <input type="hidden" th:field="*{id_rol}">
+
+                        <div class="grid grid-cols-1 gap-6">
+
+                            <!-- NOMBRE DEL ROL -->
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-2 tracking-wider">
+                                    Nombre del Rol <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text"
+                                       th:field="*{nombre}"
+                                       placeholder="Ej: Administrador de Sistema"
+                                       class="w-full rounded-lg border border-slate-200 bg-white py-3 px-4 text-sm outline-none focus:border-green-500 focus:ring-4 focus:ring-green-50"
+                                       required>
+                            </div>
+
+                            <!-- TIPO DE ROL (campo 'rol' en tu BD) -->
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-2 tracking-wider">
+                                    Identificador / Tipo de Rol <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text"
+                                       th:field="*{rol}"
+                                       placeholder="Ej: ROLE_ADMIN"
+                                       class="w-full rounded-lg border border-slate-200 bg-white py-3 px-4 text-sm outline-none focus:border-green-500 focus:ring-4 focus:ring-green-50"
+                                       required>
+                            </div>
+
+                            <!-- ESTADO -->
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-2 tracking-wider">
+                                    Estado del Rol
+                                </label>
+                                <div class="relative">
+                                    <select th:field="*{estado}"
+                                            class="w-full rounded-lg border border-slate-200 bg-white py-3 px-4 text-sm outline-none focus:border-green-500 focus:ring-4 focus:ring-green-50 appearance-none">
+                                        <option value="Activo">Activo</option>
+                                        <option value="Inactivo">Inactivo</option>
+                                    </select>
+                                    <span class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-400 text-xs">
+                                        ▼
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- BOTONES -->
+                        <div class="pt-6 flex items-center justify-end gap-3 border-t border-slate-100">
+
+                            <a th:href="@{/view/roles}"
+                               class="px-6 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">
+                                Cancelar
+                            </a>
+
+                            <button type="submit"
+                                    class="px-8 py-2.5 bg-[#2fa300] text-white text-sm font-bold rounded-lg shadow-sm hover:bg-[#248400] focus:ring-4 focus:ring-green-100 transition">
+                                Guardar Cambios
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+                <p class="text-center text-[11px] text-slate-400 mt-6 uppercase tracking-widest">
+                    Sistema ODIN &copy; 2026 - Gestión de Accesos
+                </p>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>

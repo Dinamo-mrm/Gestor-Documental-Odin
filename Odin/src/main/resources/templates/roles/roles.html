@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Roles</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-[#f5f6f8] text-slate-800">
+
+<div class="min-h-screen flex">
+
+    <!-- SIDEBAR -->
+    <!-- Se mantiene el fragmento, ajustando el parámetro activo a 'roles' -->
+    <div th:replace="fragments/layout :: sidebar('roles')"></div>
+
+    <div id="overlay"
+         class="fixed inset-0 bg-black/40 z-20 hidden"></div>
+
+    <!-- CONTENIDO -->
+    <div class="flex-1 min-w-0">
+
+        <!-- TOPBAR -->
+        <div th:replace="fragments/layout :: topbar('ODIN')"></div>
+
+        <main class="px-4 md:px-8 py-6">
+
+            <!-- ENCABEZADO -->
+            <section class="mb-6">
+
+                <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight uppercase">
+                            Gestión de<br class="hidden md:block">
+                            roles
+                        </h1>
+                        <p class="text-sm text-slate-500 mt-2">
+                            Administre y controle los roles registrados en el sistema.
+                        </p>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <a th:href="@{/view/roles/form}"
+                           class="inline-flex items-center justify-center rounded-lg bg-[#2fa300] px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#248400] transition">
+                            nuevo rol
+                        </a>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- MENSAJE DE ÉXITO -->
+            <div th:if="${success}" class="mb-5">
+                <div class="rounded-lg border border-green-200 bg-green-50 px-5 py-3 text-sm text-green-800 shadow-sm"
+                     th:text="${success}">
+                </div>
+            </div>
+
+            <!-- BUSCADOR -->
+            <section class="mb-5">
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-4 flex items-center text-slate-400">
+                        🔍
+                    </span>
+                    <input type="text"
+                           placeholder="Buscar por nombre o tipo de rol..."
+                           class="w-full rounded-lg border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-600 shadow-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100">
+                </div>
+            </section>
+
+            <!-- CARD TABLA -->
+            <section class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+
+                <!-- FILTROS -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 px-5 py-4 border-b border-slate-100">
+
+                    <!-- ESTADO -->
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                            Estado
+                        </label>
+                        <select class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 outline-none focus:border-green-500">
+                            <option>Todos</option>
+                            <option>Activo</option>
+                            <option>Inactivo</option>
+                        </select>
+                    </div>
+
+                    <!-- ACCIONES DE EXPORTACIÓN -->
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                            Exportar
+                        </label>
+                        <div class="flex gap-2">
+                            <a th:href="@{/view/roles/pdf}"
+                               class="flex-1 rounded-md border border-slate-200 px-3 py-2 text-center text-sm text-slate-600 hover:bg-slate-50">
+                                PDF
+                            </a>
+                            <a th:href="@{/view/roles/excel}"
+                               class="flex-1 rounded-md border border-slate-200 px-3 py-2 text-center text-sm text-slate-600 hover:bg-slate-50">
+                                Excel
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- TABLA -->
+                <div class="overflow-x-auto">
+
+                    <table class="min-w-full text-sm">
+
+                        <thead>
+                        <tr class="bg-[#fafafa] border-b border-slate-100 text-[11px] uppercase tracking-wide text-slate-500">
+                            <th class="px-5 py-4 text-left font-bold">ID</th>
+                            <th class="px-5 py-4 text-left font-bold">Nombre</th>
+                            <th class="px-5 py-4 text-left font-bold">Tipo de Rol</th>
+                            <th class="px-5 py-4 text-left font-bold">Estado</th>
+                            <th class="px-5 py-4 text-center font-bold">Acciones</th>
+                        </tr>
+                        </thead>
+
+                        <tbody class="divide-y divide-slate-100">
+
+                        <!-- FILAS DINÁMICAS BASADAS EN TU BD -->
+                        <tr th:each="r : ${roles}" class="hover:bg-slate-50 transition">
+
+                            <!-- ID_ROL -->
+                            <td class="px-5 py-4 font-medium text-slate-400" th:text="${r.id_rol}">
+                                1
+                            </td>
+
+                            <!-- NOMBRE -->
+                            <td class="px-5 py-4">
+                                <div class="font-bold text-slate-800" th:text="${r.nombre}"></div>
+                            </td>
+
+                            <!-- ROL (TIPO) -->
+                            <td class="px-5 py-4 text-slate-600" th:text="${r.rol}">
+                            </td>
+
+                            <!-- ESTADO -->
+                            <td class="px-5 py-4">
+                                    <span th:if="${r.estado == 'Activo'}"
+                                          class="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">
+                                        Activo
+                                    </span>
+                                <span th:if="${r.estado != 'Activo'}"
+                                      class="inline-flex rounded-full bg-yellow-100 px-3 py-1 text-xs font-bold text-yellow-700"
+                                      th:text="${r.estado}">
+                                    </span>
+                            </td>
+
+                            <!-- ACCIONES -->
+                            <td class="px-5 py-4">
+                                <div class="flex items-center justify-center gap-3">
+                                    <!-- EDITAR -->
+                                    <a th:href="@{'/view/roles/edit/' + ${r.id_rol}}"
+                                       title="Editar"
+                                       class="text-slate-500 hover:text-green-700 transition">
+                                        ✏️
+                                    </a>
+
+                                    <!-- ELIMINAR -->
+                                    <form th:action="@{'/view/roles/delete/' + ${r.id_rol}}"
+                                          method="post"
+                                          class="inline">
+                                        <button type="submit"
+                                                title="Eliminar"
+                                                class="text-slate-500 hover:text-red-600 transition"
+                                                onclick="return confirm('¿Está seguro que desea eliminar este rol?')">
+                                            🗑️
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- ESTADO VACÍO -->
+                        <tr th:if="${#lists.isEmpty(roles)}">
+                            <td colspan="5" class="px-6 py-10 text-center text-slate-500">
+                                No hay roles registrados en este momento.
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- FOOTER -->
+                <div class="flex items-center justify-between px-5 py-4 border-t border-slate-100 text-xs text-slate-500">
+                    <span th:text="'Mostrando ' + ${#lists.size(roles)} + ' roles registrados'">
+                        Mostrando roles registrados
+                    </span>
+
+                    <div class="flex items-center gap-2">
+                        <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-slate-100">‹</button>
+                        <button class="w-8 h-8 rounded-md bg-[#2fa300] text-white font-bold">1</button>
+                        <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-slate-100">›</button>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+</div>
+
+<script th:src="@{/js/script.js}" defer></script>
+
+</body>
+</html>
