@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de subseries</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-[#f5f6f8] text-slate-800">
+
+<div class="min-h-screen flex">
+
+    <!-- SIDEBAR -->
+    <div th:replace="fragments/layout :: sidebar('subseries')"></div>
+
+    <div id="overlay" class="fixed inset-0 bg-black/40 z-20 hidden"></div>
+
+    <!-- CONTENIDO -->
+    <div class="flex-1 min-w-0">
+
+        <!-- TOPBAR -->
+        <div th:replace="fragments/layout :: topbar('ODIN')"></div>
+
+        <main class="px-4 md:px-8 py-6">
+
+            <!-- ENCABEZADO -->
+            <section class="mb-6">
+                <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight uppercase">
+                            Consulta y<br class="hidden md:block"> Seguimiento
+                        </h1>
+                        <p class="text-sm text-slate-500 mt-2">
+                            Administre las subseries.
+                        </p>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <a th:href="@{/view/subseries/form}"
+                           class="inline-flex items-center justify-center rounded-lg bg-[#2fa300] px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#248400] transition">
+                            nueva subserie
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MENSAJE -->
+            <div th:if="${success}" class="mb-5">
+                <div class="rounded-lg border border-green-200 bg-green-50 px-5 py-3 text-sm text-green-800 shadow-sm"
+                     th:text="${success}">
+                </div>
+            </div>
+
+            <!-- BUSCADOR -->
+            <section class="mb-5">
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-4 flex items-center text-slate-400">
+                        🔍
+                    </span>
+                    <input type="text"
+                           placeholder="Buscar subserie, descripcion..."
+                           class="w-full rounded-lg border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-600 shadow-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100">
+                </div>
+            </section>
+
+            <!-- CARD TABLA -->
+            <section class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+
+                <!-- FILTROS -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 px-5 py-4 border-b border-slate-100">
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                            Tipo de identificación
+                        </label>
+                        <select class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 outline-none focus:border-green-500">
+                            <option>Todos los tipos</option>
+                            <option>CC</option>
+                            <option>CE</option>
+                            <option>NIT</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                            Estado
+                        </label>
+                        <select class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 outline-none focus:border-green-500">
+                            <option>Estado</option>
+                            <option>Activo</option>
+                            <option>Inactivo</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                            Dependencia
+                        </label>
+                        <select class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 outline-none focus:border-green-500">
+                            <option>Todas</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                            Acciones
+                        </label>
+                        <div class="flex gap-2">
+                            <a th:href="@{/view/subseries/pdf}"
+                               class="flex-1 rounded-md border border-slate-200 px-3 py-2 text-center text-sm text-slate-600 hover:bg-slate-50">
+                                PDF
+                            </a>
+                            <a th:href="@{/view/subseries/excel}"
+                               class="flex-1 rounded-md border border-slate-200 px-3 py-2 text-center text-sm text-slate-600 hover:bg-slate-50">
+                                Excel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABLA -->
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm">
+
+                        <thead>
+                        <tr class="bg-[#fafafa] border-b border-slate-100 text-[11px] uppercase tracking-wide text-slate-500">
+                            <th class="px-5 py-4 text-left font-bold">subserie</th>
+                            <th class="px-5 py-4 text-left font-bold">id serie</th>
+                            <th class="px-5 py-4 text-left font-bold">Descripcion</th>
+                            <th class="px-5 py-4 text-left font-bold">Estado</th>
+                            <th class="px-5 py-4 text-center font-bold">Acciones</th>
+                        </tr>
+                        </thead>
+
+                        <tbody class="divide-y divide-slate-100">
+
+                        <tr th:each="subserie : ${subseries}" class="hover:bg-slate-50 transition">
+
+                            <td class="px-5 py-4">
+                                <div class="font-bold text-slate-800" th:text="${subserie.subserie}"></div>
+                                <div class="text-xs text-slate-400" th:text="'ID: ' + ${subserie.id_subserie}"></div>
+                            </td>
+
+                            <td class="px-5 py-4 text-slate-600" th:text="${subserie.id_serie}"></td>
+
+                            <td class="px-5 py-4 text-slate-600" th:text="${subserie.descripcion}"></td>
+
+                            <td class="px-5 py-4">
+                                <span th:if="${subserie.estado == 'Activo'}"
+                                      class="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">
+                                    Activo
+                                </span>
+
+                                <span th:if="${subserie.estado != 'Activo'}"
+                                      class="inline-flex rounded-full bg-yellow-100 px-3 py-1 text-xs font-bold text-yellow-700"
+                                      th:text="${subserie.estado}">
+                                </span>
+                            </td>
+
+                            <td class="px-5 py-4">
+                                <div class="flex items-center justify-center gap-3">
+
+                                    <a th:href="@{'/view/subseries/edit/' + ${subserie.id_subserie}}"
+                                       title="Editar"
+                                       class="text-slate-500 hover:text-green-700 transition">
+                                        ✏️
+                                    </a>
+
+                                    <form th:action="@{'/view/subseries/delete/' + ${subserie.id_subserie}}"
+                                          method="post"
+                                          class="inline">
+                                        <button type="submit"
+                                                title="Eliminar"
+                                                class="text-slate-500 hover:text-red-600 transition"
+                                                onclick="return confirm('¿Está seguro que desea eliminar esta subserie?')">
+                                            🗑️
+                                        </button>
+                                    </form>
+
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr th:if="${#lists.isEmpty(subseries)}">
+                            <td colspan="8" class="px-6 py-10 text-center text-slate-500">
+                                No hay subseries registradas en este momento.
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- FOOTER TABLA -->
+                <div class="flex items-center justify-between px-5 py-4 border-t border-slate-100 text-xs text-slate-500">
+                    <span th:text="'Mostrando ' + ${#lists.size(subseries)} + ' subseries registradas'">
+                        Mostrando subseries registradas
+                    </span>
+
+                    <div class="flex items-center gap-2">
+                        <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-slate-100">
+                            ‹
+                        </button>
+                        <button class="w-8 h-8 rounded-md bg-[#2fa300] text-white font-bold">
+                            1
+                        </button>
+                        <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-slate-100">
+                            2
+                        </button>
+                        <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-slate-100">
+                            3
+                        </button>
+                        <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-slate-100">
+                            ›
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+</div>
+
+<script th:src="@{/js/script.js}" defer></script>
+
+</body>
+</html>

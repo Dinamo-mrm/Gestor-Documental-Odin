@@ -31,14 +31,28 @@
             👤 Usuarios
         </a>
 
-        <a href="#"
-           class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 transition">
+        <a th:href="@{/view/dependencias}"
+           th:classappend="${activeMenu == 'dependencias'} ? 'bg-green-100 text-green-700 font-semibold' : 'text-slate-600'"
+           class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 transition">
             🏢 Dependencias
         </a>
 
-        <a href="#"
-           class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 transition">
+        <a th:href="@{/view/radicados}"
+           th:classappend="${activeMenu == 'radicados'} ? 'bg-green-100 text-green-700 font-semibold' : 'text-slate-600'"
+           class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 transition">
             📄 Radicación
+        </a>
+
+        <a th:href="@{/view/series}"
+           th:classappend="${activeMenu == 'series'} ? 'bg-green-100 text-green-700 font-semibold' : 'text-slate-600'"
+           class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 transition">
+            🧑‍🧒‍🧒 Series
+        </a>
+
+        <a th:href="@{/view/subseries}"
+           th:classappend="${activeMenu == 'subseries'} ? 'bg-green-100 text-green-700 font-semibold' : 'text-slate-600'"
+           class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 transition">
+            🧑‍🧒‍🧒 Subseries
         </a>
 
         <a href="#"
@@ -50,6 +64,12 @@
         <a href="#"
            class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 transition">
             ⚙️ Gestión de Trámites
+        </a>
+
+        <a th:href="@{/view/roles}"
+           th:classappend="${activeMenu == 'roles'} ? 'bg-green-100 text-green-700 font-semibold' : 'text-slate-600'"
+           class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 transition">
+            🧑‍🧒‍🧒 Roles
         </a>
 
         <a href="#"
