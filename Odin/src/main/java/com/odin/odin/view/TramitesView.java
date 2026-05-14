@@ -2,6 +2,7 @@ package com.odin.odin.view;
 
 import com.odin.odin.model.Tramites;
 import com.odin.odin.model.Usuarios;
+import com.odin.odin.repository.TramitesRepository;
 import com.odin.odin.repository.UsuariosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,12 +17,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class TramitesView
 {
     @Autowired
-    private UsuariosRepository TramitesRepository;
+    private TramitesRepository tramitesRepository;
 
     @GetMapping("/view/tramites")
     public String lista(Model model)
     {
-        model.addAttribute("tramites", TramitesRepository.findAll());
+        model.addAttribute("tramites", tramitesRepository.findAll());
         return "tramites/tramites";
     }
 
@@ -33,9 +34,9 @@ public class TramitesView
     }
 
     @PostMapping("/view/tramites/save")
-    public String save(@ModelAttribute Usuarios usuarios, RedirectAttributes ra)
+    public String save(@ModelAttribute Tramites tramites, RedirectAttributes ra)
     {
-        TramitesRepository.save(usuarios);
+        tramitesRepository.save(tramites);
         ra.addFlashAttribute("mensaje", "tramite Registrado con Exito");
         return "redirect:/view/tramites";
     }
@@ -43,7 +44,7 @@ public class TramitesView
     @GetMapping("/view/tramites/edit/{id}")
     public String edit(@PathVariable Long id, Model model)
     {
-        Usuarios usuarios = TramitesRepository.findById(id).orElse(null);
+        Tramites tramites = tramitesRepository.findById(id).orElse(null);
         model.addAttribute("tramites", tramites);
         return "tramites/TramitesForm";
     }
@@ -51,7 +52,7 @@ public class TramitesView
     @PostMapping("/view/tramites/delete/{id}")
     public String delete(@PathVariable Long id, RedirectAttributes ra)
     {
-        TramitesRepository.deleteById(id);
+        tramitesRepository.deleteById(id);
         ra.addFlashAttribute("mensaje", "Usuario Eliminado con Exito");
         return "redirect:/view/TramitesView";
     }
