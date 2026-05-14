@@ -27,16 +27,16 @@ public class TramitesController
     }
 
     @PostMapping
-    public Tramites create(@RequestBody Tramites usuarios)
+    public Tramites create(@RequestBody Tramites tramites)
     {
-        return TramitesRepository.save(Tramites);
+        return TramitesRepository.save(tramites);
     }
 
     @PutMapping("/{id}")
     public Tramites update(@PathVariable Long id, @RequestBody Tramites tramites)
     {
-        Tramites.setId_tramite(id);
-        return TramitesRepository.save(Tramites);
+        tramites.setId_tramite(id);
+        return TramitesRepository.save(tramites);
     }
 
     @DeleteMapping("/{id}")
