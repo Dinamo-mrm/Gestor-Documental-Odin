@@ -15,10 +15,10 @@ public class PlantillaView
     private PlantillaRepository plantillaRepository;
 
     // LISTA
-    @GetMapping("/view/bitacoras")
+    @GetMapping("/view/plantilla")
     public String lista(Model model)
     {
-        model.addAttribute("bitacoras", plantillaRepository.findAll());
+        model.addAttribute("plantilla", plantillaRepository.findAll());
 
         return "Plantilla/Plantilla";
     }
@@ -27,9 +27,9 @@ public class PlantillaView
     @GetMapping("/view/bitacoras/form")
     public String form(Model model)
     {
-        model.addAttribute("bitacora", new Plantilla());
+        model.addAttribute("plantilla", new Plantilla());
 
-        return "Plantilla/BitacorasForm";
+        return "Plantilla/PlantillaForm";
     }
 
     // GUARDAR
@@ -40,7 +40,7 @@ public class PlantillaView
         plantillaRepository.save(bitacora);
 
         ra.addFlashAttribute("mensaje",
-                "Bitácora registrada con éxito");
+                "Plantilla registrada con éxito");
 
         return "redirect:/view/bitacoras";
     }
