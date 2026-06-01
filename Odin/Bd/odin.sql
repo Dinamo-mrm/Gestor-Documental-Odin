@@ -240,6 +240,24 @@ INSERT INTO `historial_radicado` (`id_historial`, `id_radicado`, `id_usuario`, `
 	(28, 37, 2, 'radicado', 'Documento radicado exitosamente en recepción', '2026-05-29 22:54:51'),
 	(29, 38, 2, 'radicado', 'Documento radicado exitosamente en recepción', '2026-05-29 22:55:02');
 
+-- Volcando estructura para tabla odin.log_accesos
+CREATE TABLE IF NOT EXISTS `log_accesos` (
+  `id_log` bigint NOT NULL AUTO_INCREMENT,
+  `id_usuario` int DEFAULT NULL,
+  `accion` varchar(50) NOT NULL,
+  `ip` varchar(45) DEFAULT NULL,
+  `user_agent` text,
+  `exito` tinyint(1) NOT NULL,
+  `motivo` varchar(255) DEFAULT NULL,
+  `fecha` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_log`),
+  KEY `fk_log_usuario` (`id_usuario`),
+  KEY `idx_log_fecha` (`fecha`),
+  CONSTRAINT `fk_log_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='**GRUPO 1 - Auditoría de Accesos (Login/Logout)**';
+
+-- Volcando datos para la tabla odin.log_accesos: ~0 rows (aproximadamente)
+
 -- Volcando estructura para tabla odin.notificaciones
 CREATE TABLE IF NOT EXISTS `notificaciones` (
   `id_notificacion` bigint NOT NULL AUTO_INCREMENT,
@@ -279,6 +297,29 @@ CREATE TABLE IF NOT EXISTS `observaciones` (
 -- Volcando datos para la tabla odin.observaciones: ~1 rows (aproximadamente)
 INSERT INTO `observaciones` (`id_observacion`, `id_radicado`, `id_usuario`, `comentario`, `fecha`) VALUES
 	(4, 24, 1, 'Falta de documento de identidad legible', '0000-00-00 00:00:00');
+
+-- Volcando estructura para tabla odin.permisos
+CREATE TABLE IF NOT EXISTS `permisos` (
+  `id_permiso` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  `descripcion` text,
+  `modulo` varchar(50) NOT NULL,
+  `accion` varchar(50) NOT NULL,
+  PRIMARY KEY (`id_permiso`),
+  UNIQUE KEY `uk_permiso` (`nombre`)
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='**GRUPO 1 - Permisos Granulares**';
+
+-- Volcando datos para la tabla odin.permisos: ~9 rows (aproximadamente)
+INSERT INTO `permisos` (`id_permiso`, `nombre`, `descripcion`, `modulo`, `accion`) VALUES
+	(1, 'ver_radicados', 'Ver listado y detalle de radicados', 'radicados', 'ver'),
+	(2, 'crear_radicado', 'Crear nuevos radicados', 'radicados', 'crear'),
+	(3, 'editar_radicado', 'Editar radicados', 'radicados', 'editar'),
+	(4, 'trasladar_radicado', 'Trasladar radicados entre dependencias', 'radicados', 'trasladar'),
+	(5, 'finalizar_radicado', 'Finalizar radicados', 'radicados', 'finalizar'),
+	(6, 'ver_usuarios', 'Ver usuarios del sistema', 'usuarios', 'ver'),
+	(7, 'admin_usuarios', 'Gestionar usuarios y roles', 'usuarios', 'admin'),
+	(8, 'ver_reportes', 'Acceder a reportes y estadísticas', 'reportes', 'ver'),
+	(9, 'admin_ccd', 'Gestionar Cuadro de Clasificación Documental', 'ccd', 'admin');
 
 -- Volcando estructura para tabla odin.plantilla
 CREATE TABLE IF NOT EXISTS `plantilla` (
@@ -414,6 +455,57 @@ CREATE TABLE IF NOT EXISTS `remitentes_externos` (
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='**GRUPO 3 - Remitentes Externos** \r\nPropósito: Registro de ciudadanos y entidades externas. \r\nComunicación: 1:N → radicados. \r\nTrazabilidad: Identificación del origen externo de los radicados.';
 
 -- Volcando datos para la tabla odin.remitentes_externos: ~0 rows (aproximadamente)
+
+-- Volcando estructura para tabla odin.reset_password_tokens
+CREATE TABLE IF NOT EXISTS `reset_password_tokens` (
+  `id_token` bigint NOT NULL AUTO_INCREMENT,
+  `id_usuario` int NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `expira_en` datetime NOT NULL,
+  `usado` tinyint(1) DEFAULT '0',
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_token`),
+  KEY `fk_reset_usuario` (`id_usuario`),
+  CONSTRAINT `fk_reset_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='**GRUPO 1 - Tokens para Recuperación de Contraseña**';
+
+-- Volcando datos para la tabla odin.reset_password_tokens: ~0 rows (aproximadamente)
+
+-- Volcando estructura para tabla odin.rol_permisos
+CREATE TABLE IF NOT EXISTS `rol_permisos` (
+  `id_rol` int DEFAULT NULL,
+  `id_permiso` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_spanish_ci;
+
+-- Volcando datos para la tabla odin.rol_permisos: ~0 rows (aproximadamente)
+
+-- Volcando estructura para tabla odin.sesiones_usuario
+CREATE TABLE IF NOT EXISTS `sesiones_usuario` (
+  `id_sesion` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_spanish_ci;
+
+-- Volcando datos para la tabla odin.sesiones_usuario: ~0 rows (aproximadamente)
+
+-- Volcando estructura para tabla odin.usuarios
+CREATE TABLE IF NOT EXISTS `usuarios` (
+  `id_usuario` int NOT NULL AUTO_INCREMENT,
+  `id_rol` int DEFAULT NULL,
+  `email` varchar(255) CHARACTER SET utf16 COLLATE utf16_spanish_ci NOT NULL,
+  `nombre` varchar(255) CHARACTER SET utf16 COLLATE utf16_spanish_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf16 COLLATE utf16_spanish_ci NOT NULL,
+  `estado` varchar(255) CHARACTER SET utf16 COLLATE utf16_spanish_ci NOT NULL,
+  `fecha_creacion` varchar(255) CHARACTER SET utf16 COLLATE utf16_spanish_ci NOT NULL,
+  `clave` varchar(255) CHARACTER SET utf16 COLLATE utf16_spanish_ci NOT NULL,
+  `correo` varchar(255) CHARACTER SET utf16 COLLATE utf16_spanish_ci NOT NULL,
+  `dependencia` int NOT NULL,
+  `direccion` varchar(255) CHARACTER SET utf16 COLLATE utf16_spanish_ci NOT NULL,
+  `num_identificacion` varchar(255) CHARACTER SET utf16 COLLATE utf16_spanish_ci NOT NULL,
+  `telefono` varchar(255) CHARACTER SET utf16 COLLATE utf16_spanish_ci NOT NULL,
+  `tipo_identificacion` varchar(255) CHARACTER SET utf16 COLLATE utf16_spanish_ci NOT NULL,
+  PRIMARY KEY (`id_usuario`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_spanish_ci;
+
+-- Volcando datos para la tabla odin.usuarios: ~0 rows (aproximadamente)
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
