@@ -1,0 +1,57 @@
+**✅ Análisis y Comentarios por Grupo - Base de Datos `odin`**
+
+### **GRUPO 1: SEGURIDAD Y USUARIOS**
+*(Seguridad, autenticación y control de acceso)*
+
+| Tabla                       | Estado | Comentario Recomendado |
+|-----------------------------|--------|------------------------|
+| `usuarios`                  | ✅     | **GRUPO 1 - Usuarios del Sistema**<br>Propósito: Gestión de usuarios internos (funcionarios). Contiene credenciales y datos personales. |
+| `roles`                     | ✅     | **GRUPO 1 - Roles y Perfiles**<br>Propósito: Definición de perfiles de acceso (Administrador, Recepcion, Coordinador, etc.). |
+| `permisos`                  | ✅     | **GRUPO 1 - Permisos Granulares**<br>Propósito: Control detallado de acciones permitidas por módulo. |
+| `rol_permisos`              | ✅     | **GRUPO 1 - Asignación de Permisos a Roles**<br>Propósito: Relación muchos a muchos entre roles y permisos. |
+| `sesiones_usuario`          | ✅     | **GRUPO 1 - Control de Sesiones Activas**<br>Propósito: Gestión de sesiones concurrentes y seguridad de login. |
+| `log_accesos`               | ✅     | **GRUPO 1 - Auditoría de Accesos**<br>Propósito: Registro de intentos de login, logout y accesos fallidos. |
+| `reset_password_tokens`     | ✅     | **GRUPO 1 - Tokens de Recuperación**<br>Propósito: Gestión segura de restablecimiento de contraseñas. |
+
+**Estado del Grupo 1:** Muy bueno y reforzado.
+
+
+### **GRUPO 2: ESTRUCTURA ORGANIZACIONAL Y CLASIFICACIÓN DOCUMENTAL**
+
+| Tabla                | Estado | Comentario Recomendado |
+|----------------------|--------|------------------------|
+| `dependencias`       | ✅     | **GRUPO 2 - Dependencias Operativas**<br>Propósito: Estructura organizacional (Recepción, Coordinación, Subdirección). |
+| `ccd_unidades`       | ✅     | **GRUPO 2 - Unidades Administrativas (CCD)**<br>Propósito: Estructura jerárquica según Cuadro de Clasificación Documental. |
+| `ccd_series`         | ✅     | **GRUPO 2 - Series Documentales (CCD)**<br>Propósito: Series del Cuadro de Clasificación Documental. |
+| `ccd_subseries`      | ✅     | **GRUPO 2 - Subseries + Retención Documental**<br>Propósito: Subseries con política de retención, acceso y disposición final. |
+
+**Estado del Grupo 2:** Excelente (muy maduro con CCD completo).
+
+### **GRUPO 3: CORE DE RADICACIÓN Y DOCUMENTOS**
+
+| Tabla                    | Estado | Comentario Recomendado |
+|--------------------------|--------|------------------------|
+| `radicados`              | ✅     | **GRUPO 3 - Tabla Central (Radicados)**<br>Propósito: Núcleo del sistema. Contiene todos los radicados (internos, externos, anónimos). |
+| `remitentes_externos`    | ✅     | **GRUPO 3 - Remitentes Externos**<br>Propósito: Ciudadanos y entidades externas que radican documentos. |
+| `documentos`             | ✅     | **GRUPO 3 - Documentos Principales**<br>Propósito: Documentos adjuntos principales. |
+| `anexos`                 | ✅     | **GRUPO 3 - Anexos / Soportes Adicionales**<br>Propósito: Archivos complementarios (imágenes, evidencias). |
+| `tramites`               | ✅     | **GRUPO 3 - Tipos de Trámites** |
+| `estados`                | ✅     | **GRUPO 3 - Estados del Radicado** |
+
+**Estado del Grupo 3:** Muy sólido.
+
+
+### **GRUPO 4: FLUJO, TRAZABILIDAD Y GESTIÓN**
+
+| Tabla                       | Estado | Comentario Recomendado |
+|-----------------------------|--------|------------------------|
+| `plantilla`                 | ✅     | **GRUPO 4 - Tabla Principal de Trazabilidad**<br>Propósito: Registro histórico completo de todas las acciones. |
+| `historial_radicado`        | ✅     | **GRUPO 4 - Historial Secundario** |
+| `observaciones`             | ✅     | **GRUPO 4 - Observaciones Operativas** |
+| `reasignaciones`            | ✅     | **GRUPO 4 - Reasignaciones / Traslados** |
+| `respuestas`                | ✅     | **GRUPO 4 - Respuestas entre Radicados** |
+| `notificaciones`            | ✅     | **GRUPO 4 - Notificaciones del Sistema** |
+| `firmas`                    | ✅     | **GRUPO 4 - Firmas y Aprobaciones** |
+| `auditoria_radicados`       | ✅     | **GRUPO 4 - Auditoría Detallada** |
+
+**Estado del Grupo 4:** Excelente y completo.
