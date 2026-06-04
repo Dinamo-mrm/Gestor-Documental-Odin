@@ -1,9 +1,7 @@
 package com.odin.odin.controller;
 
 import com.odin.odin.model.Series;
-import com.odin.odin.model.Usuarios;
 import com.odin.odin.repository.SeriesRepository;
-import com.odin.odin.repository.UsuariosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +21,7 @@ public class SeriesController
     }
 
     @GetMapping("/{id}")
-    public Series getById(Long id)
+    public Series getById(@PathVariable Long id)
     {
         return repository.findById(id).orElse(null);
     }

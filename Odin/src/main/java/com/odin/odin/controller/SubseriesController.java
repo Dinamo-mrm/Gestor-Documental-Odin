@@ -1,6 +1,5 @@
 package com.odin.odin.controller;
 
-import com.odin.odin.model.Series;
 import com.odin.odin.model.Subseries;
 import com.odin.odin.repository.SubseriesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,7 @@ public class SubseriesController
     }
 
     @GetMapping("/{id}")
-    public Subseries getById(Long id)
+    public Subseries getById(@PathVariable Long id)
     {
         return repository.findById(id).orElse(null);
     }

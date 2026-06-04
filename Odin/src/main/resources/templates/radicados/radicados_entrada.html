@@ -73,9 +73,12 @@
                 </a>
             </div>
 
+            <div th:replace="fragments/radicadosResumen :: radicadoGuardado(${success}, ${savedRadicado})"></div>
+
             <!-- FORMULARIO -->
             <form th:action="@{/view/radicados/entrada/save}" th:object="${radicado}" method="post" enctype="multipart/form-data"
                   class="space-y-8">
+                <input type="hidden" th:field="*{id_radicado}">
 
                 <!-- INFORMACIÓN DEL REMITENTE -->
                 <section class="rounded-xl border border-slate-200 bg-white shadow-sm p-6">

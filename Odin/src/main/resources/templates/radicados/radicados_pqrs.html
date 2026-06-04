@@ -50,8 +50,11 @@
                 </a>
             </div>
 
+            <div th:replace="fragments/radicadosResumen :: radicadoGuardado(${success}, ${savedRadicado})"></div>
+
             <form th:action="@{/view/radicados/pqrs/save}" th:object="${radicado}" method="post" enctype="multipart/form-data"
                   class="space-y-8">
+                <input type="hidden" th:field="*{id_radicado}">
                 <input type="hidden" name="tipoDocumento" value="PQRS">
 
                 <section class="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
