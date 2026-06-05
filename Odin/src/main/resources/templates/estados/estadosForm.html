@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo Documento</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body class="bg-[#f5f6f8] text-slate-800">
+
+<div class="min-h-screen flex">
+
+    <!-- SIDEBAR -->
+    <div th:replace="fragments/layout :: sidebar('documentos')"></div>
+
+    <!-- CONTENIDO -->
+    <div class="flex-1 min-w-0">
+
+        <!-- TOPBAR -->
+        <div th:replace="fragments/layout :: topbar('ODIN')"></div>
+
+        <main class="px-4 md:px-8 py-10">
+
+            <div class="max-w-3xl mx-auto">
+
+                <!-- VOLVER -->
+                <a th:href="@{/view/documentos}"
+                   class="inline-flex items-center text-sm text-slate-500 hover:text-[#39A900] mb-6 transition">
+
+                    <span class="mr-2">←</span>
+                    Volver al listado
+
+                </a>
+
+                <!-- CARD -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+
+                    <!-- HEADER -->
+                    <div class="px-8 py-6 border-b border-slate-100 bg-[#fafafa]">
+
+                        <h1 class="text-xl font-extrabold text-slate-900 uppercase tracking-tight">
+                            Crear Nuevo Documento
+                        </h1>
+
+                        <p class="text-sm text-slate-500 mt-1">
+                            Complete la información del documento que será registrado en el sistema.
+                        </p>
+
+                    </div>
+
+                    <!-- FORM -->
+                    <form
+                            th:action="@{/view/documentos/save}"
+                            th:object="${documentos}"
+                            method="post"
+                            class="p-8 space-y-6">
+
+                        <!-- ID -->
+                        <input type="hidden" th:field="*{id_documento}">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                            <!-- RADICADO -->
+                            <div>
+
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-2 tracking-wider">
+                                    Radicado <span class="text-red-500">*</span>
+                                </label>
+
+                                <input type="number"
+                                       th:field="*{id_radicado}"
+                                       placeholder="Ingrese el radicado"
+                                       class="w-full rounded-lg border border-slate-200 bg-white py-3 px-4 text-sm outline-none focus:border-green-500 focus:ring-4 focus:ring-green-50"
+                                       required>
+
+                            </div>
+
+                            <!-- NOMBRE -->
+                            <div>
+
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-2 tracking-wider">
+                                    Nombre Documento <span class="text-red-500">*</span>
+                                </label>
+
+                                <input type="text"
+                                       th:field="*{nombre}"
+                                       placeholder="Nombre del documento"
+                                       class="w-full rounded-lg border border-slate-200 bg-white py-3 px-4 text-sm outline-none focus:border-green-500 focus:ring-4 focus:ring-green-50"
+                                       required>
+
+                            </div>
+
+                            <!-- NOMBRE ARCHIVO -->
+                            <div>
+
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-2 tracking-wider">
+                                    Nombre Archivo
+                                </label>
+
+                                <input type="text"
+                                       th:field="*{nombre_archivo}"
+                                       placeholder="Ej: oficio.pdf"
+                                       class="w-full rounded-lg border border-slate-200 bg-white py-3 px-4 text-sm outline-none focus:border-green-500 focus:ring-4 focus:ring-green-50">
+
+                            </div>
+
+                            <!-- TIPO -->
+                            <div>
+
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-2 tracking-wider">
+                                    Tipo de Archivo
+                                </label>
+
+                                <input type="text"
+                                       th:field="*{tipo}"
+                                       placeholder="PDF, DOCX, XLSX..."
+                                       class="w-full rounded-lg border border-slate-200 bg-white py-3 px-4 text-sm outline-none focus:border-green-500 focus:ring-4 focus:ring-green-50">
+
+                            </div>
+
+                            <!-- TAMAÑO -->
+                            <div>
+
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-2 tracking-wider">
+                                    Tamaño (KB)
+                                </label>
+
+                                <input type="number"
+                                       th:field="*{tamano}"
+                                       placeholder="0"
+                                       class="w-full rounded-lg border border-slate-200 bg-white py-3 px-4 text-sm outline-none focus:border-green-500 focus:ring-4 focus:ring-green-50">
+
+                            </div>
+
+                            <!-- FECHA -->
+                            <div>
+
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-2 tracking-wider">
+                                    Fecha de Subida
+                                </label>
+
+                                <input type="date"
+                                       th:field="*{fecha_subida}"
+                                       class="w-full rounded-lg border border-slate-200 bg-white py-3 px-4 text-sm outline-none focus:border-green-500 focus:ring-4 focus:ring-green-50">
+
+                            </div>
+
+                        </div>
+
+                        <!-- RUTA -->
+                        <div>
+
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-2 tracking-wider">
+                                Ruta Archivo
+                            </label>
+
+                            <input type="text"
+                                   th:field="*{ruta_archivo}"
+                                   placeholder="Ruta donde se almacena el documento"
+                                   class="w-full rounded-lg border border-slate-200 bg-white py-3 px-4 text-sm outline-none focus:border-green-500 focus:ring-4 focus:ring-green-50">
+
+                        </div>
+
+                        <!-- ARCHIVO -->
+                        <div>
+
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-2 tracking-wider">
+                                Adjuntar Archivo
+                            </label>
+
+                            <input type="file"
+                                   class="w-full rounded-lg border border-slate-200 bg-white py-3 px-4 text-sm">
+
+                        </div>
+
+                        <!-- BOTONES -->
+                        <div class="pt-6 flex items-center justify-end gap-3 border-t border-slate-100">
+
+                            <a th:href="@{/view/documentos}"
+                               class="px-6 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">
+
+                                Cancelar
+
+                            </a>
+
+                            <button type="submit"
+                                    class="px-8 py-2.5 text-white text-sm font-bold rounded-lg shadow-sm transition"
+                                    style="background-color: var(--verde-sena);">
+
+                                Guardar Documento
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+                <p class="text-center text-[11px] text-slate-400 mt-6 uppercase tracking-widest">
+                    Sistema ODIN © 2026 - Gestión Documental
+                </p>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>
