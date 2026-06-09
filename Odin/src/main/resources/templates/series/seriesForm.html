@@ -10,7 +10,9 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
     </style>
 </head>
 
@@ -30,10 +32,10 @@
 
             <section class="mb-5">
                 <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 uppercase">
-                    Módulo de series
+                    Modulo de series
                 </h1>
                 <p class="text-sm text-slate-500 mt-1">
-                    Gestión institucional de series del sistema ODIN
+                    Campos alineados con la tabla ccd_series.
                 </p>
             </section>
 
@@ -46,77 +48,108 @@
 
                 <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
 
-                    <!-- INFORMACIÓN PRINCIPAL -->
                     <section class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-
                         <div class="px-5 py-4 border-b border-slate-100">
-                            <h2 class="text-sm font-extrabold text-slate-900 uppercase flex items-center gap-2">
-                                👤 Información de la serie
+                            <h2 class="text-sm font-extrabold text-slate-900 uppercase">
+                                Informacion principal
                             </h2>
                         </div>
 
                         <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                            <div class="md:col-span-2">
+                            <div>
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                   Serie
+                                    Codigo serie
                                 </label>
-                                <input type="text" th:field="*{serie}" required
-                                       placeholder="Serie"
+                                <input type="text" th:field="*{codigo_serie}" required
+                                       placeholder="Ej: 1.1012-27"
                                        class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
                             </div>
-
-                            <div class="md:col-span-2">
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                    Serie
-                                </label>
-                                <input type="text" th:field="*{descripcion}" required
-                                       placeholder="Descripcion de la serie"
-                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
-                            </div>
-
-
-                        </div>
-                    </section>
-
-                    <!-- CONTACTO Y ACCESO -->
-                    <section class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-
-                        <div class="px-5 py-4 border-b border-slate-100">
-                            <h2 class="text-sm font-extrabold text-slate-900 uppercase flex items-center gap-2">
-                                🔐 Acceso
-                            </h2>
-                        </div>
-
-                        <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
 
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                    Estado
+                                    Codigo unidad
                                 </label>
-                                <select th:field="*{estado}" required
+                                <select th:field="*{codigo_unidad}" required
                                         class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
-                                    <option value="">Seleccione</option>
-                                    <option value="Activo">Activo</option>
-                                    <option value="Inactivo">Inactivo</option>
+                                    <option value="">Seleccione una unidad</option>
+                                    <option th:each="unidadItem : ${unidadesList}"
+                                            th:value="${unidadItem.codigo_unidad}"
+                                            th:text="${unidadItem.codigo_unidad + ' - ' + unidadItem.nombre_unidad}">
+                                    </option>
                                 </select>
+                                <p class="mt-1 text-xs text-slate-400">
+                                    Selecciona una unidad existente de ccd_unidades.
+                                </p>
                             </div>
 
+                            <div class="md:col-span-2">
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Nombre serie
+                                </label>
+                                <input type="text" th:field="*{nombre_serie}" required
+                                       placeholder="Nombre de la serie"
+                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Informacion publica
+                                </label>
+                                <input type="text" th:field="*{informacion_publica}"
+                                       placeholder="Ej: SI / NO / Parcial"
+                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                            </div>
                         </div>
                     </section>
 
+                    <section class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                        <div class="px-5 py-4 border-b border-slate-100">
+                            <h2 class="text-sm font-extrabold text-slate-900 uppercase">
+                                Clasificacion documental
+                            </h2>
+                        </div>
+
+                        <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Codigo seccion
+                                </label>
+                                <input type="text" th:field="*{codigo_seccion}"
+                                       placeholder="Opcional"
+                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Codigo subseccion
+                                </label>
+                                <input type="text" th:field="*{codigo_subseccion}"
+                                       placeholder="Opcional"
+                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Descripcion
+                                </label>
+                                <textarea th:field="*{descripcion}"
+                                          rows="5"
+                                          placeholder="Descripcion general de la serie"
+                                          class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white"></textarea>
+                            </div>
+                        </div>
+                    </section>
                 </div>
 
-                <!-- BOTONES -->
                 <div class="flex justify-end gap-3 mt-5">
                     <a th:href="@{/view/series}"
                        class="rounded-lg border border-green-600 bg-white px-6 py-2.5 text-sm font-semibold text-green-700 hover:bg-green-50 transition">
-                        Limpiar / Volver
+                        Volver
                     </a>
 
                     <button type="submit"
                             class="rounded-lg bg-[#168500] px-7 py-2.5 text-sm font-bold text-white hover:bg-[#0f6d00] transition">
-                        ▶ Guardar serie
+                        Guardar serie
                     </button>
                 </div>
 

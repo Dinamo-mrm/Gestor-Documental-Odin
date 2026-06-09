@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario subserie</title>
+    <title>Formulario Subserie</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
     </style>
 </head>
 
@@ -30,10 +32,10 @@
 
             <section class="mb-5">
                 <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 uppercase">
-                    Módulo de subseries
+                    Modulo de subseries
                 </h1>
                 <p class="text-sm text-slate-500 mt-1">
-                    Gestión institucional de subseries del sistema ODIN
+                    Campos alineados con la tabla ccd_subseries.
                 </p>
             </section>
 
@@ -46,86 +48,132 @@
 
                 <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
 
-                    <!-- INFORMACIÓN PRINCIPAL -->
                     <section class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-
                         <div class="px-5 py-4 border-b border-slate-100">
-                            <h2 class="text-sm font-extrabold text-slate-900 uppercase flex items-center gap-2">
-                                👤 Información de la subserie
+                            <h2 class="text-sm font-extrabold text-slate-900 uppercase">
+                                Informacion principal
                             </h2>
                         </div>
 
                         <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                            <div class="md:col-span-2">
+                            <div>
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                   subserie
+                                    Codigo subserie
                                 </label>
-                                <input type="text" th:field="*{subserie}" required
-                                       placeholder="subserie"
+                                <input type="text" th:field="*{codigo_subserie}" required
+                                       placeholder="Ej: 1.1012-27-01"
                                        class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
                             </div>
-
-                            <div class="md:col-span-2">
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                    Serie
-                                </label>
-                                <input type="text" th:field="*{id_serie}" required
-                                       placeholder="serie"
-                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
-                            </div>
-
-                            <div class="md:col-span-2">
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                    subserie
-                                </label>
-                                <input type="text" th:field="*{descripcion}" required
-                                       placeholder="Descripcion de la subserie"
-                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
-                            </div>
-
-
-                        </div>
-                    </section>
-
-                    <!-- CONTACTO Y ACCESO -->
-                    <section class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-
-                        <div class="px-5 py-4 border-b border-slate-100">
-                            <h2 class="text-sm font-extrabold text-slate-900 uppercase flex items-center gap-2">
-                                🔐 Acceso
-                            </h2>
-                        </div>
-
-                        <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
 
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                    Estado
+                                    Serie padre
                                 </label>
-                                <select th:field="*{estado}" required
+                                <select th:field="*{id_serie}" required
                                         class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
-                                    <option value="">Seleccione</option>
-                                    <option value="Activo">Activo</option>
-                                    <option value="Inactivo">Inactivo</option>
+                                    <option value="">Seleccione una serie</option>
+                                    <option th:each="serieItem : ${seriesList}"
+                                            th:value="${serieItem.id_serie}"
+                                            th:text="${serieItem.codigo_serie + ' - ' + serieItem.nombre_serie}">
+                                    </option>
                                 </select>
                             </div>
 
+                            <div class="md:col-span-2">
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Nombre subserie
+                                </label>
+                                <input type="text" th:field="*{nombre_subserie}" required
+                                       placeholder="Nombre de la subserie"
+                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Tipo PQRSF
+                                </label>
+                                <input type="text" th:field="*{tipo_pqrsf}"
+                                       placeholder="peticion, queja, reclamo, etc."
+                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                            </div>
                         </div>
                     </section>
 
+                    <section class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                        <div class="px-5 py-4 border-b border-slate-100">
+                            <h2 class="text-sm font-extrabold text-slate-900 uppercase">
+                                Retencion y acceso
+                            </h2>
+                        </div>
+
+                        <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Retencion (anios)
+                                </label>
+                                <input type="number" th:field="*{retencion_anios}" min="0"
+                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Disposicion final
+                                </label>
+                                <select th:field="*{disposicion_final}"
+                                        class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                                    <option value="CONSERVACION">CONSERVACION</option>
+                                    <option value="ELIMINACION">ELIMINACION</option>
+                                    <option value="SELECCION">SELECCION</option>
+                                    <option value="DIGITALIZACION">DIGITALIZACION</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Nivel acceso
+                                </label>
+                                <select th:field="*{nivel_acceso}"
+                                        class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                                    <option value="PUBLICO">PUBLICO</option>
+                                    <option value="RESERVADO">RESERVADO</option>
+                                    <option value="CONFIDENCIAL">CONFIDENCIAL</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Valor documental
+                                </label>
+                                <select th:field="*{valor_documental}"
+                                        class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                                    <option value="ADMINISTRATIVO">ADMINISTRATIVO</option>
+                                    <option value="TESTIMONIAL">TESTIMONIAL</option>
+                                    <option value="LEGAL">LEGAL</option>
+                                </select>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                    Observaciones de retencion
+                                </label>
+                                <textarea th:field="*{observaciones_retencion}"
+                                          rows="5"
+                                          placeholder="Notas o justificacion de retencion"
+                                          class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white"></textarea>
+                            </div>
+                        </div>
+                    </section>
                 </div>
 
-                <!-- BOTONES -->
                 <div class="flex justify-end gap-3 mt-5">
                     <a th:href="@{/view/subseries}"
                        class="rounded-lg border border-green-600 bg-white px-6 py-2.5 text-sm font-semibold text-green-700 hover:bg-green-50 transition">
-                        Limpiar / Volver
+                        Volver
                     </a>
 
                     <button type="submit"
                             class="rounded-lg bg-[#168500] px-7 py-2.5 text-sm font-bold text-white hover:bg-[#0f6d00] transition">
-                        ▶ Guardar subserie
+                        Guardar subserie
                     </button>
                 </div>
 

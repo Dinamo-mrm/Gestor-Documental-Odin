@@ -1,9 +1,8 @@
 package com.odin.odin.view;
 
 import com.odin.odin.model.Series;
-import com.odin.odin.model.Usuarios;
+import com.odin.odin.repository.CcdUnidadRepository;
 import com.odin.odin.repository.SeriesRepository;
-import com.odin.odin.repository.UsuariosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +18,9 @@ public class SeriesView
     @Autowired
     private SeriesRepository repository;
 
+    @Autowired
+    private CcdUnidadRepository unidadesRepository;
+
     @GetMapping("/view/series")
     public String lista(Model model)
     {
@@ -30,22 +32,28 @@ public class SeriesView
     public String form(Model model)
     {
         model.addAttribute("series", new Series());
+        model.addAttribute("unidadesList", unidadesRepository.findAll());
         return "series/seriesForm";
     }
 
     @PostMapping("/view/series/save")
     public String save(@ModelAttribute Series series, RedirectAttributes ra)
     {
-        repository.save(series);
-        ra.addFlashAttribute("mensaje", "Usuario Registrado con Exito");
+        boolean isUpdate = series.getId_serie() != null;
+        Series savedSeries = repository.save(series);
+        Series loadedSeries = repository.findById(savedSeries.getId_serie()).orElse(savedSeries);
+
+        ra.addFlashAttribute("success", isUpdate ? "Serie actualizada con exito" : "Serie registrada con exito");
+        ra.addFlashAttribute("savedSeries", loadedSeries);
         return "redirect:/view/series";
     }
 
     @GetMapping("/view/series/edit/{id}")
     public String edit(@PathVariable Long id, Model model)
     {
-        Series series = repository.findById(id).orElse(null);
+        Series series = repository.findById(id).orElse(new Series());
         model.addAttribute("series", series);
+        model.addAttribute("unidadesList", unidadesRepository.findAll());
         return "series/seriesForm";
     }
 
@@ -53,7 +61,7 @@ public class SeriesView
     public String delete(@PathVariable Long id, RedirectAttributes ra)
     {
         repository.deleteById(id);
-        ra.addFlashAttribute("mensaje", "Serie Eliminada con Exito");
+        ra.addFlashAttribute("success", "Serie eliminada con exito");
         return "redirect:/view/series";
     }
 
