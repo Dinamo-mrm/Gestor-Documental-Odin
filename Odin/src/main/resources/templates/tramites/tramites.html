@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Trámites</title>
+    <title>Gestión de Trámites</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -36,142 +36,243 @@
             <!-- ENCABEZADO -->
             <section class="mb-6">
                 <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+
                     <div>
-                        <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight uppercase">
-                            Catálogo de<br class="hidden md:block"> Trámites
+                        <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 uppercase">
+                            Gestión de Trámites
                         </h1>
+
                         <p class="text-sm text-slate-500 mt-2">
-                            Administre y configure los tipos de trámites disponibles en el sistema.
+                            Administre los tipos de trámites, tiempos de respuesta,
+                            prioridades y configuración documental.
                         </p>
                     </div>
 
-                    <div class="flex gap-3">
+                    <div>
                         <a th:href="@{/view/tramites/form}"
                            class="inline-flex items-center justify-center rounded-lg bg-[#2fa300] px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#248400] transition">
-                            nuevo trámite
+                            Nuevo Trámite
                         </a>
                     </div>
+
                 </div>
             </section>
 
-            <!-- MENSAJE DE ÉXITO -->
-            <div th:if="${success}" class="mb-5">
+            <!-- MENSAJES -->
+            <div th:if="${mensaje}" class="mb-5">
                 <div class="rounded-lg border border-green-200 bg-green-50 px-5 py-3 text-sm text-green-800 shadow-sm"
-                     th:text="${success}">
+                     th:text="${mensaje}">
                 </div>
             </div>
 
             <!-- BUSCADOR -->
             <section class="mb-5">
                 <div class="relative">
+
                     <span class="absolute inset-y-0 left-4 flex items-center text-slate-400">
                         🔍
                     </span>
+
                     <input type="text"
-                           placeholder="Buscar por nombre de trámite o descripción..."
+                           placeholder="Buscar trámite..."
                            class="w-full rounded-lg border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-600 shadow-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100">
+
                 </div>
             </section>
 
-            <!-- CARD TABLA -->
+            <!-- TABLA -->
             <section class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
 
-                <!-- ACCIONES RÁPIDAS -->
+                <!-- CABECERA -->
                 <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Registros de Trámites</h3>
+
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        Catálogo de Trámites
+                    </h3>
+
                     <div class="flex gap-2">
                         <a th:href="@{/view/tramites/pdf}"
-                           class="rounded-md border border-slate-200 px-4 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition">
-                            Exportar PDF
+                           class="rounded-md border border-slate-200 px-4 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50">
+                            PDF
                         </a>
+
                         <a th:href="@{/view/tramites/excel}"
-                           class="rounded-md border border-slate-200 px-4 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition">
+                           class="rounded-md border border-slate-200 px-4 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50">
                             Excel
                         </a>
                     </div>
+
                 </div>
 
-                <!-- TABLA -->
                 <div class="overflow-x-auto">
+
                     <table class="min-w-full text-sm">
+
                         <thead>
                         <tr class="bg-[#fafafa] border-b border-slate-100 text-[11px] uppercase tracking-wide text-slate-500">
-                            <th class="px-5 py-4 text-left font-bold w-20">ID</th>
-                            <th class="px-5 py-4 text-left font-bold">Nombre del Trámite</th>
-                            <th class="px-5 py-4 text-left font-bold">Descripción</th>
-                            <th class="px-5 py-4 text-center font-bold w-32">Acciones</th>
+
+                            <th class="px-5 py-4 text-left font-bold">
+                                ID
+                            </th>
+
+                            <th class="px-5 py-4 text-left font-bold">
+                                Nombre
+                            </th>
+
+                            <th class="px-5 py-4 text-left font-bold">
+                                Descripción
+                            </th>
+
+                            <th class="px-5 py-4 text-center font-bold">
+                                Estado
+                            </th>
+
+                            <th class="px-5 py-4 text-center font-bold">
+                                Prioridad
+                            </th>
+
+                            <th class="px-5 py-4 text-center font-bold">
+                                Días Respuesta
+                            </th>
+
+                            <th class="px-5 py-4 text-center font-bold">
+                                Requiere Respuesta
+                            </th>
+
+                            <th class="px-5 py-4 text-center font-bold">
+                                Acciones
+                            </th>
+
                         </tr>
                         </thead>
 
                         <tbody class="divide-y divide-slate-100">
-                        <!-- Basado en image_94d74e.png: id_tramite, nombre, descripcion -->
-                        <tr th:each="tramite : ${tramites}" class="hover:bg-slate-50 transition">
 
-                            <td class="px-5 py-4 font-mono text-xs text-slate-400" th:text="${tramite.id_tramite}">
-                                1
+                        <tr th:each="tramite : ${tramites}"
+                            class="hover:bg-slate-50 transition">
+
+                            <td class="px-5 py-4 font-mono text-xs text-slate-500"
+                                th:text="${tramite.idTramite}">
+                            </td>
+
+                            <td class="px-5 py-4 font-semibold text-slate-800"
+                                th:text="${tramite.nombre}">
+                            </td>
+
+                            <td class="px-5 py-4 text-slate-600"
+                                th:text="${tramite.descripcion}">
+                            </td>
+
+                            <td class="px-5 py-4 text-center">
+
+                                <span th:if="${tramite.activo}"
+                                      class="px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                                    Activo
+                                </span>
+
+                                <span th:unless="${tramite.activo}"
+                                      class="px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+                                    Inactivo
+                                </span>
+
+                            </td>
+
+                            <td class="px-5 py-4 text-center">
+
+                                <span class="px-2 py-1 rounded-md bg-slate-100 text-xs font-semibold"
+                                      th:text="${tramite.prioridadDefault}">
+                                </span>
+
+                            </td>
+
+                            <td class="px-5 py-4 text-center"
+                                th:text="${tramite.diasRespuesta}">
+                            </td>
+
+                            <td class="px-5 py-4 text-center">
+
+                                <span th:if="${tramite.requiereRespuesta}"
+                                      class="text-green-600 font-semibold">
+                                    Sí
+                                </span>
+
+                                <span th:unless="${tramite.requiereRespuesta}"
+                                      class="text-red-600 font-semibold">
+                                    No
+                                </span>
+
                             </td>
 
                             <td class="px-5 py-4">
-                                <div class="font-bold text-slate-800" th:text="${tramite.nombre}">
-                                    Nombre del Trámite
-                                </div>
-                            </td>
 
-                            <td class="px-5 py-4 text-slate-600 italic" th:text="${tramite.descripcion}">
-                                Descripción breve del trámite...
-                            </td>
-
-                            <td class="px-5 py-4">
                                 <div class="flex items-center justify-center gap-4">
-                                    <a th:href="@{'/view/tramites/edit/' + ${tramite.id_tramite}}"
-                                       title="Editar"
-                                       class="text-slate-400 hover:text-green-700 transition">
+
+                                    <a th:href="@{'/view/tramites/edit/' + ${tramite.idTramite}}"
+                                       class="text-slate-400 hover:text-green-700 transition"
+                                       title="Editar">
                                         ✏️
                                     </a>
 
-                                    <form th:action="@{'/view/tramites/delete/' + ${tramite.id_tramite}}"
-                                          method="post"
-                                          class="inline">
+                                    <form th:action="@{'/view/tramites/delete/' + ${tramite.idTramite}}"
+                                          method="post">
+
                                         <button type="submit"
-                                                title="Eliminar"
                                                 class="text-slate-400 hover:text-red-600 transition"
-                                                onclick="return confirm('¿Está seguro que desea eliminar este Trámite?')">
+                                                title="Eliminar"
+                                                onclick="return confirm('¿Desea eliminar este trámite?')">
                                             🗑️
                                         </button>
+
                                     </form>
+
                                 </div>
+
                             </td>
+
                         </tr>
 
-                        <!-- Caso vacío -->
+                        <!-- SIN DATOS -->
                         <tr th:if="${#lists.isEmpty(tramites)}">
-                            <td colspan="4" class="px-6 py-12 text-center text-slate-500">
+
+                            <td colspan="8"
+                                class="px-6 py-12 text-center text-slate-500">
+
                                 <div class="flex flex-col items-center">
-                                    <span class="text-3xl mb-2">📂</span>
-                                    <p>No hay trámites configurados en este momento.</p>
+
+                                    <span class="text-3xl mb-2">
+                                        📂
+                                    </span>
+
+                                    <p>
+                                        No existen trámites registrados.
+                                    </p>
+
                                 </div>
+
                             </td>
+
                         </tr>
+
                         </tbody>
+
                     </table>
+
                 </div>
 
-                <!-- FOOTER TABLA -->
+                <!-- FOOTER -->
                 <div class="flex items-center justify-between px-5 py-4 border-t border-slate-100 text-xs text-slate-500">
+
                     <span th:text="'Total: ' + ${#lists.size(tramites)} + ' trámites registrados'">
-                        Mostrando registros
                     </span>
 
-                    <div class="flex items-center gap-2">
-                        <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-slate-100">‹</button>
-                        <button class="w-8 h-8 rounded-md bg-[#2fa300] text-white font-bold">1</button>
-                        <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-slate-100">›</button>
-                    </div>
                 </div>
 
             </section>
+
         </main>
+
     </div>
+
 </div>
 
 <script th:src="@{/js/script.js}" defer></script>

@@ -3,6 +3,8 @@ package com.odin.odin.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+
 import lombok.*;
 
 @Entity
@@ -12,16 +14,38 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Tramites
-{
+public class Tramites {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_tramite;
+    @Column(name = "id_tramite")
+    private Long idTramite;
 
     @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
 
-    @NotBlank(message = "El tipo de identificacion")
+    @NotBlank(message = "La descripción es obligatoria")
     private String descripcion;
 
+    @Column(name = "id_dependencia_responsable")
+    private Long idDependenciaResponsable;
+
+    @Column(name = "id_estado_inicial")
+    private Long idEstadoInicial;
+
+    @Column(name = "dias_respuesta")
+    private Integer diasRespuesta;
+
+    @Column(name = "prioridad_default")
+    private String prioridadDefault;
+
+    @Column(name = "requiere_respuesta")
+    private Boolean requiereRespuesta;
+
+    @Builder.Default
+    private Boolean activo = true;
+
+    private LocalDateTime fecha_creacion;
+
+    private LocalDateTime fecha_actualizacion;
 }
