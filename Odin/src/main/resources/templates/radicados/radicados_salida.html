@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radicación de Salida</title>
+    <title>Radicacion de Salida</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
@@ -24,7 +24,7 @@
         <main class="px-4 md:px-8 py-6">
             <section class="mb-6">
                 <h1 class="text-2xl md:text-3xl font-extrabold uppercase text-slate-900">
-                    Radicación de Salida
+                    Radicacion de Salida
                 </h1>
                 <p class="text-sm text-slate-500 mt-1">
                     Registro de documentos enviados
@@ -58,15 +58,15 @@
                 <input type="hidden" name="canalRecepcion" value="Salida institucional">
 
                 <section class="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
-                    <h2 class="mb-4 text-lg font-bold text-slate-900">Información del Destinatario</h2>
+                    <h2 class="mb-4 text-lg font-bold text-slate-900">Informacion del Destinatario</h2>
 
                     <div class="grid md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-slate-700">Nombre / Razón Social</label>
+                            <label class="block text-sm font-medium text-slate-700">Nombre / Razon social</label>
                             <input type="text" th:field="*{remitente}" class="input w-full mt-1">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700">Número de Identificación</label>
+                            <label class="block text-sm font-medium text-slate-700">Numero de identificacion</label>
                             <input type="text" th:field="*{numeroIdentificacion}" class="input w-full mt-1">
                         </div>
                         <div>
@@ -74,7 +74,7 @@
                             <input type="text" th:field="*{contacto}" class="input w-full mt-1">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700">Dirección</label>
+                            <label class="block text-sm font-medium text-slate-700">Direccion</label>
                             <input type="text" th:field="*{direccion}" class="input w-full mt-1">
                         </div>
                     </div>
@@ -84,31 +84,80 @@
                     <h2 class="mb-4 text-lg font-bold text-slate-900">Detalles del Documento</h2>
 
                     <div class="grid md:grid-cols-2 gap-6">
-                        <div>
+                        <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-700">Asunto / Referencia</label>
                             <input type="text" th:field="*{asunto}" class="input w-full mt-1">
                         </div>
+
                         <div>
-                            <label class="block text-sm font-medium text-slate-700">Tipo de Documento</label>
-                            <select th:field="*{tipoDocumento}" class="input w-full mt-1">
+                            <label class="block text-sm font-medium text-slate-700">Serie documental</label>
+                            <select th:field="*{codigo_serie}" class="input w-full mt-1">
                                 <option value="">Seleccione...</option>
-                                <option value="Oficio de salida">Oficio de salida</option>
-                                <option value="Respuesta">Respuesta</option>
-                                <option value="Comunicación externa">Comunicación externa</option>
+                                <option th:each="serieItem : ${seriesList}"
+                                        th:value="${serieItem.codigo_serie}"
+                                        th:text="${serieItem.codigo_serie + ' - ' + serieItem.nombre_serie}">
+                                </option>
                             </select>
                         </div>
+
                         <div>
-                            <label class="block text-sm font-medium text-slate-700">Fecha del Documento</label>
-                            <input type="date" th:field="*{fechaDocumento}" class="input w-full mt-1">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700">Dependencia Responsable</label>
-                            <select th:field="*{dependencia}" class="input w-full mt-1">
+                            <label class="block text-sm font-medium text-slate-700">Subserie documental</label>
+                            <select th:field="*{codigo_subserie}" class="input w-full mt-1">
                                 <option value="">Seleccione...</option>
-                                <option value="Dirección">Dirección</option>
-                                <option value="Recursos Humanos">Recursos Humanos</option>
-                                <option value="Financiera">Financiera</option>
+                                <option th:each="subserieItem : ${subseriesList}"
+                                        th:value="${subserieItem.codigo_subserie}"
+                                        th:text="${subserieItem.codigo_subserie + ' - ' + subserieItem.nombre_subserie}">
+                                </option>
                             </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Tramite</label>
+                            <select th:field="*{id_tramite}" class="input w-full mt-1">
+                                <option value="">Seleccione...</option>
+                                <option th:each="tramiteItem : ${tramitesList}"
+                                        th:value="${tramiteItem.id_tramite}"
+                                        th:text="${tramiteItem.nombre}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Estado</label>
+                            <select th:field="*{id_estado}" class="input w-full mt-1">
+                                <option value="">Seleccione...</option>
+                                <option th:each="estadoItem : ${estadosList}"
+                                        th:value="${estadoItem.id_estado}"
+                                        th:text="${estadoItem.nombre}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Dependencia</label>
+                            <select th:field="*{id_dependencia}" class="input w-full mt-1">
+                                <option value="">Seleccione...</option>
+                                <option th:each="dependenciaItem : ${dependenciasList}"
+                                        th:value="${dependenciaItem.id_dependencia}"
+                                        th:text="${dependenciaItem.nombre + ' - ' + dependenciaItem.dependencia}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Usuario responsable</label>
+                            <select th:field="*{id_usuario}" class="input w-full mt-1">
+                                <option value="">Seleccione...</option>
+                                <option th:each="usuarioItem : ${usuariosList}"
+                                        th:value="${usuarioItem.id_usuario}"
+                                        th:text="${usuarioItem.nombre}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Fecha del radicado</label>
+                            <input type="datetime-local" th:field="*{fecha_radicado}" class="input w-full mt-1">
                         </div>
                     </div>
                 </section>
