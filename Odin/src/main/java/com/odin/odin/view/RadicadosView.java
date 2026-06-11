@@ -182,6 +182,7 @@ public class RadicadosView {
         return "ENT-";
     }
 
+
     private void prepararRadicado(Radicados radicado, String uri) {
         if (!tieneTexto(radicado.getNumero_radicado())) {
             String consecutivo = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
@@ -243,6 +244,7 @@ public class RadicadosView {
             radicado.setAsunto(valorODefecto(radicado.getObservaciones(), "Sin asunto"));
         }
     }
+
     private String primerTexto(String... valores) {
         for (String valor : valores) {
             if (tieneTexto(valor)) {
