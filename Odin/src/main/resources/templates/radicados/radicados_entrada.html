@@ -132,7 +132,7 @@
                                 <option value="">Seleccione...</option>
                                 <option value="Oficio">Oficio</option>
                                 <option value="Carta">Carta</option>
-                                <option value="Informe">Informe</option>
+                                <option value="1">Informe</option>
                             </select>
                         </div>
 
@@ -147,17 +147,17 @@
                                 <option value="">Seleccione...</option>
                                 <option value="Correo">Correo</option>
                                 <option value="Presencial">Presencial</option>
-                                <option value="Mensajería">Mensajería</option>
+                                <option value="1">Mensajería</option>
                             </select>
                         </div>
 
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-700">Dependencia Asignada</label>
                             <select th:field="*{dependencia}" class="input w-full mt-1">
-                                <option value="">Seleccione...</option>
-                                <option value="Dirección">Dirección</option>
-                                <option value="Recursos Humanos">Recursos Humanos</option>
-                                <option value="Financiera">Financiera</option>
+                                <option value="">Seleccione una dependencia...</option>
+                                <option th:each="j: ${dependencias}"
+                                        th:value="${j.id_dependencia}"
+                                        th:text="${j.nombre}"></option>
                             </select>
                         </div>
                     </div>

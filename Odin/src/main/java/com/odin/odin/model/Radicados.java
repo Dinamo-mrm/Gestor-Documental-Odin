@@ -26,16 +26,21 @@ public class Radicados
     private String numero_radicado;
 
     @NotNull(message = "el tramite es obligatorio")
-    private String id_tramite ;
+    private Integer id_tramite ;
 
     @NotNull(message = "el estado es obligatorio")
-    private String id_estado ;
+    private Integer id_estado ;
 
+    @ManyToOne
+    @JoinColumn(name = "id_dependencia")
+    private Dependencias dependencias;
+
+    /*
     @NotNull(message = "la dependencia es obligatoria")
-    private String id_dependencia ;
-
+    private Integer id_dependencia ;
+     */
     @NotNull(message = "el usuario es obligatorio")
-    private String id_usuario ;
+    private Integer id_usuario ;
 
     @NotBlank(message = "el remitente es obligatorio")
     private String remitente ;
@@ -87,5 +92,4 @@ public class Radicados
 
     @Transient
     private String tipoPQRS;
-
 }

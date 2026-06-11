@@ -1,6 +1,8 @@
 package com.odin.odin.view;
 
+import com.odin.odin.model.Dependencias;
 import com.odin.odin.model.Radicados;
+import com.odin.odin.repository.DependenciasRepository;
 import com.odin.odin.repository.RadicadosRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,35 +23,43 @@ public class RadicadosView {
     @Autowired
     private RadicadosRepository radicadosRepository;
 
+    @Autowired
+    private DependenciasRepository dependenciasRepository;
+
     @GetMapping("/view/radicados")
     public String inicio(Model model) {
         model.addAttribute("radicado", new Radicados());
+        model.addAttribute("dependencias", dependenciasRepository.findAll());
         return "radicados/radicados_entrada";
     }
 
     @GetMapping("/view/radicados/entrada")
     public String entrada(Model model) {
         model.addAttribute("radicado", new Radicados());
+        model.addAttribute("dependencias", dependenciasRepository.findAll());
         return "radicados/radicados_entrada";
     }
 
     @GetMapping("/view/radicados/salida")
     public String salida(Model model) {
         model.addAttribute("radicado", new Radicados());
+        model.addAttribute("dependencias", dependenciasRepository.findAll());
         return "radicados/radicados_salida";
     }
 
     @GetMapping("/view/radicados/interna")
     public String interna(Model model) {
         model.addAttribute("radicado", new Radicados());
+        model.addAttribute("dependencias", dependenciasRepository.findAll());
         return "radicados/radicados_interno";
     }
 
     @GetMapping("/view/radicados/pqrs")
     public String pqrs(Model model) {
         Radicados radicado = new Radicados();
-        radicado.setTipoPQRS("Petici\u00f3n");
+        radicado.setTipoPQRS("Petición");
         model.addAttribute("radicado", radicado);
+        model.addAttribute("dependencias", dependenciasRepository.findAll());
         return "radicados/radicados_pqrs";
     }
 
@@ -78,6 +88,7 @@ public class RadicadosView {
     public String edit(@PathVariable Long id, Model model) {
         Radicados radicado = radicadosRepository.findById(id).orElse(new Radicados());
         model.addAttribute("radicado", radicado);
+        model.addAttribute("dependencias", dependenciasRepository.findAll());
         return "radicados/radicados_entrada";
     }
 
@@ -178,45 +189,66 @@ public class RadicadosView {
         }
 
         if (!tieneTexto(radicado.getFecha_radicado())) {
-            radicado.setFecha_radicado(tieneTexto(radicado.getFechaDocumento())
+            String fecha = tieneTexto(radicado.getFechaDocumento())
                     ? radicado.getFechaDocumento()
-                    : LocalDateTime.now().toLocalDate().toString());
+                    : LocalDateTime.now().toLocalDate().toString();
+            radicado.setFecha_radicado(fecha);
         }
 
-        if (!tieneTexto(radicado.getId_tramite())) {
-            radicado.setId_tramite(primerTexto(radicado.getTipoPQRS(), radicado.getTipoDocumento(),
-                    radicado.getPrioridad(), "Entrada"));
+        // === 1. PARSEO SEGURO DE VARIABLES A ENTEROS ===
+        Integer tipoPQRSId = convertirAEnteroSeguro(radicado.getTipoPQRS());
+        Integer tipoDocId = convertirAEnteroSeguro(radicado.getTipoDocumento());
+        Integer prioridadId = convertirAEnteroSeguro(radicado.getPrioridad());
+
+        Integer canalRecepcionId = convertirAEnteroSeguro(radicado.getCanalRecepcion());
+
+        Integer dependenciaId = convertirAEnteroSeguro(radicado.getDependencia());
+        Integer depeDestinoId = convertirAEnteroSeguro(radicado.getDependenciaDestino());
+        Integer depeOrigenId = convertirAEnteroSeguro(radicado.getDependenciaOrigen());
+
+        Integer responsableId = convertirAEnteroSeguro(radicado.getResponsable());
+
+        // === 2. VALIDACIONES Y ASIGNACIONES ===
+
+        // Trámite
+        if (!tieneNumero(radicado.getId_tramite())) {
+            radicado.setId_tramite(primerId(tipoPQRSId, tipoDocId, prioridadId, 1));
         }
 
-        if (!tieneTexto(radicado.getId_estado())) {
-            radicado.setId_estado(valorODefecto(radicado.getCanalRecepcion(), "Recibido"));
+        // Estado
+        if (!tieneNumero(radicado.getId_estado())) {
+            radicado.setId_estado(idValorODefecto(canalRecepcionId, 1));
         }
 
-        if (!tieneTexto(radicado.getId_dependencia())) {
-            radicado.setId_dependencia(primerTexto(radicado.getDependencia(), radicado.getDependenciaDestino(),
-                    radicado.getDependenciaOrigen(), "Sin asignar"));
+        // Dependencia (CORRECCIÓN CLAVE PARA ENTIDADES RELACIONALES)
+        // 1. Evaluamos qué ID numérico corresponde usando tu lógica de prioridades
+        Integer idDepElegido = primerId(dependenciaId, depeDestinoId, depeOrigenId, 99);
+
+        // 2. Buscamos el objeto Dependencias real en la base de datos con ese ID
+        // NOTA: Cambia "setDependencia" o "setDependencias" según cómo se llame el setter exacto de tu Objeto en la clase Radicados
+        Dependencias depBaseDatos = dependenciasRepository.findById(Long.valueOf(idDepElegido)).orElse(null);
+        radicado.setDependencias(depBaseDatos);
+
+        // Usuario
+        if (!tieneNumero(radicado.getId_usuario())) {
+            radicado.setId_usuario(idValorODefecto(responsableId, 2));
         }
 
-        if (!tieneTexto(radicado.getId_usuario())) {
-            radicado.setId_usuario(valorODefecto(radicado.getResponsable(), "sistema"));
-        }
-
+        // Criterios de texto restantes
         if (!tieneTexto(radicado.getRemitente())) {
-            radicado.setRemitente(valorODefecto(radicado.getResponsable(), "An\u00f3nimo"));
+            radicado.setRemitente(valorODefecto(radicado.getResponsable(), "Anónimo"));
         }
 
         if (!tieneTexto(radicado.getAsunto())) {
             radicado.setAsunto(valorODefecto(radicado.getObservaciones(), "Sin asunto"));
         }
     }
-
     private String primerTexto(String... valores) {
         for (String valor : valores) {
             if (tieneTexto(valor)) {
                 return valor;
             }
         }
-
         return "";
     }
 
@@ -226,5 +258,42 @@ public class RadicadosView {
 
     private boolean tieneTexto(String valor) {
         return valor != null && !valor.trim().isEmpty();
+    }
+
+    private boolean tieneNumero(Integer valor) {
+        return valor != null && valor > 0;
+    }
+
+    /**
+     * Convierte un String en Integer de manera segura.
+     * Si es nulo, vacío o texto no numérico, retorna null sin lanzar excepciones.
+     */
+    private Integer convertirAEnteroSeguro(String texto) {
+        if (texto == null || texto.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(texto.trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Evalúa varios IDs en orden de prioridad y devuelve el primero válido (> 0).
+     * Si ninguno es válido, devuelve el ID por defecto.
+     */
+    private Integer primerId(Integer id1, Integer id2, Integer id3, Integer idPorDefecto) {
+        if (id1 != null && id1 > 0) return id1;
+        if (id2 != null && id2 > 0) return id2;
+        if (id3 != null && id3 > 0) return id3;
+        return idPorDefecto;
+    }
+
+    /**
+     * Devuelve el ID proporcionado si es válido, de lo contrario devuelve el ID por defecto.
+     */
+    private Integer idValorODefecto(Integer valor, Integer idPorDefecto) {
+        return (valor != null && valor > 0) ? valor : idPorDefecto;
     }
 }
