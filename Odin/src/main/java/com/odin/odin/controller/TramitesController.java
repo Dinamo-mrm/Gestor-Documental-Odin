@@ -9,39 +9,63 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tramites")
-public class TramitesController
-{
+public class TramitesController {
+
     @Autowired
-    private TramitesRepository TramitesRepository;
+    private TramitesRepository tramitesRepository;
 
     @GetMapping
-    public List<Tramites> getAll()
-    {
-        return TramitesRepository.findAll();
+    public List<Tramites> getAll() {
+        return tramitesRepository.findAll();
     }
 
     @GetMapping("/{id}")
-    public Tramites getById(Long id)
-    {
-        return TramitesRepository.findById(id).orElse(null);
+    public Tramites getById(@PathVariable Long id) {
+        return tramitesRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Trámite no encontrado"));
     }
 
     @PostMapping
-    public Tramites create(@RequestBody Tramites tramites)
-    {
-        return TramitesRepository.save(tramites);
+    public Tramites create(@RequestBody Tramites tramite) {
+        return tramitesRepository.save(tramite);
     }
 
     @PutMapping("/{id}")
-    public Tramites update(@PathVariable Long id, @RequestBody Tramites tramites)
-    {
-        tramites.setId_tramite(id);
-        return TramitesRepository.save(tramites);
+    public Tramites update(
+            @PathVariable Long id,
+            @RequestBody Tramites tramite) {
+
+        Tramites existente = tramitesRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Trámite no encontrado"));
+
+        existente.setNombre(tramite.getNombre());
+        existente.setDescripcion(tramite.getDescripcion());
+
+        existente.setIdDependenciaResponsable(
+                tramite.getIdDependenciaResponsable());
+
+        existente.setIdEstadoInicial(
+                tramite.getIdEstadoInicial());
+
+        existente.setDiasRespuesta(
+                tramite.getDiasRespuesta());
+
+        existente.setPrioridadDefault(
+                tramite.getPrioridadDefault());
+
+        existente.setRequiereRespuesta(
+                tramite.getRequiereRespuesta());
+
+        existente.setActivo(
+                tramite.getActivo());
+
+        return tramitesRepository.save(existente);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id)
-    {
-        TramitesRepository.deleteById(id);
+    public void delete(@PathVariable Long id) {
+        tramitesRepository.deleteById(id);
     }
 }
