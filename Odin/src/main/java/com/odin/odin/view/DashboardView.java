@@ -6,6 +6,7 @@ import com.odin.odin.repository.ReasignacionesRepository;
 import com.odin.odin.repository.TramitesRepository;
 import com.odin.odin.repository.UsuariosRepository;
 
+import com.odin.odin.service.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,9 @@ public class DashboardView {
 
     @Autowired
     private TramitesRepository tramitesRepository;
+
+    @Autowired
+    private DashboardService dashboardService;
 
     @Autowired
     private PlantillaRepository plantillaRepository;
@@ -34,12 +38,26 @@ public class DashboardView {
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
 
-        // Totales para las tarjetas del dashboard
-        model.addAttribute("totalTramites", tramitesRepository.count());
-        model.addAttribute("totalPlantillas", plantillaRepository.count());
-        model.addAttribute("totalRadicados", radicadosRepository.count());
-        model.addAttribute("totalReasignaciones", reasignacionesRepository.count());
-        model.addAttribute("totalUsuarios", usuariosRepository.count());
+        model.addAttribute(
+                "pendientes",
+                dashboardService.pendientes());
+
+        model.addAttribute(
+                "finalizados",
+                dashboardService.finalizados());
+
+        model.addAttribute(
+                "problemas",
+                dashboardService.problemas());
+
+        model.addAttribute(
+                "vencidos",
+                dashboardService.vencidos());
+
+        model.addAttribute(
+                "ultimosRadicados",
+                radicadosRepository
+                        .findTop10ByOrderByIdRadicadoDesc());
 
         return "dashboard/dashboard";
     }

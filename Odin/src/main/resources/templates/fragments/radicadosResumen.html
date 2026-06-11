@@ -22,7 +22,7 @@
     </div>
 
     <div class="p-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 text-sm">
-        <div th:if="${savedRadicado.id_radicado > 0}">
+        <div th:if="${savedRadicado.id_radicado != null}">
             <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-1">
                 ID radicado
             </p>
@@ -40,49 +40,70 @@
             <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-1">
                 Fecha radicado
             </p>
-            <p class="font-semibold text-slate-800" th:text="${savedRadicado.fecha_radicado}"></p>
-        </div>
-
-        <div th:if="${savedRadicado.tipoDocumento != null and !#strings.isEmpty(savedRadicado.tipoDocumento)}">
-            <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-1">
-                Tipo documento
+            <p class="font-semibold text-slate-800"
+               th:text="${savedRadicado.fecha_radicado}">
             </p>
-            <p class="font-semibold text-slate-800" th:text="${savedRadicado.tipoDocumento}"></p>
         </div>
 
-        <div th:if="${savedRadicado.tipoPQRS != null and !#strings.isEmpty(savedRadicado.tipoPQRS)}">
+        <div th:if="${savedRadicado.serie != null or savedRadicado.codigo_serie != null}">
             <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-1">
-                Tipo PQRS
+                Serie documental
             </p>
-            <p class="font-semibold text-slate-800" th:text="${savedRadicado.tipoPQRS}"></p>
+            <p class="font-semibold text-slate-800"
+               th:text="${savedRadicado.serie != null ? savedRadicado.serie.codigo_serie + ' - ' + savedRadicado.serie.nombre_serie : savedRadicado.codigo_serie}">
+            </p>
         </div>
 
-        <div th:if="${savedRadicado.id_tramite != null and !#strings.isEmpty(savedRadicado.id_tramite)}">
+        <div th:if="${savedRadicado.subserie != null or savedRadicado.codigo_subserie != null}">
+            <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-1">
+                Subserie documental
+            </p>
+            <p class="font-semibold text-slate-800"
+               th:text="${savedRadicado.subserie != null ? savedRadicado.subserie.codigo_subserie + ' - ' + savedRadicado.subserie.nombre_subserie : savedRadicado.codigo_subserie}">
+            </p>
+        </div>
+
+        <div th:if="${savedRadicado.tramite != null or savedRadicado.id_tramite != null}">
             <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-1">
                 Tramite
             </p>
-            <p class="font-semibold text-slate-800" th:text="${savedRadicado.id_tramite}"></p>
+            <p class="font-semibold text-slate-800"
+               th:text="${savedRadicado.tramite != null ? savedRadicado.tramite.nombre : savedRadicado.id_tramite}">
+            </p>
         </div>
 
-        <div th:if="${savedRadicado.id_estado != null and !#strings.isEmpty(savedRadicado.id_estado)}">
+        <div th:if="${savedRadicado.estado != null or savedRadicado.id_estado != null}">
             <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-1">
                 Estado
             </p>
-            <p class="font-semibold text-slate-800" th:text="${savedRadicado.id_estado}"></p>
+            <p class="font-semibold text-slate-800"
+               th:text="${savedRadicado.estado != null ? savedRadicado.estado.nombre : savedRadicado.id_estado}">
+            </p>
         </div>
 
-        <div th:if="${savedRadicado.id_dependencia != null and !#strings.isEmpty(savedRadicado.id_dependencia)}">
+        <div th:if="${savedRadicado.dependenciaCatalogo != null or savedRadicado.id_dependencia != null}">
             <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-1">
                 Dependencia
             </p>
-            <p class="font-semibold text-slate-800" th:text="${savedRadicado.id_dependencia}"></p>
+            <p class="font-semibold text-slate-800"
+               th:text="${savedRadicado.dependenciaCatalogo != null ? savedRadicado.dependenciaCatalogo.nombre : savedRadicado.id_dependencia}">
+            </p>
         </div>
 
-        <div th:if="${savedRadicado.id_usuario != null and !#strings.isEmpty(savedRadicado.id_usuario)}">
+        <div th:if="${savedRadicado.usuarioCatalogo != null or savedRadicado.id_usuario != null}">
             <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-1">
                 Usuario
             </p>
-            <p class="font-semibold text-slate-800" th:text="${savedRadicado.id_usuario}"></p>
+            <p class="font-semibold text-slate-800"
+               th:text="${savedRadicado.usuarioCatalogo != null ? savedRadicado.usuarioCatalogo.nombre : savedRadicado.id_usuario}">
+            </p>
+        </div>
+
+        <div th:if="${savedRadicado.id_remitente != null}">
+            <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-1">
+                Id remitente
+            </p>
+            <p class="font-semibold text-slate-800" th:text="${savedRadicado.id_remitente}"></p>
         </div>
 
         <div th:if="${savedRadicado.remitente != null and !#strings.isEmpty(savedRadicado.remitente)}">
@@ -97,6 +118,34 @@
                 Asunto
             </p>
             <p class="font-semibold text-slate-800" th:text="${savedRadicado.asunto}"></p>
+        </div>
+
+        <div th:if="${savedRadicado.tipoPQRS != null and !#strings.isEmpty(savedRadicado.tipoPQRS)}">
+            <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-1">
+                Tipo PQRS
+            </p>
+            <p class="font-semibold text-slate-800" th:text="${savedRadicado.tipoPQRS}"></p>
+        </div>
+
+        <div th:if="${savedRadicado.numeroIdentificacion != null and !#strings.isEmpty(savedRadicado.numeroIdentificacion)}">
+            <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-1">
+                Numero identificacion
+            </p>
+            <p class="font-semibold text-slate-800" th:text="${savedRadicado.numeroIdentificacion}"></p>
+        </div>
+
+        <div th:if="${savedRadicado.contacto != null and !#strings.isEmpty(savedRadicado.contacto)}">
+            <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-1">
+                Contacto
+            </p>
+            <p class="font-semibold text-slate-800" th:text="${savedRadicado.contacto}"></p>
+        </div>
+
+        <div th:if="${savedRadicado.direccion != null and !#strings.isEmpty(savedRadicado.direccion)}">
+            <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-1">
+                Direccion
+            </p>
+            <p class="font-semibold text-slate-800" th:text="${savedRadicado.direccion}"></p>
         </div>
 
         <div th:if="${savedRadicado.fechaDocumento != null and !#strings.isEmpty(savedRadicado.fechaDocumento)}">
@@ -146,27 +195,6 @@
                 Prioridad
             </p>
             <p class="font-semibold text-slate-800" th:text="${savedRadicado.prioridad}"></p>
-        </div>
-
-        <div th:if="${savedRadicado.numeroIdentificacion != null and !#strings.isEmpty(savedRadicado.numeroIdentificacion)}">
-            <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-1">
-                Numero identificacion
-            </p>
-            <p class="font-semibold text-slate-800" th:text="${savedRadicado.numeroIdentificacion}"></p>
-        </div>
-
-        <div th:if="${savedRadicado.contacto != null and !#strings.isEmpty(savedRadicado.contacto)}">
-            <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-1">
-                Contacto
-            </p>
-            <p class="font-semibold text-slate-800" th:text="${savedRadicado.contacto}"></p>
-        </div>
-
-        <div th:if="${savedRadicado.direccion != null and !#strings.isEmpty(savedRadicado.direccion)}">
-            <p class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-1">
-                Direccion
-            </p>
-            <p class="font-semibold text-slate-800" th:text="${savedRadicado.direccion}"></p>
         </div>
 
         <div th:if="${savedRadicado.observaciones != null and !#strings.isEmpty(savedRadicado.observaciones)}"

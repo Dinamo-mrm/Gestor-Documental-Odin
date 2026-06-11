@@ -20,7 +20,7 @@ public class Subseries
 
     @NotNull(message = "La serie es obligatorio")
     @Column(name = "id_serie", nullable = false)
-    private Integer id_serie;
+    private Long id_serie;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_serie", referencedColumnName = "id_serie", insertable = false, updatable = false)
