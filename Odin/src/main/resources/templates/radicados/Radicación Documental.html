@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ODIN · Módulo Radicación</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+
+--verde:#39A900;
+--verde-dark:#007832;
+
+--azul:#00304D;
+
+--gris:#F6F6F6;
+
+--borde:#E5E7EB;
+
+--texto:#262626;
+
+--radio:16px;
+
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Work Sans',sans-serif;
+}
+
+body{
+background:var(--gris);
+color:var(--texto);
+}
+
+.layout{
+display:grid;
+grid-template-columns:260px 1fr 340px;
+min-height:100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+
+background:white;
+
+border-right:1px solid var(--borde);
+
+padding:28px;
+
+}
+
+.logo{
+
+font-size:28px;
+
+font-weight:700;
+
+color:var(--verde);
+
+margin-bottom:40px;
+
+}
+
+.menu{
+
+display:flex;
+
+flex-direction:column;
+
+gap:10px;
+
+}
+
+.menu a{
+
+padding:14px 16px;
+
+border-radius:12px;
+
+text-decoration:none;
+
+color:#555;
+
+font-weight:500;
+
+}
+
+.menu .active{
+
+background:var(--verde);
+
+color:white;
+
+}
+
+.content{
+
+padding:32px;
+
+overflow:auto;
+
+}
+
+.header{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:24px;
+
+}
+
+.title h1{
+
+font-size:30px;
+
+color:var(--azul);
+
+}
+
+.title p{
+
+color:#777;
+
+margin-top:6px;
+
+}
+
+.card{
+
+background:white;
+
+border-radius:var(--radio);
+
+padding:28px;
+
+margin-bottom:24px;
+
+}
+
+.section{
+
+font-size:18px;
+
+font-weight:700;
+
+color:var(--azul);
+
+margin-bottom:24px;
+
+}
+
+.grid{
+
+display:grid;
+
+grid-template-columns:repeat(2,1fr);
+
+gap:18px;
+
+}
+
+.full{
+
+grid-column:1/-1;
+
+}
+
+.group{
+
+display:flex;
+
+flex-direction:column;
+
+gap:8px;
+
+}
+
+label{
+
+font-size:13px;
+
+font-weight:600;
+
+}
+
+input,
+select,
+textarea{
+
+padding:14px;
+
+border-radius:12px;
+
+border:1px solid var(--borde);
+
+font-size:14px;
+
+outline:none;
+
+}
+
+textarea{
+
+height:130px;
+
+resize:none;
+
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+
+border-color:var(--verde);
+
+}
+
+.upload{
+
+border:2px dashed var(--verde);
+
+padding:40px;
+
+text-align:center;
+
+border-radius:14px;
+
+background:#FAFFF7;
+
+}
+
+.timeline{
+
+display:flex;
+
+justify-content:space-between;
+
+gap:10px;
+
+}
+
+.step{
+
+flex:1;
+
+text-align:center;
+
+padding:12px;
+
+border-radius:10px;
+
+background:#F0F3F5;
+
+font-size:13px;
+
+}
+
+.step.active{
+
+background:#E6F8D9;
+
+color:var(--verde-dark);
+
+font-weight:700;
+
+}
+
+.actions{
+
+display:flex;
+
+justify-content:flex-end;
+
+gap:12px;
+
+margin-top:30px;
+
+}
+
+button{
+
+padding:14px 20px;
+
+border:none;
+
+border-radius:12px;
+
+cursor:pointer;
+
+font-weight:600;
+
+}
+
+.secondary{
+
+background:#ECECEC;
+
+}
+
+.primary{
+
+background:var(--verde);
+
+color:white;
+
+}
+
+.success{
+
+background:var(--verde-dark);
+
+color:white;
+
+}
+
+/* PANEL */
+
+.panel{
+
+background:white;
+
+padding:28px;
+
+border-left:1px solid var(--borde);
+
+}
+
+.summary{
+
+display:flex;
+
+flex-direction:column;
+
+gap:20px;
+
+}
+
+.box{
+
+background:#F8FAFB;
+
+padding:18px;
+
+border-radius:14px;
+
+}
+
+.box h3{
+
+font-size:14px;
+
+margin-bottom:10px;
+
+color:var(--azul);
+
+}
+
+.box p{
+
+font-size:14px;
+
+color:#666;
+
+margin:5px 0;
+
+}
+
+.radicado{
+
+font-size:28px;
+
+font-weight:700;
+
+color:var(--verde);
+
+}
+
+.badge{
+
+display:inline-block;
+
+padding:8px 14px;
+
+border-radius:30px;
+
+background:#E6F8D9;
+
+color:var(--verde-dark);
+
+font-size:13px;
+
+font-weight:700;
+
+}
+
+.audit{
+
+font-size:13px;
+
+color:#666;
+
+line-height:1.8;
+
+}
+
+@media(max-width:1200px){
+
+.layout{
+
+grid-template-columns:1fr;
+
+}
+
+.panel{
+
+border:none;
+
+}
+
+.grid{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="layout">
+
+<!-- MENU -->
+
+<aside class="sidebar">
+
+<div class="logo">
+ODIN
+</div>
+
+<nav class="menu">
+
+<a href="#">Dashboard</a>
+
+<a class="active">
+Radicación
+</a>
+
+<a href="#">
+Gestión Trámites
+</a>
+
+<a href="#">
+Consulta
+</a>
+
+<a href="#">
+Reportes
+</a>
+
+<a href="#">
+Usuarios
+</a>
+
+</nav>
+
+</aside>
+
+<!-- CONTENIDO -->
+
+<main class="content">
+
+<div class="header">
+
+<div class="title">
+
+<h1>
+Radicación Documental
+</h1>
+
+<p>
+Registro, clasificación y asignación inicial del trámite
+</p>
+
+</div>
+
+</div>
+
+<!-- RADICADO -->
+
+<section class="card">
+
+<div class="section">
+Información del Radicado
+</div>
+
+<div class="grid">
+
+<div class="group">
+<label>Número radicado</label>
+<input value="RAD-2026-000145" readonly>
+</div>
+
+<div class="group">
+<label>Fecha y hora</label>
+<input value="17/06/2026 10:30 AM">
+</div>
+
+<div class="group">
+<label>Canal recepción</label>
+
+<select>
+
+<option>Presencial</option>
+
+<option>Correo</option>
+
+<option>Portal Web</option>
+
+<option>Interno</option>
+
+</select>
+
+</div>
+
+<div class="group">
+
+<label>Tipo radicación</label>
+
+<select>
+
+<option>Entrada</option>
+
+<option>Salida</option>
+
+<option>Interna</option>
+
+</select>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- SOLICITANTE -->
+
+<section class="card">
+
+<div class="section">
+
+Datos del Solicitante
+
+</div>
+
+<div class="grid">
+
+<input placeholder="Tipo documento">
+
+<input placeholder="Número documento">
+
+<input placeholder="Nombre completo">
+
+<input placeholder="Correo">
+
+<input placeholder="Teléfono">
+
+<input placeholder="Ciudad">
+
+</div>
+
+</section>
+
+<!-- CLASIFICACION -->
+
+<section class="card">
+
+<div class="section">
+
+Clasificación Documental
+
+</div>
+
+<div class="grid">
+
+<select>
+<option>Dependencia destino</option>
+</select>
+
+<select>
+<option>Serie documental</option>
+</select>
+
+<select>
+<option>Subserie documental</option>
+</select>
+
+<select>
+<option>Tipo documental</option>
+</select>
+
+<select class="full">
+
+<option>Nivel confidencialidad</option>
+
+<option>Público</option>
+
+<option>Interno</option>
+
+<option>Reservado</option>
+
+</select>
+
+</div>
+
+</section>
+
+<!-- DOCUMENTO -->
+
+<section class="card">
+
+<div class="section">
+
+Información Documento
+
+</div>
+
+<div class="grid">
+
+<input placeholder="Asunto" class="full">
+
+<textarea
+class="full"
+placeholder="Descripción del trámite">
+</textarea>
+
+<input placeholder="Número folios">
+
+<select>
+
+<option>Digital</option>
+
+<option>Físico</option>
+
+<option>Mixto</option>
+
+</select>
+
+<input placeholder="Fecha documento">
+
+<input placeholder="Etiquetas">
+
+</div>
+
+</section>
+
+<!-- ADJUNTOS -->
+
+<section class="card">
+
+<div class="section">
+
+Adjuntos
+
+</div>
+
+<div class="upload">
+
+📄 Arrastre documentos o cargue archivos
+
+</div>
+
+</section>
+
+<!-- ASIGNACION -->
+
+<section class="card">
+
+<div class="section">
+
+Asignación Inicial
+
+</div>
+
+<div class="grid">
+
+<select>
+
+<option>Responsable</option>
+
+</select>
+
+<select>
+
+<option>Dependencia responsable</option>
+
+</select>
+
+<select>
+
+<option>Prioridad</option>
+
+<option>Baja</option>
+
+<option>Media</option>
+
+<option>Alta</option>
+
+<option>Urgente</option>
+
+</select>
+
+<input placeholder="Fecha límite">
+
+</div>
+
+</section>
+
+<!-- FLUJO -->
+
+<section class="card">
+
+<div class="section">
+
+Seguimiento Inicial
+
+</div>
+
+<div class="timeline">
+
+<div class="step active">
+Radicado
+</div>
+
+<div class="step">
+Clasificado
+</div>
+
+<div class="step">
+Asignado
+</div>
+
+<div class="step">
+En Gestión
+</div>
+
+<div class="step">
+Finalizado
+</div>
+
+</div>
+
+<div class="actions">
+
+<button class="secondary">
+
+Guardar borrador
+
+</button>
+
+<button class="primary">
+
+Radicar
+
+</button>
+
+<button class="success">
+
+Radicar y asignar
+
+</button>
+
+</div>
+
+</section>
+
+</main>
+
+<!-- PANEL -->
+
+<aside class="panel">
+
+<div class="summary">
+
+<div class="box">
+
+<h3>
+
+Resumen
+
+</h3>
+
+<div class="radicado">
+
+RAD-2026-000145
+
+</div>
+
+<p>
+Solicitante:
+—
+</p>
+
+<p>
+Dependencia:
+—
+</p>
+
+<p>
+Adjuntos:
+0
+</p>
+
+</div>
+
+<div class="box">
+
+<h3>
+
+Estado
+
+</h3>
+
+<span class="badge">
+
+Pendiente clasificación
+
+</span>
+
+</div>
+
+<div class="box">
+
+<h3>
+
+Auditoría
+
+</h3>
+
+<div class="audit">
+
+Creado por: Operario<br>
+
+Fecha: 17/06/2026<br>
+
+Última edición: —<br>
+
+Versión: 1.0
+
+</div>
+
+</div>
+
+</div>
+
+</aside>
+
+</div>
+
+</body>
+</html>
