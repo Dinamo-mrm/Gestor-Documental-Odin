@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>ODIN · Gestión de Trámites</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+
+--green:#39A900;
+--dark:#00304D;
+
+--bg:#F6F6F6;
+--card:#FFFFFF;
+
+--border:#EAEAEA;
+
+--text:#202124;
+--muted:#7A7A7A;
+
+--success:#E9F8DD;
+--warning:#FFF6D8;
+--danger:#FFE4E4;
+
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+
+font-family:"Work Sans",sans-serif;
+
+background:var(--bg);
+
+color:var(--text);
+
+}
+
+.layout{
+
+display:grid;
+
+grid-template-columns:260px 1fr;
+
+min-height:100vh;
+
+}
+
+/* SIDEBAR */
+
+.sidebar{
+
+background:#fff;
+
+border-right:1px solid var(--border);
+
+padding:28px;
+
+}
+
+.brand{
+
+display:flex;
+
+gap:14px;
+
+margin-bottom:40px;
+
+}
+
+.logo{
+
+width:50px;
+
+height:50px;
+
+border-radius:12px;
+
+background:var(--green);
+
+}
+
+.brand h2{
+
+color:var(--dark);
+
+}
+
+.menu{
+
+display:flex;
+
+flex-direction:column;
+
+gap:8px;
+
+}
+
+.menu a{
+
+padding:14px;
+
+text-decoration:none;
+
+color:#555;
+
+border-radius:12px;
+
+}
+
+.menu a:hover,
+.menu .active{
+
+background:#EEF8E6;
+
+color:var(--green);
+
+font-weight:600;
+
+}
+
+/* MAIN */
+
+.main{
+
+padding:28px;
+
+}
+
+.header{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:24px;
+
+}
+
+.header h1{
+
+font-size:30px;
+
+}
+
+.header p{
+
+color:var(--muted);
+
+margin-top:4px;
+
+}
+
+.header-actions{
+
+display:flex;
+
+gap:12px;
+
+}
+
+button{
+
+border:none;
+
+cursor:pointer;
+
+padding:14px 18px;
+
+border-radius:12px;
+
+font-family:inherit;
+
+}
+
+.primary{
+
+background:var(--green);
+
+color:white;
+
+}
+
+.secondary{
+
+background:white;
+
+border:1px solid var(--border);
+
+}
+
+/* TOP GRID */
+
+.top{
+
+display:grid;
+
+grid-template-columns:2fr 1fr;
+
+gap:20px;
+
+margin-bottom:20px;
+
+}
+
+.card{
+
+background:white;
+
+border-radius:20px;
+
+padding:22px;
+
+}
+
+/* KPIS */
+
+.kpis{
+
+display:grid;
+
+grid-template-columns:repeat(5,1fr);
+
+gap:14px;
+
+}
+
+.kpi{
+
+padding:18px;
+
+border-radius:16px;
+
+background:#FAFAFA;
+
+}
+
+.kpi small{
+
+color:var(--muted);
+
+}
+
+.kpi h2{
+
+margin-top:10px;
+
+}
+
+.green{
+
+border-left:6px solid var(--green);
+
+}
+
+.yellow{
+
+border-left:6px solid #FDC300;
+
+}
+
+.red{
+
+border-left:6px solid #D32F2F;
+
+}
+
+.blue{
+
+border-left:6px solid var(--dark);
+
+}
+
+/* ALERTAS */
+
+.alert{
+
+display:flex;
+
+flex-direction:column;
+
+gap:12px;
+
+}
+
+.notice{
+
+padding:14px;
+
+border-radius:14px;
+
+}
+
+.notice.red{
+
+background:var(--danger);
+
+}
+
+.notice.yellow{
+
+background:var(--warning);
+
+}
+
+.notice.green{
+
+background:var(--success);
+
+}
+
+/* TOOLBAR */
+
+.toolbar{
+
+background:white;
+
+padding:20px;
+
+border-radius:20px;
+
+margin-bottom:20px;
+
+}
+
+.filters{
+
+display:grid;
+
+grid-template-columns:
+2fr
+1fr
+1fr
+1fr
+auto;
+
+gap:12px;
+
+}
+
+input,
+select{
+
+padding:14px;
+
+border:1px solid var(--border);
+
+border-radius:12px;
+
+width:100%;
+
+}
+
+/* CONTENT */
+
+.content{
+
+display:grid;
+
+grid-template-columns:2fr 380px;
+
+gap:20px;
+
+}
+
+/* TABLE */
+
+.table-card{
+
+background:white;
+
+border-radius:20px;
+
+overflow:hidden;
+
+}
+
+.mass{
+
+display:flex;
+
+gap:12px;
+
+padding:18px;
+
+border-bottom:1px solid var(--border);
+
+}
+
+table{
+
+width:100%;
+
+border-collapse:collapse;
+
+}
+
+th{
+
+padding:18px;
+
+text-align:left;
+
+color:var(--muted);
+
+}
+
+td{
+
+padding:18px;
+
+border-top:1px solid var(--border);
+
+}
+
+.status{
+
+padding:8px 12px;
+
+border-radius:30px;
+
+font-size:13px;
+
+}
+
+.pending{
+
+background:#FFF6D8;
+
+}
+
+.progress{
+
+background:#EAF8DE;
+
+}
+
+.done{
+
+background:#DDEBFF;
+
+}
+
+.priority{
+
+display:inline-block;
+
+width:10px;
+
+height:10px;
+
+border-radius:50%;
+
+margin-right:6px;
+
+}
+
+.high{
+
+background:#E53935;
+
+}
+
+.medium{
+
+background:#FDC300;
+
+}
+
+.low{
+
+background:#39A900;
+
+}
+
+/* DETAIL */
+
+.detail{
+
+background:white;
+
+padding:22px;
+
+border-radius:20px;
+
+}
+
+.block{
+
+margin-bottom:28px;
+
+}
+
+.block h3{
+
+margin-bottom:14px;
+
+}
+
+.timeline{
+
+display:flex;
+
+flex-direction:column;
+
+gap:14px;
+
+}
+
+.step{
+
+display:flex;
+
+gap:12px;
+
+}
+
+.dot{
+
+width:14px;
+
+height:14px;
+
+border-radius:50%;
+
+background:var(--green);
+
+margin-top:6px;
+
+}
+
+.comment{
+
+padding:12px;
+
+background:#FAFAFA;
+
+border-radius:12px;
+
+margin-bottom:10px;
+
+}
+
+.tabs{
+
+display:flex;
+
+gap:10px;
+
+margin-bottom:18px;
+
+}
+
+.tab{
+
+padding:10px 14px;
+
+border-radius:12px;
+
+background:#F7F7F7;
+
+}
+
+.active-tab{
+
+background:#EEF8E6;
+
+color:var(--green);
+
+}
+
+.floating{
+
+position:fixed;
+
+right:30px;
+
+bottom:30px;
+
+width:60px;
+
+height:60px;
+
+border-radius:50%;
+
+font-size:26px;
+
+background:var(--green);
+
+color:white;
+
+}
+
+@media(max-width:1200px){
+
+.top,
+.content{
+
+grid-template-columns:1fr;
+
+}
+
+.kpis{
+
+grid-template-columns:1fr 1fr;
+
+}
+
+.filters{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+@media(max-width:900px){
+
+.layout{
+
+grid-template-columns:1fr;
+
+}
+
+.sidebar{
+
+display:none;
+
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="layout">
+
+<aside class="sidebar">
+
+<div class="brand">
+
+<div class="logo"></div>
+
+<div>
+
+<h2>ODIN</h2>
+
+<small>Gestión Documental</small>
+
+</div>
+
+</div>
+
+<nav class="menu">
+
+<a href="#">Dashboard</a>
+
+<a href="#">Radicación</a>
+
+<a class="active">
+Gestión de Trámites
+</a>
+
+<a href="#">Consulta</a>
+
+<a href="#">Documentos</a>
+
+<a href="#">Reportes</a>
+
+<a href="#">Usuarios</a>
+
+</nav>
+
+</aside>
+
+<main class="main">
+
+<header class="header">
+
+<div>
+
+<h1>Gestión de Trámites</h1>
+
+<p>Control, seguimiento y trazabilidad documental</p>
+
+</div>
+
+<div class="header-actions">
+
+<button class="secondary">
+Exportar
+</button>
+
+<button class="primary">
+＋ Nuevo trámite
+</button>
+
+</div>
+
+</header>
+
+<!-- KPIS -->
+
+<section class="top">
+
+<div class="card">
+
+<div class="tabs">
+
+<div class="tab active-tab">
+Mis trámites
+</div>
+
+<div class="tab">
+Dependencia
+</div>
+
+<div class="tab">
+Todos
+</div>
+
+</div>
+
+<div class="kpis">
+
+<div class="kpi green">
+<small>Pendientes</small>
+<h2>25</h2>
+</div>
+
+<div class="kpi yellow">
+<small>En proceso</small>
+<h2>14</h2>
+</div>
+
+<div class="kpi blue">
+<small>Finalizados</small>
+<h2>82</h2>
+</div>
+
+<div class="kpi red">
+<small>Vencidos</small>
+<h2>3</h2>
+</div>
+
+<div class="kpi green">
+<small>SLA</small>
+<h2>92%</h2>
+</div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>Notificaciones</h3>
+
+<div class="alert">
+
+<div class="notice red">
+TRM-001 vence hoy
+</div>
+
+<div class="notice yellow">
+3 reasignaciones pendientes
+</div>
+
+<div class="notice green">
+8 trámites cerrados
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- FILTROS -->
+
+<section class="toolbar">
+
+<div class="filters">
+
+<input placeholder="Buscar radicado">
+
+<select>
+<option>Estado</option>
+</select>
+
+<select>
+<option>Dependencia</option>
+</select>
+
+<select>
+<option>Serie / Subserie</option>
+</select>
+
+<button class="primary">
+
+Filtrar
+
+</button>
+
+</div>
+
+</section>
+
+<section class="content">
+
+<!-- TABLA -->
+
+<div class="table-card">
+
+<div class="mass">
+
+<button class="secondary">
+Asignar
+</button>
+
+<button class="secondary">
+Reasignar
+</button>
+
+<button class="secondary">
+Cambiar Estado
+</button>
+
+<button class="secondary">
+Cerrar
+</button>
+
+</div>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th></th>
+
+<th>Radicado</th>
+
+<th>Solicitante</th>
+
+<th>Estado</th>
+
+<th>Prioridad</th>
+
+<th>Vence</th>
+
+<th></th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>☐</td>
+
+<td>TRM-2026-001</td>
+
+<td>Juan Pérez</td>
+
+<td>
+<span class="status pending">
+Pendiente
+</span>
+</td>
+
+<td>
+<span class="priority high"></span>
+Alta
+</td>
+
+<td>Hoy</td>
+
+<td>→</td>
+
+</tr>
+
+<tr>
+
+<td>☐</td>
+
+<td>TRM-2026-002</td>
+
+<td>María López</td>
+
+<td>
+<span class="status progress">
+En proceso
+</span>
+</td>
+
+<td>
+<span class="priority medium"></span>
+Media
+</td>
+
+<td>2 días</td>
+
+<td>→</td>
+
+</tr>
+
+<tr>
+
+<td>☐</td>
+
+<td>TRM-2026-003</td>
+
+<td>Pedro Gómez</td>
+
+<td>
+<span class="status done">
+Finalizado
+</span>
+</td>
+
+<td>
+<span class="priority low"></span>
+Baja
+</td>
+
+<td>—</td>
+
+<td>→</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+<!-- PANEL DETALLE -->
+
+<aside class="detail">
+
+<div class="block">
+
+<h3>Detalle del trámite</h3>
+
+<p>
+TRM-2026-001
+</p>
+
+<br>
+
+<p>
+Responsable:
+Carlos Ruiz
+</p>
+
+<p>
+Dependencia:
+Archivo Central
+</p>
+
+<p>
+Serie:
+Correspondencia
+</p>
+
+<p>
+Subserie:
+Solicitudes
+</p>
+
+</div>
+
+<div class="block">
+
+<h3>Trazabilidad</h3>
+
+<div class="timeline">
+
+<div class="step">
+
+<div class="dot"></div>
+
+<div>
+Creado
+<br>
+17/06 · 08:00
+</div>
+
+</div>
+
+<div class="step">
+
+<div class="dot"></div>
+
+<div>
+Asignado
+</div>
+
+</div>
+
+<div class="step">
+
+<div class="dot"></div>
+
+<div>
+En revisión
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="block">
+
+<h3>Comentarios</h3>
+
+<div class="comment">
+Falta documento soporte.
+</div>
+
+<div class="comment">
+Adjunto recibido.
+</div>
+
+<input placeholder="Agregar comentario">
+
+</div>
+
+<div class="block">
+
+<button class="primary">
+
+Generar respuesta
+
+</button>
+
+</div>
+
+</aside>
+
+</section>
+
+</main>
+
+</div>
+
+<button class="floating">
+＋
+</button>
+
+</body>
+</html>
