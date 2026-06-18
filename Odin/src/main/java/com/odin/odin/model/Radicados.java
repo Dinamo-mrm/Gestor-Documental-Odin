@@ -43,6 +43,23 @@ public class Radicados
     @NotNull(message = "el usuario es obligatorio")
     private Integer id_usuario ;
 
+    // === CLASIFICACION DOCUMENTAL ===
+    // Columnas REALES de la tabla radicados: FK hacia ccd_series(codigo_serie) y ccd_subseries(codigo_subserie).
+    @Column(name = "codigo_serie", length = 50)
+    private String codigo_serie;
+
+    @Column(name = "codigo_subserie", length = 60)
+    private String codigo_subserie;
+
+    // Relaciones de solo lectura para mostrar el nombre/codigo de la serie/subserie en el resumen.
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "codigo_serie", referencedColumnName = "codigo_serie", insertable = false, updatable = false)
+    private Series serie;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "codigo_subserie", referencedColumnName = "codigo_subserie", insertable = false, updatable = false)
+    private Subseries subserie;
+
     @NotBlank(message = "el remitente es obligatorio")
     private String remitente ;
 
@@ -93,5 +110,42 @@ public class Radicados
 
     @Transient
     private String tipoPQRS;
+
+    // === CAMPOS ADICIONALES DEL FORMULARIO DOCUMENTAL (no persistidos aun) ===
+    @Transient
+    private String tipoRadicacion;
+
+    @Transient
+    private String correo;
+
+    @Transient
+    private String telefono;
+
+    @Transient
+    private String ciudad;
+
+    @Transient
+    private String numeroFolios;
+
+    @Transient
+    private String soporte;
+
+    @Transient
+    private String etiquetas;
+
+    @Transient
+    private String confidencialidad;
+
+    @Transient
+    private String fechaLimite;
+
+    @Transient
+    private String descripcion;
+
+    @Transient
+    private String dependenciaResponsable;
+
+    @Transient
+    private String tipoDocumental;
 
 }
