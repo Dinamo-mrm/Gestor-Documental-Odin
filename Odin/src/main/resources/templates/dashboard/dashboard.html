@@ -2,7 +2,7 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Dashboard</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -27,8 +27,8 @@
     <!-- SIDEBAR -->
     <div th:replace="fragments/layout :: sidebar('dashboard')"></div>
 
-    <div id="overlay"
-         class="fixed inset-0 bg-black/40 z-20 hidden">
+    <div class="fixed inset-0 bg-black/40 z-20 hidden"
+         id="overlay">
     </div>
 
     <!-- CONTENIDO -->
@@ -178,7 +178,7 @@
 
 </div>
 
-<script th:src="@{/js/script.js}" defer></script>
+<script defer th:src="@{/js/script.js}"></script>
 <script th:inline="javascript">
 
     const pendientes = [[${pendientes != null ? pendientes : 0}]];
