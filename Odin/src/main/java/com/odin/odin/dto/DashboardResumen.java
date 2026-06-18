@@ -1,4 +1,4 @@
-package com.odin.odin.dto;
+/*package com.odin.odin.dto;
 
 import lombok.Data;
 
@@ -14,4 +14,4 @@ public class DashboardResumen {
     private Long usuariosActivos;
     private Long documentosCargados;
     private Long anexosPendientes;
-}
+}*/

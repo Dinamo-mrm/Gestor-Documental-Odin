@@ -1,4 +1,4 @@
-package com.odin.odin.service;
+/*package com.odin.odin.service;
 
 import com.odin.odin.dto.DashboardResumen;
 import com.odin.odin.repository.DocumentosRepository;
@@ -54,4 +54,4 @@ public class DashboardService {
     public Long usuariosActivos() {
         return usuariosRepository.count();
     }
-}
+}*/

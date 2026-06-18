@@ -1,4 +1,4 @@
-package com.odin.odin.controller;
+/*package com.odin.odin.controller;
 
 import com.odin.odin.dto.DashboardResumen;
 import com.odin.odin.repository.RadicadosRepository;
@@ -40,4 +40,4 @@ public class DashboardController {
 
         return "dashboard";
     }
-}
+}*/
