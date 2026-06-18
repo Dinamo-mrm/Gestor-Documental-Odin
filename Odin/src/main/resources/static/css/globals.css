@@ -82,3 +82,29 @@ a {
   font-family: "Work Sans";
   src: local("Work Sans");
 }
+
+@media(max-width:1200px){
+.top,
+.content{ grid-template-columns:1fr;
+}
+
+.kpis{
+grid-template-columns:1fr 1fr;
+}
+
+.filters{
+grid-template-columns:1fr;
+}
+
+}
+
+@media(max-width:900px){
+
+.layout{
+grid-template-columns:1fr;
+}
+
+.sidebar{
+display:none;
+}
+}

@@ -30,8 +30,12 @@ public class Tramites {
     @Column(name = "id_dependencia_responsable")
     private Long idDependenciaResponsable;
 
-    @Column(name = "id_estado_inicial")
-    private Long idEstadoInicial;
+    @ManyToOne
+    @JoinColumn(
+            name = "id_estado_inicial",
+            insertable = false,
+            updatable = false)
+    private Estados estado;
 
     @Column(name = "dias_respuesta")
     private Integer diasRespuesta;
@@ -48,4 +52,7 @@ public class Tramites {
     private LocalDateTime fecha_creacion;
 
     private LocalDateTime fecha_actualizacion;
+
+    @Column(name = "id_estado_inicial")
+    private Long idEstadoInicial;
 }

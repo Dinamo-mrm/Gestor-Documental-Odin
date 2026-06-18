@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface RadicadosRepository extends JpaRepository<Radicados, Long> {
 
+    Long countVencidos();
 }

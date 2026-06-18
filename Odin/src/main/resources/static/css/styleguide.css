@@ -1,16 +1,21 @@
 :root {
   --verde-oscuro: rgba(0, 120, 50, 1);
   --verde-claro: rgba(144, 238, 144, 1);
-  --rojo-claro: rgba(255, 182, 193, 1);
+  --rojo-claro:rgb(255, 228, 228);
   --blanco-neutro: rgba(255, 255, 255, 1);
   --gris-claro-neutro: rgba(211, 211, 211, 1);
-  --gris-oscuro-neutro: rgba(105, 105, 105, 1);
+  --gris-oscuro-neutro: rgba(122, 122, 122, 1);
+  --azul-oscuro:rgb(0, 48, 77, 1);
   --azul-claro: rgba(173, 216, 230, 1);
   --gris-apagado: rgba(169, 169, 169, 1);
   --naranja-sena: rgba(252, 115, 35, 1);
   --emphasis-gray: rgba(224, 224, 224, 1);
   --verde-osc-sena: rgba(35, 130, 118, 1);
   --verde-sena: rgba(57, 169, 0, 1);
+  --bg:#F6F6F6;
+  --border:rgb(234, 234, 234, 1);
+  --success:rgb(233, 248, 221);
+  --warning:rgb(255, 246, 216);
   --h1-TITLE-font-family: "Inter", Helvetica;
   --h1-TITLE-font-weight: 700;
   --h1-TITLE-font-size: 28px;

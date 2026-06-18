@@ -63,7 +63,7 @@ public class TramitesView {
 
     @PostMapping("/delete/{id}")
     public String delete(
-            @PathVariable Long id,
+            @PathVariable long id,
             RedirectAttributes ra) {
 
         Tramites tramite = tramitesRepository.findById(id)

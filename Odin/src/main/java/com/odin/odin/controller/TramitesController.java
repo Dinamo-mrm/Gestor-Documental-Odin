@@ -21,6 +21,7 @@ public class TramitesController {
 
     @GetMapping("/{id}")
     public Tramites getById(@PathVariable Long id) {
+
         return tramitesRepository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException("Trámite no encontrado"));
@@ -42,22 +43,16 @@ public class TramitesController {
 
         existente.setNombre(tramite.getNombre());
         existente.setDescripcion(tramite.getDescripcion());
-
         existente.setIdDependenciaResponsable(
                 tramite.getIdDependenciaResponsable());
-
         existente.setIdEstadoInicial(
                 tramite.getIdEstadoInicial());
-
         existente.setDiasRespuesta(
                 tramite.getDiasRespuesta());
-
         existente.setPrioridadDefault(
                 tramite.getPrioridadDefault());
-
         existente.setRequiereRespuesta(
                 tramite.getRequiereRespuesta());
-
         existente.setActivo(
                 tramite.getActivo());
 
