@@ -5,146 +5,632 @@
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <title>ODIN · Gestión de Trámites</title>
 
-    <!-- ✅ CSS CORREGIDO -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/css/styleguide.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .pagination-btn.active {
+            background-color: #2fa300;
+            color: white;
+        }
+        .pagination-btn {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background: white;
+            border: 1px solid #e5e7eb;
+            color: #4b5563;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pagination-btn:hover:not(.active) {
+            background: #f3f4f6;
+        }
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2fa300;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 
-<body>
+<body class="bg-[#f5f6f8] text-slate-800">
 
-<!-- ✅ SIDEBAR CORREGIDO -->
-<div th:replace="fragments/layout :: sidebar('tramites')"></div>
+<div class="min-h-screen flex">
 
-<div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay"></div>
+    <div th:replace="~{fragments/layout :: sidebar('tramites')}"></div>
 
-<!-- ✅ TOPBAR CORREGIDO -->
-<div th:replace="fragments/layout :: topbar('ODIN')"></div>
+    <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay"></div>
 
-<main class="main px-4 md:px-8 py-6">
+    <div class="flex-1 min-w-0">
 
-    <header class="header">
-        <div>
-            <h1>Gestión de Trámites</h1>
-            <p>Control, seguimiento y trazabilidad documental</p>
-        </div>
-        <div class="header-actions">
-            <button class="secondary">Exportar</button>
-            <a class="primary" th:href="@{/view/tramites/form}">＋ Nuevo trámite</a>
-        </div>
-    </header>
+        <div th:replace="~{fragments/layout :: topbar('ODIN')}"></div>
 
-    <!-- ✅ KPIS DINÁMICOS -->
-    <section class="top">
-        <div class="card">
-            <div class="kpis">
-                <div class="kpi green">
-                    <small>Pendientes</small>
-                    <h2 th:text="${pendientes != null ? pendientes : 0}">0</h2>
+        <main class="px-4 md:px-8 py-6">
+
+            <!-- HEADER -->
+            <header class="flex flex-wrap justify-between items-start gap-4 mb-6">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 uppercase">Gestión de Trámites</h1>
+                    <p class="text-sm text-slate-500 mt-1">Control, seguimiento y trazabilidad documental</p>
                 </div>
-                <div class="kpi yellow">
-                    <small>En proceso</small>
-                    <h2 th:text="${enProceso != null ? enProceso : 0}">0</h2>
+                <div class="flex gap-3">
+                    <button class="bg-white border border-slate-200 px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-50 transition">
+                        Exportar
+                    </button>
+                    <a class="bg-[#2fa300] px-6 py-2.5 rounded-lg text-sm font-bold text-white hover:bg-[#248400] transition shadow-sm"
+                       th:href="@{/view/tramites/form}">＋
+                        Nuevo trámite</a>
                 </div>
-                <div class="kpi blue">
-                    <small>Finalizados</small>
-                    <h2 th:text="${finalizados != null ? finalizados : 0}">0</h2>
+            </header>
+
+            <!-- KPIS DINÁMICOS -->
+            <section class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm text-center">
+                    <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wide">Pendientes</span>
+                    <h2 class="text-2xl font-extrabold text-yellow-600 mt-1"
+                        th:text="${pendientes != null ? pendientes : 0}">0</h2>
                 </div>
-                <div class="kpi red">
-                    <small>Vencidos</small>
-                    <h2 th:text="${vencidos != null ? vencidos : 0}">0</h2>
+                <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm text-center">
+                    <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wide">En Proceso</span>
+                    <h2 class="text-2xl font-extrabold text-blue-600 mt-1"
+                        th:text="${enProceso != null ? enProceso : 0}">0</h2>
                 </div>
-                <div class="kpi green">
-                    <small>Total</small>
-                    <h2 th:text="${totalRadicados != null ? totalRadicados : 0}">0</h2>
+                <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm text-center">
+                    <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wide">Finalizados</span>
+                    <h2 class="text-2xl font-extrabold text-green-600 mt-1"
+                        th:text="${finalizados != null ? finalizados : 0}">0</h2>
                 </div>
+                <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm text-center">
+                    <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wide">Vencidos</span>
+                    <h2 class="text-2xl font-extrabold text-red-600 mt-1" th:text="${vencidos != null ? vencidos : 0}">
+                        0</h2>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm text-center">
+                    <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wide">Total</span>
+                    <h2 class="text-2xl font-extrabold text-[#2fa300] mt-1"
+                        th:text="${totalTramites != null ? totalTramites : 0}">0</h2>
+                </div>
+            </section>
+
+            <!-- FILTROS -->
+            <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
+                <div class="flex flex-wrap gap-4 p-4 bg-[#fafafa] border-b border-slate-100">
+                    <input class="flex-1 min-w-[180px] rounded-lg border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#2fa300]" id="filtroBusqueda" placeholder="Buscar radicado o asunto..."
+                           type="text">
+                    <select class="min-w-[150px] rounded-lg border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#2fa300]"
+                            id="filtroEstado">
+                        <option value="">Todos los estados</option>
+                        <option th:each="e : ${estados}" th:text="${e.nombre}" th:value="${e.id_estado}"></option>
+                    </select>
+                    <select class="min-w-[150px] rounded-lg border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#2fa300]"
+                            id="filtroDependencia">
+                        <option value="">Todas las dependencias</option>
+                        <option th:each="d : ${dependencias}" th:text="${d.nombre}"
+                                th:value="${d.id_dependencia}"></option>
+                    </select>
+                    <button class="bg-[#2fa300] px-6 py-2.5 rounded-lg text-sm font-bold text-white hover:bg-[#248400] transition"
+                            id="btnFiltrar">
+                        Filtrar
+                    </button>
+                    <button class="bg-slate-200 px-6 py-2.5 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-300 transition"
+                            id="btnLimpiar">
+                        Limpiar
+                    </button>
+                </div>
+            </section>
+
+            <!-- CONTENIDO PRINCIPAL -->
+            <div class="flex flex-col lg:flex-row gap-6">
+
+                <!-- TABLA DE RADICADOS -->
+                <div class="flex-1 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+
+                    <!-- Acciones masivas -->
+                    <div class="flex flex-wrap gap-2 p-3 border-b border-slate-100 bg-[#fafafa]">
+                        <button class="bg-white border border-slate-200 px-4 py-1.5 rounded text-xs font-semibold text-slate-600 hover:bg-slate-50">
+                            Asignar
+                        </button>
+                        <button class="bg-white border border-slate-200 px-4 py-1.5 rounded text-xs font-semibold text-slate-600 hover:bg-slate-50">
+                            Reasignar
+                        </button>
+                        <button class="bg-white border border-slate-200 px-4 py-1.5 rounded text-xs font-semibold text-slate-600 hover:bg-slate-50">
+                            Cambiar Estado
+                        </button>
+                        <button class="bg-white border border-slate-200 px-4 py-1.5 rounded text-xs font-semibold text-slate-600 hover:bg-slate-50">
+                            Cerrar
+                        </button>
+                    </div>
+
+                    <!-- Tabla -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                            <tr class="bg-[#fafafa] border-b border-slate-100 text-[11px] uppercase tracking-wide text-slate-500">
+                                <th class="px-4 py-3 text-left w-10"><input id="selectAll" type="checkbox"></th>
+                                <th class="px-4 py-3 text-left font-bold">Radicado</th>
+                                <th class="px-4 py-3 text-left font-bold">Asunto</th>
+                                <th class="px-4 py-3 text-left font-bold">Tipo de trámite</th>
+                                <th class="px-4 py-3 text-left font-bold">Estado</th>
+                                <th class="px-4 py-3 text-left font-bold">Dependencia</th>
+                                <th class="px-4 py-3 text-left font-bold">Responsable</th>
+                                <th class="px-4 py-3 text-left font-bold">Prioridad</th>
+                                <th class="px-4 py-3 text-left font-bold">Vencimiento</th>
+                                <th class="px-4 py-3 text-center font-bold">Acción</th>
+                            </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100" id="tablaBody">
+                            <!-- Las filas se generan dinámicamente con JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Footer Tabla con Paginación -->
+                    <div class="flex flex-wrap justify-between items-center px-4 py-3 border-t border-slate-100 text-xs text-slate-500">
+                        <span id="infoPaginacion">Cargando radicados...</span>
+                        <div class="flex gap-1" id="paginationControls">
+                            <!-- Los botones de paginación se generan dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANEL DETALLE -->
+                <aside class="w-full lg:w-80 xl:w-96 bg-white rounded-xl border border-slate-200 shadow-sm p-5 max-h-[600px] overflow-y-auto">
+                    <div class="space-y-4">
+
+                        <div class="border-b border-slate-100 pb-3">
+                            <h3 class="text-sm font-extrabold text-slate-800 uppercase">Detalle del trámite</h3>
+                            <div class="mt-3 space-y-2 text-sm text-slate-600" id="detalleContainer">
+                                <p><strong>Radicado:</strong> <span class="text-slate-800" id="detalleRadicado">Seleccione un radicado</span>
+                                </p>
+                                <p><strong>Asunto:</strong> <span id="detalleAsunto">-</span></p>
+                                <p><strong>Estado:</strong> <span id="detalleEstado">-</span></p>
+                                <p><strong>Trámite:</strong> <span id="detalleTramite">-</span></p>
+                                <p><strong>Dependencia:</strong> <span id="detalleDependencia">-</span></p>
+                                <p><strong>Responsable:</strong> <span id="detalleResponsable">-</span></p>
+                                <p><strong>Serie:</strong> <span id="detalleSerie">-</span></p>
+                                <p><strong>Subserie:</strong> <span id="detalleSubserie">-</span></p>
+                                <p><strong>Prioridad:</strong> <span id="detallePrioridad">-</span></p>
+                                <p><strong>Vencimiento:</strong> <span id="detalleVencimiento">-</span></p>
+                                <p><strong>Remitente:</strong> <span id="detalleRemitente">-</span></p>
+                                <p><strong>Medio Recepción:</strong> <span id="detalleMedio">-</span></p>
+                            </div>
+                        </div>
+
+                        <div class="border-b border-slate-100 pb-3">
+                            <h3 class="text-sm font-extrabold text-slate-800 uppercase">Trazabilidad</h3>
+                            <div class="mt-3 text-sm text-slate-500" id="timelineContainer">
+                                <p>Seleccione un radicado para ver su trazabilidad</p>
+                            </div>
+                        </div>
+
+                        <div class="border-b border-slate-100 pb-3">
+                            <h3 class="text-sm font-extrabold text-slate-800 uppercase">Documentos</h3>
+                            <div class="mt-3 text-sm text-slate-500" id="tablaDocumentos">
+                                <p>No hay documentos asociados</p>
+                            </div>
+                        </div>
+
+                        <div class="border-b border-slate-100 pb-3">
+                            <h3 class="text-sm font-extrabold text-slate-800 uppercase">Observaciones</h3>
+                            <div class="mt-3 text-sm text-slate-500" id="listaObservaciones">
+                                <p>Sin observaciones</p>
+                            </div>
+                            <textarea class="w-full mt-2 p-2 border rounded-lg text-sm" id="nuevaObservacion" placeholder="Agregar observación..."
+                                      rows="2"></textarea>
+                            <button class="w-full mt-2 bg-[#2fa300] text-white py-2 rounded-lg text-sm font-bold hover:bg-[#248400] transition"
+                                    onclick="guardarObservacion()">
+                                Guardar observación
+                            </button>
+                        </div>
+
+                        <div class="border-b border-slate-100 pb-3">
+                            <h3 class="text-sm font-extrabold text-slate-800 uppercase">Reasignaciones</h3>
+                            <div class="mt-3 text-sm text-slate-500" id="historialReasignaciones">
+                                <p>Sin reasignaciones</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <button class="w-full bg-slate-800 text-white py-2.5 rounded-lg text-sm font-bold hover:bg-slate-700 transition">
+                                Generar respuesta
+                            </button>
+                        </div>
+                    </div>
+                </aside>
             </div>
-        </div>
-    </section>
+        </main>
+    </div>
+</div>
 
-    <!-- ✅ FILTROS -->
-    <section class="toolbar">
-        <div class="filters">
-            <input placeholder="Buscar radicado..." type="text"/>
-            <select>
-                <option value="">Todos los estados</option>
-                <option th:each="e : ${estados}" th:text="${e.nombre}" th:value="${e.id_estado}"></option>
-            </select>
-            <select>
-                <option value="">Todas las dependencias</option>
-                <option th:each="d : ${dependencias}" th:text="${d.nombre}" th:value="${d.id_dependencia}"></option>
-            </select>
-            <select>
-                <option value="">Todos los trámites</option>
-                <option th:each="t : ${tramites}" th:text="${t.nombre}" th:value="${t.idTramite}"></option>
-            </select>
-            <button class="primary">Filtrar</button>
-        </div>
-    </section>
+<!-- ✅ SCRIPTS CON THYMELEAF INLINE -->
+<script th:inline="javascript">
+    // ============================================================
+    // VARIABLES GLOBALES
+    // ============================================================
+    /*<![CDATA[*/
+    const radicadosData = /*[[${radicados}]]*/ [];
+    const estadosData = /*[[${estados}]]*/ [];
+    const dependenciasData = /*[[${dependencias}]]*/ [];
+    /*]]>*/
 
-    <!-- ✅ TABLA DINÁMICA -->
-    <section class="content">
-        <div class="table-card">
-            <div class="mass">
-                <button class="secondary">Asignar</button>
-                <button class="secondary">Reasignar</button>
-                <button class="secondary">Cambiar Estado</button>
-                <button class="secondary">Cerrar</button>
-            </div>
+    let todosLosRadicados = radicadosData || [];
+    let radicadosFiltrados = [...todosLosRadicados];
+    let paginaActual = 1;
+    const itemsPorPagina = 10;
+    let radicadoSeleccionado = null;
 
-            <div class="overflow-x-auto">
-                <table>
-                    <thead>
-                    <tr>
-                        <th><input type="checkbox"/></th>
-                        <th>Radicado</th>
-                        <th>Asunto</th>
-                        <th>Trámite</th>
-                        <th>Estado</th>
-                        <th>Dependencia</th>
-                        <th>Responsable</th>
-                        <th>Prioridad</th>
-                        <th>Serie</th>
-                        <th>Subserie</th>
-                        <th>Vencimiento</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr class="hover:bg-slate-50" th:each="r : ${radicados}">
-                        <td><input th:value="${r.id_radicado}" type="checkbox"/></td>
-                        <td class="font-medium" th:text="${r.numero_radicado}">-</td>
-                        <td th:text="${r.asunto}">-</td>
-                        <td th:text="${r.id_tramite}">-</td>
-                        <td>
-                            <span class="status pending" th:text="${r.id_estado}">Pendiente</span>
-                        </td>
-                        <td th:text="${r.id_dependencia}">-</td>
-                        <td th:text="${r.id_usuario}">-</td>
-                        <td>
-                            <span class="priority media"
-                                  th:text="${r.prioridad != null ? r.prioridad : 'MEDIA'}">MEDIA</span>
-                        </td>
-                        <td th:text="${r.codigo_serie != null ? r.codigo_serie : '-'}">-</td>
-                        <td th:text="${r.codigo_subserie != null ? r.codigo_subserie : '-'}">-</td>
-                        <td th:text="${r.fecha_vencimiento != null ? r.fecha_vencimiento : 'Sin fecha'}">-</td>
-                        <td>
-                            <a class="secondary" style="padding: 4px 12px; font-size: 12px;"
-                               th:href="@{'/view/radicados/detalle/' + ${r.id_radicado}}">Ver</a>
-                        </td>
-                    </tr>
-                    <tr th:if="${#lists.isEmpty(radicados)}">
-                        <td class="text-center py-8 text-slate-500" colspan="12">No hay radicados registrados</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
+    // ============================================================
+    // INICIALIZACIÓN
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        // Verificar si hay datos
+        if (todosLosRadicados.length === 0) {
+            console.warn('No hay radicados disponibles');
+            document.getElementById('infoPaginacion').textContent = 'No hay radicados registrados';
+        }
 
-</main>
+        renderizarTabla();
+        actualizarPaginacion();
+
+        // Event listeners para filtros
+        document.getElementById('btnFiltrar').addEventListener('click', aplicarFiltros);
+        document.getElementById('btnLimpiar').addEventListener('click', limpiarFiltros);
+
+        // Enter en el campo de búsqueda
+        document.getElementById('filtroBusqueda').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') aplicarFiltros();
+        });
+
+        // Select all
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('#tablaBody input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+    });
+
+    // ============================================================
+    // FUNCIONES DE PAGINACIÓN
+    // ============================================================
+    function renderizarTabla() {
+        const inicio = (paginaActual - 1) * itemsPorPagina;
+        const fin = Math.min(inicio + itemsPorPagina, radicadosFiltrados.length);
+        const paginaData = radicadosFiltrados.slice(inicio, fin);
+        const tbody = document.getElementById('tablaBody');
+
+        if (paginaData.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="10" class="px-6 py-10 text-center text-slate-500">
+                        ${todosLosRadicados.length === 0 ? 'No hay radicados registrados' : 'No hay radicados que coincidan con los filtros'}
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = paginaData.map(r => `
+            <tr class="hover:bg-slate-50 transition cursor-pointer fade-in" onclick="verDetalle(${r.id_radicado})">
+                <td class="px-4 py-3"><input type="checkbox" th:value="${r.id_radicado}" onclick="event.stopPropagation()"></td>
+                <td class="px-4 py-3 font-bold text-[#2fa300]">${r.numero_radicado || '-'}</td>
+                <td class="px-4 py-3 text-slate-700">${r.asunto || '-'}</td>
+                <td class="px-4 py-3 text-slate-600">${r.tramite && r.tramite.nombre ? r.tramite.nombre : (r.id_tramite || '-')}</td>
+                <td class="px-4 py-3">
+                    ${r.estado ? `
+                        <span class="px-3 py-1 rounded-full text-xs font-bold ${r.estado.id_estado == 1 ? 'bg-yellow-100 text-yellow-700' :
+                                                                          r.estado.id_estado == 2 ? 'bg-blue-100 text-blue-700' :
+                                                                          r.estado.id_estado == 3 ? 'bg-green-100 text-green-700' :
+                                                                          r.estado.id_estado == 4 ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'}">
+                            ${r.estado.nombre || 'Sin nombre'}
+                        </span>
+                    ` : '<span class="text-slate-400 text-xs">Sin estado</span>'}
+                </td>
+                <td class="px-4 py-3 text-slate-600">${r.dependencias ? r.dependencias.nombre : '-'}</td>
+                <td class="px-4 py-3 text-slate-600">${r.usuario ? r.usuario.nombre : (r.id_usuario || '-')}</td>
+                <td class="px-4 py-3">
+                    ${r.prioridad ? `
+                        <span class="px-2 py-0.5 rounded text-xs font-bold ${r.prioridad == 'ALTA' ? 'bg-red-100 text-red-700' :
+                                                                          r.prioridad == 'MEDIA' ? 'bg-yellow-100 text-yellow-700' :
+                                                                          r.prioridad == 'BAJA' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}">
+                            ${r.prioridad}
+                        </span>
+                    ` : '<span class="text-slate-400 text-xs">-</span>'}
+                </td>
+                <td class="px-4 py-3 text-slate-600">${r.fecha_vencimiento || 'Sin fecha'}</td>
+                <td class="px-4 py-3 text-center">
+                    <button class="bg-white border border-slate-200 px-3 py-1 rounded text-xs font-semibold text-slate-600 hover:bg-slate-50 transition" onclick="verDetalle(${r.id_radicado}); event.stopPropagation();">Ver</button>
+                </td>
+            </tr>
+        `).join('');
+
+        // Actualizar info de paginación
+        const total = radicadosFiltrados.length;
+        const desde = total === 0 ? 0 : inicio + 1;
+        const hasta = Math.min(fin, total);
+        document.getElementById('infoPaginacion').textContent =
+            total === 0 ? (todosLosRadicados.length === 0 ? 'No hay radicados registrados' : 'Mostrando 0 de 0 radicados') :
+            `Mostrando ${desde} - ${hasta} de ${total} radicados`;
+    }
+
+    function actualizarPaginacion() {
+        const totalPaginas = Math.ceil(radicadosFiltrados.length / itemsPorPagina);
+        const controls = document.getElementById('paginationControls');
+
+        if (totalPaginas <= 1) {
+            controls.innerHTML = '';
+            return;
+        }
+
+        let html = '';
+        html += `<button class="pagination-btn" onclick="cambiarPagina(${paginaActual - 1})" ${paginaActual <= 1 ? 'disabled' : ''}>‹</button>`;
+
+        const maxVisible = 5;
+        let inicio = Math.max(1, paginaActual - Math.floor(maxVisible / 2));
+        let fin = Math.min(totalPaginas, inicio + maxVisible - 1);
+        if (fin - inicio < maxVisible - 1) inicio = Math.max(1, fin - maxVisible + 1);
+
+        if (inicio > 1) {
+            html += `<button class="pagination-btn" onclick="cambiarPagina(1)">1</button>`;
+            if (inicio > 2) html += `<span class="px-2">...</span>`;
+        }
+
+        for (let i = inicio; i <= fin; i++) {
+            html += `<button class="pagination-btn ${i === paginaActual ? 'active' : ''}" onclick="cambiarPagina(${i})">${i}</button>`;
+        }
+
+        if (fin < totalPaginas) {
+            if (fin < totalPaginas - 1) html += `<span class="px-2">...</span>`;
+            html += `<button class="pagination-btn" onclick="cambiarPagina(${totalPaginas})">${totalPaginas}</button>`;
+        }
+
+        html += `<button class="pagination-btn" onclick="cambiarPagina(${paginaActual + 1})" ${paginaActual >= totalPaginas ? 'disabled' : ''}>›</button>`;
+
+        controls.innerHTML = html;
+    }
+
+    function cambiarPagina(pagina) {
+        const totalPaginas = Math.ceil(radicadosFiltrados.length / itemsPorPagina);
+        if (pagina < 1 || pagina > totalPaginas) return;
+        paginaActual = pagina;
+        renderizarTabla();
+        actualizarPaginacion();
+        document.querySelector('.overflow-x-auto').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ============================================================
+    // FUNCIONES DE FILTRO
+    // ============================================================
+    function aplicarFiltros() {
+        const busqueda = document.getElementById('filtroBusqueda').value.toLowerCase().trim();
+        const estadoId = document.getElementById('filtroEstado').value;
+        const dependenciaId = document.getElementById('filtroDependencia').value;
+
+        radicadosFiltrados = todosLosRadicados.filter(r => {
+            let coincideBusqueda = true;
+            if (busqueda) {
+                const numero = (r.numero_radicado || '').toLowerCase();
+                const asunto = (r.asunto || '').toLowerCase();
+                coincideBusqueda = numero.includes(busqueda) || asunto.includes(busqueda);
+            }
+
+            let coincideEstado = true;
+            if (estadoId) {
+                coincideEstado = r.id_estado && r.id_estado.toString() === estadoId;
+            }
+
+            let coincideDependencia = true;
+            if (dependenciaId) {
+                coincideDependencia = r.dependencias && r.dependencias.id_dependencia &&
+                                      r.dependencias.id_dependencia.toString() === dependenciaId;
+            }
+
+            return coincideBusqueda && coincideEstado && coincideDependencia;
+        });
+
+        paginaActual = 1;
+        renderizarTabla();
+        actualizarPaginacion();
+    }
+
+    function limpiarFiltros() {
+        document.getElementById('filtroBusqueda').value = '';
+        document.getElementById('filtroEstado').value = '';
+        document.getElementById('filtroDependencia').value = '';
+        radicadosFiltrados = [...todosLosRadicados];
+        paginaActual = 1;
+        renderizarTabla();
+        actualizarPaginacion();
+    }
+
+    // ============================================================
+    // FUNCIÓN VER DETALLE
+    // ============================================================
+    function verDetalle(idRadicado) {
+        if (!idRadicado) return;
+        radicadoSeleccionado = idRadicado;
+
+        const radicado = todosLosRadicados.find(r => r.id_radicado === idRadicado);
+        if (radicado) {
+            actualizarDetalle(radicado);
+        } else {
+            fetch('/api/radicados/' + idRadicado)
+                .then(response => response.json())
+                .then(data => actualizarDetalle(data))
+                .catch(error => console.error('Error:', error));
+        }
+
+        cargarTrazabilidad(idRadicado);
+        cargarDocumentos(idRadicado);
+        cargarObservaciones(idRadicado);
+        cargarReasignaciones(idRadicado);
+    }
+
+    function actualizarDetalle(data) {
+        document.getElementById('detalleRadicado').textContent = data.numero_radicado || '-';
+        document.getElementById('detalleAsunto').textContent = data.asunto || '-';
+        document.getElementById('detalleEstado').textContent = data.estado ? data.estado.nombre : 'Sin estado';
+        document.getElementById('detalleTramite').textContent = data.tramite ? data.tramite.nombre : (data.id_tramite || '-');
+        document.getElementById('detalleDependencia').textContent = data.dependencias ? data.dependencias.nombre : '-';
+        document.getElementById('detalleResponsable').textContent = data.usuario ? data.usuario.nombre : (data.id_usuario || '-');
+        document.getElementById('detalleSerie').textContent = data.codigo_serie || '-';
+        document.getElementById('detalleSubserie').textContent = data.codigo_subserie || '-';
+        document.getElementById('detallePrioridad').textContent = data.prioridad || 'MEDIA';
+        document.getElementById('detalleVencimiento').textContent = data.fecha_vencimiento || 'Sin fecha';
+        document.getElementById('detalleRemitente').textContent = data.remitente || '-';
+        document.getElementById('detalleMedio').textContent = data.canalRecepcion || '-';
+    }
+
+    // ============================================================
+    // FUNCIONES DE CARGA DE DATOS RELACIONADOS
+    // ============================================================
+    function cargarTrazabilidad(idRadicado) {
+        const container = document.getElementById('timelineContainer');
+        fetch('/api/historial/radicado/' + idRadicado)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length === 0) {
+                    container.innerHTML = '<p class="text-sm text-slate-500">Sin trazabilidad registrada</p>';
+                    return;
+                }
+                container.innerHTML = data.map(h => `
+                    <div class="flex gap-3 py-2 border-b border-slate-50 text-sm">
+                        <div class="w-2 h-2 rounded-full bg-green-600 mt-1.5"></div>
+                        <div>
+                            <p class="font-medium text-slate-700">${h.accion || 'Evento'}</p>
+                            <p class="text-xs text-slate-400">${h.fecha || ''}</p>
+                            <p class="text-xs text-slate-500">${h.descripcion || ''}</p>
+                        </div>
+                    </div>
+                `).join('');
+            })
+            .catch(() => container.innerHTML = '<p class="text-sm text-slate-500">Error al cargar trazabilidad</p>');
+    }
+
+    function cargarDocumentos(idRadicado) {
+        const container = document.getElementById('tablaDocumentos');
+        fetch('/api/documentos/radicado/' + idRadicado)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length === 0) {
+                    container.innerHTML = '<p class="text-sm text-slate-500">No hay documentos asociados</p>';
+                    return;
+                }
+                container.innerHTML = data.map(d => `
+                    <div class="flex justify-between items-center py-1 text-sm border-b border-slate-50">
+                        <span class="text-slate-700">${d.nombre || 'Documento'}</span>
+                        <span class="text-xs text-slate-400">${d.tipo || ''}</span>
+                    </div>
+                `).join('');
+            })
+            .catch(() => container.innerHTML = '<p class="text-sm text-slate-500">Error al cargar documentos</p>');
+    }
+
+    function cargarObservaciones(idRadicado) {
+        const container = document.getElementById('listaObservaciones');
+        fetch('/api/observaciones/radicado/' + idRadicado)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length === 0) {
+                    container.innerHTML = '<p class="text-sm text-slate-500">Sin observaciones</p>';
+                    return;
+                }
+                container.innerHTML = data.map(o => `
+                    <div class="bg-slate-50 p-2 rounded mb-2 text-sm">
+                        <p class="text-slate-700">${o.comentario || ''}</p>
+                        <span class="text-xs text-slate-400">${o.fecha || ''}</span>
+                    </div>
+                `).join('');
+            })
+            .catch(() => container.innerHTML = '<p class="text-sm text-slate-500">Error al cargar observaciones</p>');
+    }
+
+    function cargarReasignaciones(idRadicado) {
+        const container = document.getElementById('historialReasignaciones');
+        fetch('/api/reasignaciones/radicado/' + idRadicado)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length === 0) {
+                    container.innerHTML = '<p class="text-sm text-slate-500">Sin reasignaciones</p>';
+                    return;
+                }
+                container.innerHTML = data.map(r => `
+                    <div class="flex gap-3 py-1 text-sm border-b border-slate-50">
+                        <span class="text-slate-700">De: ${r.usuarioAnterior || '?'}</span>
+                        <span class="text-slate-400">→</span>
+                        <span class="text-slate-700">A: ${r.usuarioNuevo || '?'}</span>
+                    </div>
+                `).join('');
+            })
+            .catch(() => container.innerHTML = '<p class="text-sm text-slate-500">Error al cargar reasignaciones</p>');
+    }
+
+    // ============================================================
+    // FUNCIÓN GUARDAR OBSERVACIÓN
+    // ============================================================
+    function guardarObservacion() {
+        const idRadicado = document.getElementById('detalleRadicado').textContent;
+        const comentario = document.getElementById('nuevaObservacion').value;
+
+        if (!idRadicado || idRadicado === 'Seleccione un radicado' || !comentario.trim()) {
+            alert('Seleccione un radicado y escriba una observación');
+            return;
+        }
+
+        const id = parseInt(idRadicado);
+        if (isNaN(id)) {
+            alert('ID de radicado inválido');
+            return;
+        }
+
+        fetch('/api/observaciones', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id_radicado: id,
+                comentario: comentario,
+                id_usuario: 1
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Error al guardar');
+            return response.json();
+        })
+        .then(() => {
+            document.getElementById('nuevaObservacion').value = '';
+            cargarObservaciones(id);
+        })
+        .catch(error => alert('Error al guardar observación: ' + error.message));
+    }
+</script>
 
 </body>
 </html>

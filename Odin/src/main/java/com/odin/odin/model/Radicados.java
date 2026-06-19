@@ -79,6 +79,21 @@ public class Radicados {
     @Column(name = "fecha_limite")
     private String fecha_limite;
 
+    // Relación con Tramites
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_tramite", insertable = false, updatable = false)
+    private Tramites tramite;
+
+    // Relación con Usuarios
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_usuario", insertable = false, updatable = false)
+    private Usuarios usuario;
+
+    // Relación con Estados
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_estado", insertable = false, updatable = false)
+    private Estados estado;
+
     // ============================================================
     // CAMPOS TRANSIENT (no persisten en BD)
     // ============================================================
