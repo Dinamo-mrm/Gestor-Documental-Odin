@@ -123,6 +123,7 @@
                         </section>
 
                         <!-- DATOS DEL SOLICITANTE -->
+                        <!-- SECCIÓN CORREGIDA: DATOS DEL SOLICITANTE -->
                         <section class="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
                             <h2 class="text-lg font-bold text-slate-900 mb-4">Datos del Solicitante</h2>
 
@@ -140,27 +141,79 @@
 
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700">Número de documento</label>
-                                    <input type="text" th:field="*{numeroIdentificacion}" class="input w-full mt-1"/>
+                                    <!-- ✅ CORREGIDO: nombre correcto del campo -->
+                                    <input class="input w-full mt-1" placeholder="Número de identificación" th:field="*{numeroIdentificacion}"
+                                           type="text"/>
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700">Nombre completo / Razón social</label>
-                                    <input type="text" th:field="*{remitente}" class="input w-full mt-1"/>
+                                    <!-- ✅ CORREGIDO: remitente es el nombre del solicitante -->
+                                    <input class="input w-full mt-1" placeholder="Nombre completo" th:field="*{remitente}"
+                                           type="text"/>
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700">Correo</label>
-                                    <input type="email" th:field="*{correo}" class="input w-full mt-1"/>
+                                    <input class="input w-full mt-1" placeholder="correo@ejemplo.com" th:field="*{correo}"
+                                           type="email"/>
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700">Teléfono</label>
-                                    <input type="text" th:field="*{telefono}" class="input w-full mt-1"/>
+                                    <input class="input w-full mt-1" placeholder="Número de teléfono" th:field="*{telefono}"
+                                           type="text"/>
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700">Ciudad</label>
-                                    <input type="text" th:field="*{ciudad}" class="input w-full mt-1"/>
+                                    <input class="input w-full mt-1" placeholder="Ciudad" th:field="*{ciudad}"
+                                           type="text"/>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- ✅ CORREGIDO: ASIGNACIÓN INICIAL -->
+                        <section class="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
+                            <h2 class="text-lg font-bold text-slate-900 mb-4">Asignación Inicial</h2>
+
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700">Responsable</label>
+                                    <!-- ✅ CORREGIDO: id_usuario es el campo correcto -->
+                                    <select class="input w-full mt-1" th:field="*{id_usuario}">
+                                        <option value="">Seleccione un responsable...</option>
+                                        <option th:each="u : ${usuarios}" th:text="${u.nombre}"
+                                                th:value="${u.id_usuario}"></option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700">Dependencia
+                                        responsable</label>
+                                    <!-- ✅ CORREGIDO: id_dependencia es el campo correcto -->
+                                    <select class="input w-full mt-1" th:field="*{id_dependencia}">
+                                        <option value="">Seleccione una dependencia...</option>
+                                        <option th:each="d : ${dependencias}" th:text="${d.nombre}"
+                                                th:value="${d.id_dependencia}"></option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700">Prioridad</label>
+                                    <select class="input w-full mt-1" th:field="*{prioridad}">
+                                        <option value="">Seleccione...</option>
+                                        <option value="BAJA">Baja</option>
+                                        <option value="MEDIA">Media</option>
+                                        <option value="ALTA">Alta</option>
+                                        <option value="URGENTE">Urgente</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700">Fecha límite</label>
+                                    <!-- ✅ CORREGIDO: fecha_vencimiento es el campo correcto -->
+                                    <input class="input w-full mt-1" th:field="*{fecha_vencimiento}" type="date"/>
                                 </div>
                             </div>
                         </section>

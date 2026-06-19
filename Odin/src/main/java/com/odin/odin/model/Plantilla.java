@@ -22,10 +22,10 @@ public class Plantilla
     private long id_evento;
 
     @NotBlank(message = "El radicado es obligatorio")
-    private Integer id_radicado;
+    private long id_radicado;
 
     @NotBlank(message = "el usuario es obligatoria")
-    private Integer id_usuario ;
+    private long id_usuario;
 
     @NotBlank(message = "la accion es obligatorio")
     private String accion ;

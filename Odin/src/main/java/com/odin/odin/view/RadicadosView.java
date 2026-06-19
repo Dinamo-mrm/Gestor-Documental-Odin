@@ -239,7 +239,7 @@ public class RadicadosView {
                 archivo.transferTo(destino);
 
                 Documentos documento = new Documentos();
-                documento.setId_radicado((int) radicado.getId_radicado());
+                documento.setId_radicado((long) radicado.getId_radicado());
                 documento.setTamano((int) archivo.getSize());
                 documento.setNombre(nombreOriginal);
                 documento.setNombre_archivo(nombreAlmacenado);

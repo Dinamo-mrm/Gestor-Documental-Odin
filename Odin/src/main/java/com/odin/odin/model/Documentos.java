@@ -19,7 +19,7 @@ public class Documentos
     private Long id_documento;
 
     @NotNull(message = "El id_radicado es obligatorio")
-    private Integer id_radicado;
+    private Long id_radicado;
 
     @NotNull(message = "La tamano es obligatoria")
     private Integer tamano;

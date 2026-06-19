@@ -3,6 +3,7 @@ package com.odin.odin.controller;
 import com.odin.odin.model.Usuarios;
 import com.odin.odin.repository.UsuariosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,10 +21,13 @@ public class UsuariosController
         return usuariosRepository.findAll();
     }
 
+    // ✅ CORREGIDO: Añadir @PathVariable
     @GetMapping("/{id}")
-    public Usuarios getById(Long id)
+    public ResponseEntity<Usuarios> getById(@PathVariable Long id)  // <-- @PathVariable añadido
     {
-        return usuariosRepository.findById(id).orElse(null);
+        return usuariosRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -33,15 +37,23 @@ public class UsuariosController
     }
 
     @PutMapping("/{id}")
-    public Usuarios update(@PathVariable Long id, @RequestBody Usuarios usuarios)
+    public ResponseEntity<Usuarios> update(@PathVariable Long id, @RequestBody Usuarios usuarios)
     {
-        usuarios.setId_usuario(id);
-        return usuariosRepository.save(usuarios);
+        return usuariosRepository.findById(id)
+                .map(existing -> {
+                    usuarios.setId_usuario(id);
+                    return ResponseEntity.ok(usuariosRepository.save(usuarios));
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id)
+    public ResponseEntity<Void> delete(@PathVariable Long id)
     {
-        usuariosRepository.deleteById(id);
+        if (usuariosRepository.existsById(id)) {
+            usuariosRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

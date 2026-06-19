@@ -8,15 +8,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+        body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
 
@@ -27,9 +23,7 @@
     <!-- SIDEBAR -->
     <div th:replace="fragments/layout :: sidebar('dashboard')"></div>
 
-    <div class="fixed inset-0 bg-black/40 z-20 hidden"
-         id="overlay">
-    </div>
+    <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay"></div>
 
     <!-- CONTENIDO -->
     <div class="flex-1 min-w-0">
@@ -41,135 +35,92 @@
 
             <!-- ENCABEZADO -->
             <section class="mb-8">
-
-                <h1 class="text-3xl font-extrabold text-slate-900 uppercase">
-                    Dashboard
-                </h1>
-
-                <p class="text-sm text-slate-500 mt-2">
-                    Resumen general del sistema ODIN.
-                </p>
-
+                <h1 class="text-3xl font-extrabold text-slate-900 uppercase">Dashboard</h1>
+                <p class="text-sm text-slate-500 mt-2">Resumen general del sistema ODIN.</p>
             </section>
 
             <!-- TARJETAS -->
             <section class="grid grid-cols-2 md:grid-cols-4 gap-5 mt-6">
 
                 <div class="bg-white rounded-xl p-5 border shadow-sm">
-                    <p class="text-xs font-bold uppercase text-slate-500">
-                        Pendientes
-                    </p>
-
-                    <h2 class="text-3xl font-bold text-yellow-600"
-                        th:text="${pendientes}">
-                        0
-                    </h2>
+                    <p class="text-xs font-bold uppercase text-slate-500">Total Radicados</p>
+                    <h2 class="text-3xl font-bold text-blue-600"
+                        th:text="${totalRadicados != null ? totalRadicados : 0}">0</h2>
                 </div>
 
                 <div class="bg-white rounded-xl p-5 border shadow-sm">
-                    <p class="text-xs font-bold uppercase text-slate-500">
-                        Finalizados
-                    </p>
-
-                    <h2 class="text-3xl font-bold text-green-600"
-                        th:text="${finalizados}">
-                        0
-                    </h2>
+                    <p class="text-xs font-bold uppercase text-slate-500">Pendientes</p>
+                    <h2 class="text-3xl font-bold text-yellow-600" th:text="${pendientes != null ? pendientes : 0}">
+                        0</h2>
                 </div>
 
                 <div class="bg-white rounded-xl p-5 border shadow-sm">
-                    <p class="text-xs font-bold uppercase text-slate-500">
-                        Devueltos/Rechazados
-                    </p>
-
-                    <h2 class="text-3xl font-bold text-red-600"
-                        th:text="${problemas}">
-                        0
-                    </h2>
+                    <p class="text-xs font-bold uppercase text-slate-500">Finalizados</p>
+                    <h2 class="text-3xl font-bold text-green-600" th:text="${finalizados != null ? finalizados : 0}">
+                        0</h2>
                 </div>
 
                 <div class="bg-white rounded-xl p-5 border shadow-sm">
-                    <p class="text-xs font-bold uppercase text-slate-500">
-                        Vencidos
-                    </p>
-
-                    <h2 class="text-3xl font-bold text-red-700"
-                        th:text="${vencidos}">
-                        0
-                    </h2>
+                    <p class="text-xs font-bold uppercase text-slate-500">Vencidos</p>
+                    <h2 class="text-3xl font-bold text-red-700" th:text="${vencidos != null ? vencidos : 0}">0</h2>
                 </div>
 
             </section>
 
-            <section class="mt-8">
-
-                <div class="bg-white rounded-xl p-6 border shadow-sm">
-
-                    <h3 class="font-bold mb-4">
-                        Estado de los Radicados
-                    </h3>
-
-                    <canvas id="estadoChart"></canvas>
-
-                </div>
-
-            </section>
-
-
-            <!-- PANEL INFORMATIVO -->
+            <!-- GRÁFICOS -->
             <section class="mt-8 grid grid-cols-1 xl:grid-cols-2 gap-6">
 
-                <!-- GRÁFICO -->
+                <!-- GRÁFICO DONA -->
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-
-                    <h3 class="font-bold text-slate-800 mb-4">
-                        Distribución General
-                    </h3>
-
-                    <canvas id="dashboardChart"></canvas>
-
+                    <h3 class="font-bold text-slate-800 mb-4">Estado de los Radicados</h3>
+                    <canvas id="estadoChart"></canvas>
                 </div>
 
-                <!-- ÚLTIMOS RADICADOS -->
+                <!-- GRÁFICO BARRAS -->
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                    <h3 class="font-bold text-slate-800 mb-4">Distribución General</h3>
+                    <canvas id="dashboardChart"></canvas>
+                </div>
 
-                    <h3 class="font-bold text-slate-800 mb-4">
-                        Últimos Radicados
-                    </h3>
+            </section>
+
+            <!-- ÚLTIMOS RADICADOS -->
+            <section class="mt-8">
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                    <h3 class="font-bold text-slate-800 mb-4">Últimos Radicados</h3>
 
                     <div class="overflow-auto max-h-80">
-
                         <table class="w-full text-sm">
-
                             <thead>
                             <tr class="border-b">
                                 <th class="text-left py-2">Número</th>
                                 <th class="text-left py-2">Asunto</th>
+                                <th class="text-left py-2">Estado</th>
+                                <th class="text-left py-2">Fecha</th>
                             </tr>
                             </thead>
-
                             <tbody>
-
-                            <tr th:each="r : ${ultimosRadicados}">
-
-                                <td class="py-2"
-                                    th:text="${r.numeroRadicado}">
+                            <tr class="border-b hover:bg-slate-50" th:each="r : ${ultimosRadicados}">
+                                <td class="py-2 font-medium" th:text="${r.numero_radicado}">-</td>
+                                <td class="py-2" th:text="${r.asunto}">-</td>
+                                <td class="py-2">
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs"
+                                          th:if="${r.id_estado == 1}">Pendiente</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
+                                          th:if="${r.id_estado == 2}">En Proceso</span>
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs"
+                                          th:if="${r.id_estado == 3}">Finalizado</span>
                                 </td>
-
-                                <td class="py-2"
-                                    th:text="${r.asunto}">
-                                </td>
-
+                                <td class="py-2" th:text="${r.fecha_radicado}">-</td>
                             </tr>
-
+                            <tr th:if="${#lists.isEmpty(ultimosRadicados)}">
+                                <td class="py-4 text-center text-slate-500" colspan="4">No hay radicados registrados
+                                </td>
+                            </tr>
                             </tbody>
-
                         </table>
-
                     </div>
-
                 </div>
-
             </section>
 
         </main>
@@ -180,91 +131,62 @@
 
 <script defer th:src="@{/js/script.js}"></script>
 <script th:inline="javascript">
-
+    // ✅ VARIABLES CORREGIDAS
+    const totalRadicados = [[${totalRadicados != null ? totalRadicados : 0}]];
     const pendientes = [[${pendientes != null ? pendientes : 0}]];
     const finalizados = [[${finalizados != null ? finalizados : 0}]];
-    const problemas = [[${problemas != null ? problemas : 0}]];
     const vencidos = [[${vencidos != null ? vencidos : 0}]];
+    const enTramite = [[${enTramite != null ? enTramite : 0}]];
+    const rechazados = [[${rechazados != null ? rechazados : 0}]];
 
+    // GRÁFICO DONA
     const estadoCanvas = document.getElementById('estadoChart');
-
     if (estadoCanvas) {
-
         new Chart(estadoCanvas, {
-
             type: 'doughnut',
-
             data: {
-
-                labels: [
-                    'Pendientes',
-                    'Finalizados',
-                    'Problemas',
-                    'Vencidos'
-                ],
-
+                labels: ['Pendientes', 'En Trámite', 'Finalizados', 'Rechazados', 'Vencidos'],
                 datasets: [{
-                    data: [
-                        pendientes,
-                        finalizados,
-                        problemas,
-                        vencidos
-                    ]
+                    data: [pendientes, enTramite, finalizados, rechazados, vencidos],
+                    backgroundColor: ['#FBBF24', '#60A5FA', '#34D399', '#F87171', '#991B1B'],
+                    borderWidth: 2
                 }]
             },
-
             options: {
                 responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    }
-
-    const dashboardCanvas =
-        document.getElementById('dashboardChart');
-
-    if (dashboardCanvas) {
-
-        new Chart(dashboardCanvas, {
-
-            type: 'bar',
-
-            data: {
-
-                labels: [
-                    'Pendientes',
-                    'Finalizados',
-                    'Problemas',
-                    'Vencidos'
-                ],
-
-                datasets: [{
-
-                    label: 'Radicados',
-
-                    data: [
-                        pendientes,
-                        finalizados,
-                        problemas,
-                        vencidos
-                    ]
-                }]
-            },
-
-            options: {
-
-                responsive: true,
-
-                scales: {
-
-                    y: {
-                        beginAtZero: true
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
                     }
                 }
             }
         });
     }
 
+    // GRÁFICO BARRAS
+    const dashboardCanvas = document.getElementById('dashboardChart');
+    if (dashboardCanvas) {
+        new Chart(dashboardCanvas, {
+            type: 'bar',
+            data: {
+                labels: ['Pendientes', 'En Trámite', 'Finalizados', 'Rechazados', 'Vencidos'],
+                datasets: [{
+                    label: 'Radicados',
+                    data: [pendientes, enTramite, finalizados, rechazados, vencidos],
+                    backgroundColor: ['#FBBF24', '#60A5FA', '#34D399', '#F87171', '#991B1B'],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
 </script>
 
 </body>
