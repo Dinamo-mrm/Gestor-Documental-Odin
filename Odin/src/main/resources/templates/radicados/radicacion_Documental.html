@@ -25,13 +25,13 @@
 <div class="min-h-screen flex">
 
     <!-- SIDEBAR COMPARTIDO -->
-    <div th:replace="fragments/layout :: sidebar('radicados')"></div>
+    <div th:replace="~{fragments/layout :: sidebar('radicados')}"></div>
 
     <!-- CONTENIDO -->
     <div class="flex-1 min-w-0">
 
         <!-- TOPBAR COMPARTIDO -->
-        <div th:replace="fragments/layout :: topbar('ODIN')"></div>
+        <div th:replace="~{fragments/layout :: topbar('ODIN')}"></div>
 
         <!-- MAIN -->
         <main class="px-4 md:px-8 py-6">
@@ -123,7 +123,6 @@
                         </section>
 
                         <!-- DATOS DEL SOLICITANTE -->
-                        <!-- SECCIÓN CORREGIDA: DATOS DEL SOLICITANTE -->
                         <section class="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
                             <h2 class="text-lg font-bold text-slate-900 mb-4">Datos del Solicitante</h2>
 
@@ -141,14 +140,12 @@
 
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700">Número de documento</label>
-                                    <!-- ✅ CORREGIDO: nombre correcto del campo -->
                                     <input class="input w-full mt-1" placeholder="Número de identificación" th:field="*{numeroIdentificacion}"
                                            type="text"/>
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700">Nombre completo / Razón social</label>
-                                    <!-- ✅ CORREGIDO: remitente es el nombre del solicitante -->
                                     <input class="input w-full mt-1" placeholder="Nombre completo" th:field="*{remitente}"
                                            type="text"/>
                                 </div>
@@ -173,14 +170,13 @@
                             </div>
                         </section>
 
-                        <!-- ✅ CORREGIDO: ASIGNACIÓN INICIAL -->
+                        <!-- ASIGNACIÓN INICIAL -->
                         <section class="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
                             <h2 class="text-lg font-bold text-slate-900 mb-4">Asignación Inicial</h2>
 
                             <div class="grid md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700">Responsable</label>
-                                    <!-- ✅ CORREGIDO: id_usuario es el campo correcto -->
                                     <select class="input w-full mt-1" th:field="*{id_usuario}">
                                         <option value="">Seleccione un responsable...</option>
                                         <option th:each="u : ${usuarios}" th:text="${u.nombre}"
@@ -191,7 +187,7 @@
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700">Dependencia
                                         responsable</label>
-                                    <!-- ✅ CORREGIDO: id_dependencia es el campo correcto -->
+                                    <!-- ✅ USANDO id_dependencia (campo nuevo) -->
                                     <select class="input w-full mt-1" th:field="*{id_dependencia}">
                                         <option value="">Seleccione una dependencia...</option>
                                         <option th:each="d : ${dependencias}" th:text="${d.nombre}"
@@ -212,7 +208,6 @@
 
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700">Fecha límite</label>
-                                    <!-- ✅ CORREGIDO: fecha_vencimiento es el campo correcto -->
                                     <input class="input w-full mt-1" th:field="*{fecha_vencimiento}" type="date"/>
                                 </div>
                             </div>
@@ -225,7 +220,8 @@
                             <div class="grid md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700">Dependencia destino</label>
-                                    <select th:field="*{dependencia}" class="input w-full mt-1">
+                                    <!-- ✅ USANDO id_dependencia (campo nuevo) -->
+                                    <select class="input w-full mt-1" th:field="*{id_dependencia}">
                                         <option value="">Seleccione una dependencia...</option>
                                         <option th:each="d : ${dependencias}"
                                                 th:value="${d.id_dependencia}"
@@ -320,49 +316,6 @@
                                 <p class="text-slate-600 mb-3">📄 Arrastre documentos o cargue archivos</p>
                                 <input type="file" th:field="*{archivos}" multiple class="input w-full bg-white"/>
                                 <p class="text-xs text-slate-500 mt-2">Formatos permitidos: PDF, DOCX, JPG, PNG</p>
-                            </div>
-                        </section>
-
-                        <!-- ASIGNACIÓN INICIAL -->
-                        <section class="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
-                            <h2 class="text-lg font-bold text-slate-900 mb-4">Asignación Inicial</h2>
-
-                            <div class="grid md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-700">Responsable</label>
-                                    <select th:field="*{responsable}" class="input w-full mt-1">
-                                        <option value="">Seleccione un responsable...</option>
-                                        <option th:each="u : ${usuarios}"
-                                                th:value="${u.id_usuario}"
-                                                th:text="${u.nombre}"></option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-700">Dependencia responsable</label>
-                                    <select th:field="*{dependenciaResponsable}" class="input w-full mt-1">
-                                        <option value="">Seleccione una dependencia...</option>
-                                        <option th:each="d : ${dependencias}"
-                                                th:value="${d.id_dependencia}"
-                                                th:text="${d.nombre}"></option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-700">Prioridad</label>
-                                    <select th:field="*{prioridad}" class="input w-full mt-1">
-                                        <option value="">Seleccione...</option>
-                                        <option value="Baja">Baja</option>
-                                        <option value="Media">Media</option>
-                                        <option value="Alta">Alta</option>
-                                        <option value="Urgente">Urgente</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-700">Fecha límite</label>
-                                    <input type="date" th:field="*{fechaLimite}" class="input w-full mt-1"/>
-                                </div>
                             </div>
                         </section>
 

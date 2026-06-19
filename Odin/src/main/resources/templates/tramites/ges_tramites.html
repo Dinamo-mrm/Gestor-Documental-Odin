@@ -1,413 +1,150 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ODIN · Gestión de Trámites</title>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>ODIN · Gestión de Trámites</title>
+
+    <!-- ✅ CSS CORREGIDO -->
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/css/styleguide.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <!--<link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="gestion-tramites.css">
-    <link rel="stylesheet" href="styleguide.css">
-    <link rel="stylesheet" href="global.css">
-    <link rel="stylesheet" href="style.css">-->
     <script src="https://cdn.tailwindcss.com"></script>
-
-</head>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-<style>
-
-
-</style>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-<main class="main">
-
-<header class="header">
-
-<div>
-
-<h1>Gestión de Trámites</h1>
-
-<p>Control, seguimiento y trazabilidad documental</p>
-
-</div>
-
-<div class="header-actions">
-
-<button class="secondary">
-Exportar
-</button>
-
-<button class="primary">
-＋ Nuevo trámite
-</button>
-
-</div>
-
-</header>
-
-<!-- KPIS -->
-
-<section class="top">
-
-<div class="card">
-
-<div class="tabs">
-
-<div class="tab active-tab">
-Mis trámites
-</div>
-
-<div class="tab">
-Dependencia
-</div>
-
-<div class="tab">
-Todos
-</div>
-
-</div>
-
-<div class="kpis">
-
-<div class="kpi green">
-<small>Pendientes</small>
-<h2>25</h2>
-</div>
-
-<div class="kpi yellow">
-<small>En proceso</small>
-<h2>14</h2>
-</div>
-
-<div class="kpi blue">
-<small>Finalizados</small>
-<h2>82</h2>
-</div>
-
-<div class="kpi red">
-<small>Vencidos</small>
-<h2>3</h2>
-</div>
-
-<div class="kpi green">
-<small>SLA</small>
-<h2>92%</h2>
-</div>
-
-</div>
-
-</div>
-
-<div class="card">
-
-<h3>Notificaciones</h3>
-
-<div class="alert">
-
-<div class="notice red">
-TRM-001 vence hoy
-</div>
-
-<div class="notice yellow">
-3 reasignaciones pendientes
-</div>
-
-<div class="notice green">
-8 trámites cerrados
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-<!-- FILTROS -->
-
-<section class="toolbar">
-
-<div class="filters">
-
-<input placeholder="Buscar radicado">
-
-<select>
-<option>Estado</option>
-</select>
-
-<select>
-<option>Dependencia</option>
-</select>
-
-<select>
-<option>Serie / Subserie</option>
-</select>
-
-<button class="primary">
-
-Filtrar
-
-</button>
-
-</div>
-
-</section>
-
-<section class="content">
-
-<!-- TABLA -->
-
-<div class="table-card">
-
-<div class="mass">
-
-<button class="secondary">
-Asignar
-</button>
-
-<button class="secondary">
-Reasignar
-</button>
-
-<button class="secondary">
-Cambiar Estado
-</button>
-
-<button class="secondary">
-Cerrar
-</button>
-
-</div>
-
-<table>
-
-<thead>
-
-<tr>
-
-<th></th>
-
-<th>Radicado</th>
-
-<th>Solicitante</th>
-
-<th>Estado</th>
-
-<th>Prioridad</th>
-
-<th>Vence</th>
-
-<th></th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-<tr>
-
-<td>☐</td>
-
-<td>TRM-2026-001</td>
-
-<td>Juan Pérez</td>
-
-<td>
-<span class="status pending">
-Pendiente
-</span>
-</td>
-
-<td>
-<span class="priority high"></span>
-Alta
-</td>
-
-<td>Hoy</td>
-
-<td>→</td>
-
-</tr>
-
-<tr>
-
-<td>☐</td>
-
-<td>TRM-2026-002</td>
-
-<td>María López</td>
-
-<td>
-<span class="status progress">
-En proceso
-</span>
-</td>
-
-<td>
-<span class="priority medium"></span>
-Media
-</td>
-
-<td>2 días</td>
-
-<td>→</td>
-
-</tr>
-
-<tr>
-
-<td>☐</td>
-
-<td>TRM-2026-003</td>
-
-<td>Pedro Gómez</td>
-
-<td>
-<span class="status done">
-Finalizado
-</span>
-</td>
-
-<td>
-<span class="priority low"></span>
-Baja
-</td>
-
-<td>—</td>
-
-<td>→</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
-
-<!-- PANEL DETALLE -->
-
-<aside class="detail">
-
-<div class="block">
-
-<h3>Detalle del trámite</h3>
-
-<p>
-TRM-2026-001
-</p>
-
-<br>
-
-<p>
-Responsable:
-Carlos Ruiz
-</p>
-
-<p>
-Dependencia:
-Archivo Central
-</p>
-
-<p>
-Serie:
-Correspondencia
-</p>
-
-<p>
-Subserie:
-Solicitudes
-</p>
-
-</div>
-
-<div class="block">
-
-<h3>Trazabilidad</h3>
-
-<div class="timeline">
-
-<div class="step">
-
-<div class="dot"></div>
-
-<div>
-Creado
-<br>
-17/06 · 08:00
-</div>
-
-</div>
-
-<div class="step">
-
-<div class="dot"></div>
-
-<div>
-Asignado
-</div>
-
-</div>
-
-<div class="step">
-
-<div class="dot"></div>
-
-<div>
-En revisión
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="block">
-
-<h3>Comentarios</h3>
-
-<div class="comment">
-Falta documento soporte.
-</div>
-
-<div class="comment">
-Adjunto recibido.
-</div>
-
-<input placeholder="Agregar comentario">
-
-</div>
-
-<div class="block">
-
-<button class="primary">
-
-Generar respuesta
-
-</button>
-
-</div>
-
-</aside>
-
-</section>
+<!-- ✅ SIDEBAR CORREGIDO -->
+<div th:replace="fragments/layout :: sidebar('tramites')"></div>
+
+<div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay"></div>
+
+<!-- ✅ TOPBAR CORREGIDO -->
+<div th:replace="fragments/layout :: topbar('ODIN')"></div>
+
+<main class="main px-4 md:px-8 py-6">
+
+    <header class="header">
+        <div>
+            <h1>Gestión de Trámites</h1>
+            <p>Control, seguimiento y trazabilidad documental</p>
+        </div>
+        <div class="header-actions">
+            <button class="secondary">Exportar</button>
+            <a class="primary" th:href="@{/view/tramites/form}">＋ Nuevo trámite</a>
+        </div>
+    </header>
+
+    <!-- ✅ KPIS DINÁMICOS -->
+    <section class="top">
+        <div class="card">
+            <div class="kpis">
+                <div class="kpi green">
+                    <small>Pendientes</small>
+                    <h2 th:text="${pendientes != null ? pendientes : 0}">0</h2>
+                </div>
+                <div class="kpi yellow">
+                    <small>En proceso</small>
+                    <h2 th:text="${enProceso != null ? enProceso : 0}">0</h2>
+                </div>
+                <div class="kpi blue">
+                    <small>Finalizados</small>
+                    <h2 th:text="${finalizados != null ? finalizados : 0}">0</h2>
+                </div>
+                <div class="kpi red">
+                    <small>Vencidos</small>
+                    <h2 th:text="${vencidos != null ? vencidos : 0}">0</h2>
+                </div>
+                <div class="kpi green">
+                    <small>Total</small>
+                    <h2 th:text="${totalRadicados != null ? totalRadicados : 0}">0</h2>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ✅ FILTROS -->
+    <section class="toolbar">
+        <div class="filters">
+            <input placeholder="Buscar radicado..." type="text"/>
+            <select>
+                <option value="">Todos los estados</option>
+                <option th:each="e : ${estados}" th:text="${e.nombre}" th:value="${e.id_estado}"></option>
+            </select>
+            <select>
+                <option value="">Todas las dependencias</option>
+                <option th:each="d : ${dependencias}" th:text="${d.nombre}" th:value="${d.id_dependencia}"></option>
+            </select>
+            <select>
+                <option value="">Todos los trámites</option>
+                <option th:each="t : ${tramites}" th:text="${t.nombre}" th:value="${t.idTramite}"></option>
+            </select>
+            <button class="primary">Filtrar</button>
+        </div>
+    </section>
+
+    <!-- ✅ TABLA DINÁMICA -->
+    <section class="content">
+        <div class="table-card">
+            <div class="mass">
+                <button class="secondary">Asignar</button>
+                <button class="secondary">Reasignar</button>
+                <button class="secondary">Cambiar Estado</button>
+                <button class="secondary">Cerrar</button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table>
+                    <thead>
+                    <tr>
+                        <th><input type="checkbox"/></th>
+                        <th>Radicado</th>
+                        <th>Asunto</th>
+                        <th>Trámite</th>
+                        <th>Estado</th>
+                        <th>Dependencia</th>
+                        <th>Responsable</th>
+                        <th>Prioridad</th>
+                        <th>Serie</th>
+                        <th>Subserie</th>
+                        <th>Vencimiento</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="hover:bg-slate-50" th:each="r : ${radicados}">
+                        <td><input th:value="${r.id_radicado}" type="checkbox"/></td>
+                        <td class="font-medium" th:text="${r.numero_radicado}">-</td>
+                        <td th:text="${r.asunto}">-</td>
+                        <td th:text="${r.id_tramite}">-</td>
+                        <td>
+                            <span class="status pending" th:text="${r.id_estado}">Pendiente</span>
+                        </td>
+                        <td th:text="${r.id_dependencia}">-</td>
+                        <td th:text="${r.id_usuario}">-</td>
+                        <td>
+                            <span class="priority media"
+                                  th:text="${r.prioridad != null ? r.prioridad : 'MEDIA'}">MEDIA</span>
+                        </td>
+                        <td th:text="${r.codigo_serie != null ? r.codigo_serie : '-'}">-</td>
+                        <td th:text="${r.codigo_subserie != null ? r.codigo_subserie : '-'}">-</td>
+                        <td th:text="${r.fecha_vencimiento != null ? r.fecha_vencimiento : 'Sin fecha'}">-</td>
+                        <td>
+                            <a class="secondary" style="padding: 4px 12px; font-size: 12px;"
+                               th:href="@{'/view/radicados/detalle/' + ${r.id_radicado}}">Ver</a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(radicados)}">
+                        <td class="text-center py-8 text-slate-500" colspan="12">No hay radicados registrados</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
 
 </main>
-
-</div>
-
-<button class="floating">
-＋
-</button>
 
 </body>
 </html>

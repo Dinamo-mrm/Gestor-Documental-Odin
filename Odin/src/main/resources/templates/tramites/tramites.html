@@ -2,182 +2,149 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
     <title>ODIN · Gestión de Trámites</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- ✅ CSS CORREGIDO -->
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
-
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
-<body class="bg-[#f5f6f8] text-slate-800">
+<body>
 
-<div class="min-h-screen flex">
+<!-- ✅ SIDEBAR CORREGIDO -->
+<div th:replace="fragments/layout :: sidebar('tramites')"></div>
 
-    <div th:replace="fragments/layout :: sidebar('tramites')"></div>
-    <div id="overlay" class="fixed inset-0 bg-black/40 z-20 hidden"></div>
+<div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay"></div>
 
-    <div class="flex-1 min-w-0">
+<!-- ✅ TOPBAR CORREGIDO -->
+<div th:replace="fragments/layout :: topbar('ODIN')"></div>
 
-        <div th:replace="fragments/layout :: topbar('ODIN')"></div>
+<main class="main px-4 md:px-8 py-6">
 
-        <main class="px-4 md:px-8 py-6">
+    <header class="header">
+        <div>
+            <h1>Gestión de Trámites</h1>
+            <p>Control, seguimiento y trazabilidad documental</p>
+        </div>
+        <div class="header-actions">
+            <button class="secondary">Exportar</button>
+            <a class="primary" th:href="@{/view/tramites/form}">＋ Nuevo trámite</a>
+        </div>
+    </header>
 
-            <section class="mb-6">
-                <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                    <div>
-                        <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight uppercase">
-                            Gestión de Trámites
-                        </h1>
-                        <p class="text-sm text-slate-500 mt-2">Control, seguimiento y trazabilidad documental.</p>
-                    </div>
-                    <div class="flex gap-3">
-                        <a th:href="@{/view/tramites/form}"
-                           class="inline-flex items-center justify-center rounded-lg bg-[#2fa300] px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#248400] transition uppercase">
-                            Nuevo Trámite
-                        </a>
-                    </div>
+    <!-- ✅ KPIS DINÁMICOS -->
+    <section class="top">
+        <div class="card">
+            <div class="kpis">
+                <div class="kpi green">
+                    <small>Pendientes</small>
+                    <h2 th:text="${pendientes != null ? pendientes : 0}">0</h2>
                 </div>
-            </section>
-
-            <!-- ✅ KPI DINÁMICOS DESDE BD -->
-            <section class="mb-5 grid grid-cols-2 md:grid-cols-5 gap-4">
-                <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm text-center">
-                    <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wide">Total Trámites</span>
-                    <h2 class="text-2xl font-extrabold text-[#2fa300] mt-1"
-                        th:text="${totalTramites != null ? totalTramites : 0}">0</h2>
+                <div class="kpi yellow">
+                    <small>En proceso</small>
+                    <h2 th:text="${enProceso != null ? enProceso : 0}">0</h2>
                 </div>
-                <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm text-center">
-                    <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wide">Pendientes</span>
-                    <h2 class="text-2xl font-extrabold text-yellow-600 mt-1"
-                        th:text="${pendientes != null ? pendientes : 0}">0</h2>
+                <div class="kpi blue">
+                    <small>Finalizados</small>
+                    <h2 th:text="${finalizados != null ? finalizados : 0}">0</h2>
                 </div>
-                <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm text-center">
-                    <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wide">En Proceso</span>
-                    <h2 class="text-2xl font-extrabold text-blue-600 mt-1"
-                        th:text="${enProceso != null ? enProceso : 0}">0</h2>
+                <div class="kpi red">
+                    <small>Vencidos</small>
+                    <h2 th:text="${vencidos != null ? vencidos : 0}">0</h2>
                 </div>
-                <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm text-center">
-                    <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wide">Finalizados</span>
-                    <h2 class="text-2xl font-extrabold text-green-600 mt-1"
-                        th:text="${finalizados != null ? finalizados : 0}">0</h2>
+                <div class="kpi green">
+                    <small>Total</small>
+                    <h2 th:text="${totalRadicados != null ? totalRadicados : 0}">0</h2>
                 </div>
-                <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm text-center">
-                    <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wide">Vencidos</span>
-                    <h2 class="text-2xl font-extrabold text-red-600 mt-1" th:text="${vencidos != null ? vencidos : 0}">
-                        0</h2>
-                </div>
-            </section>
+            </div>
+        </div>
+    </section>
 
-            <!-- ✅ TABLA CON DATOS DINÁMICOS -->
-            <div class="flex flex-col lg:flex-row gap-6">
+    <!-- ✅ FILTROS -->
+    <section class="toolbar">
+        <div class="filters">
+            <input placeholder="Buscar radicado..." type="text"/>
+            <select>
+                <option value="">Todos los estados</option>
+                <option th:each="e : ${estados}" th:text="${e.nombre}" th:value="${e.id_estado}"></option>
+            </select>
+            <select>
+                <option value="">Todas las dependencias</option>
+                <option th:each="d : ${dependencias}" th:text="${d.nombre}" th:value="${d.id_dependencia}"></option>
+            </select>
+            <select>
+                <option value="">Todos los trámites</option>
+                <option th:each="t : ${tramites}" th:text="${t.nombre}" th:value="${t.idTramite}"></option>
+            </select>
+            <button class="primary">Filtrar</button>
+        </div>
+    </section>
 
-                <div class="flex-1 rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden flex flex-col">
-
-                    <!-- Buscador -->
-                    <div class="px-5 py-4 border-b border-slate-100 bg-[#fafafa]">
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-4 flex items-center text-slate-400">🔍</span>
-                            <input placeholder="Buscar trámite..." type="text"
-                                   class="w-full rounded-lg border border-slate-200 bg-white py-2 pl-11 pr-4 text-sm text-slate-600 shadow-sm outline-none focus:border-[#2fa300] focus:ring-2 focus:ring-green-100">
-                        </div>
-                    </div>
-
-                    <!-- Tabla -->
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full text-sm">
-                            <thead>
-                            <tr class="bg-[#fafafa] border-b border-slate-100 text-[11px] uppercase tracking-wide text-slate-500">
-                                <th class="px-5 py-4 text-left font-bold w-10">#</th>
-                                <th class="px-5 py-4 text-left font-bold">Nombre</th>
-                                <th class="px-5 py-4 text-left font-bold">Dependencia</th>
-                                <th class="px-5 py-4 text-left font-bold">Estado Inicial</th>
-                                <th class="px-5 py-4 text-left font-bold">Días Respuesta</th>
-                                <th class="px-5 py-4 text-left font-bold">Prioridad</th>
-                                <th class="px-5 py-4 text-left font-bold">Activo</th>
-                                <th class="px-5 py-4 text-center font-bold">Acciones</th>
-                            </tr>
-                            </thead>
-
-                            <tbody class="divide-y divide-slate-100">
-                            <tr class="hover:bg-slate-50 transition" th:each="t : ${tramites}">
-                                <td class="px-5 py-4 text-slate-400" th:text="${t.idTramite}">1</td>
-                                <td class="px-5 py-4 font-bold text-slate-800" th:text="${t.nombre}">-</td>
-                                <td class="px-5 py-4 text-slate-600" th:text="${t.idDependenciaResponsable}">-</td>
-                                <td class="px-5 py-4 text-slate-600" th:text="${t.idEstadoInicial}">-</td>
-                                <td class="px-5 py-4 text-slate-600"
-                                    th:text="${t.diasRespuesta != null ? t.diasRespuesta + ' días' : '—'}">-
-                                </td>
-                                <td class="px-5 py-4">
-                                    <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-bold"
-                                          th:if="${t.prioridadDefault == 'ALTA'}">ALTA</span>
-                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-bold"
-                                          th:if="${t.prioridadDefault == 'MEDIA'}">MEDIA</span>
-                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-bold"
-                                          th:if="${t.prioridadDefault == 'BAJA'}">BAJA</span>
-                                    <span class="text-slate-400 text-xs" th:if="${t.prioridadDefault == null}">—</span>
-                                </td>
-                                <td class="px-5 py-4">
-                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-bold"
-                                          th:if="${t.activo}">Activo</span>
-                                    <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-bold"
-                                          th:if="${!t.activo}">Inactivo</span>
-                                </td>
-                                <td class="px-5 py-4 text-center">
-                                    <div class="flex items-center justify-center gap-2">
-                                        <a class="text-slate-500 hover:text-[#2fa300] transition"
-                                           th:href="@{'/view/tramites/edit/' + ${t.idTramite}}">✏️</a>
-                                        <form class="inline" method="post"
-                                              th:action="@{'/view/tramites/delete/' + ${t.idTramite}}">
-                                            <button class="text-slate-500 hover:text-red-600 transition" onclick="return confirm('¿Eliminar este trámite?')"
-                                                    type="submit">🗑️
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(tramites)}">
-                                <td class="px-6 py-10 text-center text-slate-500" colspan="8">No hay trámites
-                                    registrados.
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Footer -->
-                    <div class="flex items-center justify-between px-5 py-4 border-t border-slate-100 text-xs text-slate-500 bg-white">
-                        <span th:text="'Mostrando ' + ${#lists.size(tramites)} + ' trámites'">Mostrando 0 trámites</span>
-                    </div>
-                </div>
-
-                <!-- Panel Detalle -->
-                <aside class="w-full lg:w-80 flex flex-col gap-5">
-                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                        <h3 class="text-sm font-extrabold text-slate-800 uppercase border-b border-slate-100 pb-2 mb-3">
-                            Resumen</h3>
-                        <div class="space-y-2 text-sm text-slate-600">
-                            <p><span class="font-bold text-slate-800">Total:</span> <span
-                                    th:text="${totalTramites != null ? totalTramites : 0}">0</span></p>
-                            <p><span class="font-bold text-slate-800">Activos:</span> <span
-                                    th:text="${activos != null ? activos : 0}">0</span></p>
-                            <p><span class="font-bold text-slate-800">Inactivos:</span> <span
-                                    th:text="${inactivos != null ? inactivos : 0}">0</span></p>
-                        </div>
-                    </div>
-                </aside>
-
+    <!-- ✅ TABLA DINÁMICA -->
+    <section class="content">
+        <div class="table-card">
+            <div class="mass">
+                <button class="secondary">Asignar</button>
+                <button class="secondary">Reasignar</button>
+                <button class="secondary">Cambiar Estado</button>
+                <button class="secondary">Cerrar</button>
             </div>
 
-        </main>
-    </div>
-</div>
+            <div class="overflow-x-auto">
+                <table>
+                    <thead>
+                    <tr>
+                        <th><input type="checkbox"/></th>
+                        <th>Radicado</th>
+                        <th>Asunto</th>
+                        <th>Trámite</th>
+                        <th>Estado</th>
+                        <th>Dependencia</th>
+                        <th>Responsable</th>
+                        <th>Prioridad</th>
+                        <th>Serie</th>
+                        <th>Subserie</th>
+                        <th>Vencimiento</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="hover:bg-slate-50" th:each="r : ${radicados}">
+                        <td><input th:value="${r.id_radicado}" type="checkbox"/></td>
+                        <td class="font-medium" th:text="${r.numero_radicado}">-</td>
+                        <td th:text="${r.asunto}">-</td>
+                        <td th:text="${r.id_tramite}">-</td>
+                        <td>
+                            <span class="status pending" th:text="${r.id_estado}">Pendiente</span>
+                        </td>
+                        <td th:text="${r.id_dependencia}">-</td>
+                        <td th:text="${r.id_usuario}">-</td>
+                        <td>
+                            <span class="priority media"
+                                  th:text="${r.prioridad != null ? r.prioridad : 'MEDIA'}">MEDIA</span>
+                        </td>
+                        <td th:text="${r.codigo_serie != null ? r.codigo_serie : '-'}">-</td>
+                        <td th:text="${r.codigo_subserie != null ? r.codigo_subserie : '-'}">-</td>
+                        <td th:text="${r.fecha_vencimiento != null ? r.fecha_vencimiento : 'Sin fecha'}">-</td>
+                        <td>
+                            <a class="secondary" style="padding: 4px 12px; font-size: 12px;"
+                               th:href="@{'/view/radicados/detalle/' + ${r.id_radicado}}">Ver</a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(radicados)}">
+                        <td class="text-center py-8 text-slate-500" colspan="12">No hay radicados registrados</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
 
-<script th:src="@{/js/script.js}" defer></script>
+</main>
 
 </body>
 </html>

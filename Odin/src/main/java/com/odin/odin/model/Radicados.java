@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
-
 @Entity
 @Table(name = "radicados")
 @Getter
@@ -14,44 +13,44 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+public class Radicados {
 
-
-public class Radicados
-{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id_radicado ;
+    @Column(name = "id_radicado")
+    private Long id_radicado;
 
     @NotNull(message = "el numero de radicado es obligatorio")
+    @Column(name = "numero_radicado")
     private String numero_radicado;
 
     @NotNull(message = "el tramite es obligatorio")
-    private Integer id_tramite ;
+    @Column(name = "id_tramite")
+    private Integer id_tramite;
 
     @NotNull(message = "el estado es obligatorio")
-    private Integer id_estado ;
+    @Column(name = "id_estado")
+    private Integer id_estado;
+
+    // ✅ AGREGAR ESTE CAMPO
+    @Column(name = "id_dependencia", insertable = false, updatable = false)
+    private Long id_dependencia;
 
     @ManyToOne
     @JoinColumn(name = "id_dependencia")
-    private Dependencias dependencias; // Asumiendo que tienes una entidad llamada Estado
-/*
-    @NotNull(message = "la dependencia es obligatoria")
-    private String id_dependencia ;
-
- */
+    private Dependencias dependencias;
 
     @NotNull(message = "el usuario es obligatorio")
-    private Integer id_usuario ;
+    @Column(name = "id_usuario")
+    private Integer id_usuario;
 
     // === CLASIFICACION DOCUMENTAL ===
-    // Columnas REALES de la tabla radicados: FK hacia ccd_series(codigo_serie) y ccd_subseries(codigo_subserie).
     @Column(name = "codigo_serie", length = 50)
     private String codigo_serie;
 
     @Column(name = "codigo_subserie", length = 60)
     private String codigo_subserie;
 
-    // Relaciones de solo lectura para mostrar el nombre/codigo de la serie/subserie en el resumen.
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "codigo_serie", referencedColumnName = "codigo_serie", insertable = false, updatable = false)
     private Series serie;
@@ -61,14 +60,28 @@ public class Radicados
     private Subseries subserie;
 
     @NotBlank(message = "el remitente es obligatorio")
-    private String remitente ;
+    @Column(name = "remitente")
+    private String remitente;
 
     @NotBlank(message = "el asunto es obligatorio")
-    private String asunto ;
+    @Column(name = "asunto")
+    private String asunto;
 
     @NotBlank(message = "la fecha de radicado es obligatoria")
-    private String fecha_radicado ;
+    @Column(name = "fecha_radicado")
+    private String fecha_radicado;
 
+    // ✅ AGREGAR ESTE CAMPO PARA FECHA VENCIMIENTO
+    @Column(name = "fecha_vencimiento")
+    private String fecha_vencimiento;
+
+    // ✅ AGREGAR ESTE CAMPO PARA FECHA LIMITE
+    @Column(name = "fecha_limite")
+    private String fecha_limite;
+
+    // ============================================================
+    // CAMPOS TRANSIENT (no persisten en BD)
+    // ============================================================
     @Transient
     private String numeroIdentificacion;
 
@@ -111,7 +124,6 @@ public class Radicados
     @Transient
     private String tipoPQRS;
 
-    // === CAMPOS ADICIONALES DEL FORMULARIO DOCUMENTAL (no persistidos aun) ===
     @Transient
     private String tipoRadicacion;
 
@@ -147,5 +159,4 @@ public class Radicados
 
     @Transient
     private String tipoDocumental;
-
 }

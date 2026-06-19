@@ -24,10 +24,8 @@ public class DashboardController {
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
-        // Obtener el resumen completo del service
         DashboardResumen resumen = dashboardService.obtenerResumen();
 
-        // Agregar métricas al modelo
         model.addAttribute("totalRadicados", resumen.getTotalRadicados());
         model.addAttribute("pendientes", resumen.getPendientes());
         model.addAttribute("vencidos", resumen.getVencidos());
@@ -38,10 +36,10 @@ public class DashboardController {
         model.addAttribute("documentosCargados", resumen.getDocumentosCargados());
         model.addAttribute("anexosPendientes", resumen.getAnexosPendientes());
 
-        // Obtener los últimos 5 radicados
         List<Radicados> ultimosRadicados = radicadosRepository.findTop5UltimosRadicados();
         model.addAttribute("ultimosRadicados", ultimosRadicados);
 
-        return "dashboard";
+        // ✅ CORREGIDO: Apunta a la carpeta dashboard/Dashboard
+        return "dashboard/Dashboard";
     }
 }
