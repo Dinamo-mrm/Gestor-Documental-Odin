@@ -9,11 +9,9 @@ import java.util.List;
 
 public interface RadicadosRepository extends JpaRepository<Radicados, Long> {
 
-    // Últimos 5 radicados
     @Query("SELECT r FROM Radicados r ORDER BY r.id_radicado DESC")
     List<Radicados> findTop5UltimosRadicados();
 
-    // Estadísticas para KPIs
     @Query("SELECT COUNT(r) FROM Radicados r WHERE r.id_estado = 1")
     Long countPendientes();
 
@@ -26,16 +24,22 @@ public interface RadicadosRepository extends JpaRepository<Radicados, Long> {
     @Query("SELECT COUNT(r) FROM Radicados r WHERE r.id_estado = 4")
     Long countRechazados();
 
-    // ⚠️ Solo si existe el campo fecha_vencimiento
-    // @Query("SELECT COUNT(r) FROM Radicados r WHERE r.fecha_vencimiento < CURRENT_DATE")
-    // Long countVencidos();
+    @Query("SELECT COUNT(r) FROM Radicados r WHERE r.fecha_vencimiento IS NOT NULL AND r.fecha_vencimiento < :fecha")
+    Long countVencidos(@Param("fecha") String fecha);
 
-    // Si NO existe fecha_vencimiento, usa este método alternativo
-    default Long countVencidos() {
-        return 0L;  // O implementar con otra lógica
-    }
-
-    // Contar por estado específico
     @Query("SELECT COUNT(r) FROM Radicados r WHERE r.id_estado = :estadoId")
     Long countByEstado(@Param("estadoId") Long estadoId);
+
+    @Query("SELECT r FROM Radicados r " +
+           "WHERE (:texto IS NULL OR :texto = '' OR " +
+           "LOWER(r.numero_radicado) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+           "LOWER(r.asunto) LIKE LOWER(CONCAT('%', :texto, '%'))) " +
+           "AND (:estado IS NULL OR r.id_estado = :estado) " +
+           "AND (:dependencia IS NULL OR r.id_dependencia = :dependencia) " +
+           "AND (:tramite IS NULL OR r.id_tramite = :tramite) " +
+           "ORDER BY r.id_radicado DESC")
+    List<Radicados> buscar(@Param("texto") String texto,
+                           @Param("estado") Integer estado,
+                           @Param("dependencia") Long dependencia,
+                           @Param("tramite") Integer tramite);
 }
