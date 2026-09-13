@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Controller
 @RequestMapping("/view/tramites")
@@ -22,18 +24,26 @@ public class TramitesView {
     @Autowired private UsuariosRepository usuariosRepository;
 
     @GetMapping
-    public String lista(Model model) {
-        model.addAttribute("radicados", radicadosRepository.findAll());
+    public String lista(@RequestParam(required=false) String texto,
+                        @RequestParam(required=false) Integer estado,
+                        @RequestParam(required=false) Long dependencia,
+                        @RequestParam(required=false) Integer tramite,
+                        Model model) {
+        model.addAttribute("radicados", radicadosRepository.buscar(texto, estado, dependencia, tramite));
         model.addAttribute("tramites", tramitesRepository.findAll());
         model.addAttribute("estados", estadosRepository.findAll());
         model.addAttribute("dependencias", dependenciasRepository.findAll());
         model.addAttribute("usuarios", usuariosRepository.findAll());
+        model.addAttribute("textoFiltro", texto);
+        model.addAttribute("estadoFiltro", estado);
+        model.addAttribute("dependenciaFiltro", dependencia);
+        model.addAttribute("tramiteFiltro", tramite);
         model.addAttribute("totalRadicados", radicadosRepository.count());
         model.addAttribute("totalTramites", tramitesRepository.count());
         model.addAttribute("pendientes", radicadosRepository.countPendientes());
         model.addAttribute("enProceso", radicadosRepository.countEnTramite());
         model.addAttribute("finalizados", radicadosRepository.countFinalizados());
-        model.addAttribute("vencidos", radicadosRepository.countVencidos());
+        model.addAttribute("vencidos", radicadosRepository.countVencidos(LocalDate.now().format(DateTimeFormatter.ISO_DATE)));
         return "tramites/ges_tramites";
     }
 
@@ -47,8 +57,7 @@ public class TramitesView {
 
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable Long id, Model model) {
-        Tramites tramite = tramitesRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Trámite no encontrado"));
+        Tramites tramite = tramitesRepository.findById(id).orElseThrow(() -> new RuntimeException("Trámite no encontrado"));
         model.addAttribute("tramites", tramite);
         model.addAttribute("estados", estadosRepository.findAll());
         model.addAttribute("dependencias", dependenciasRepository.findAll());
