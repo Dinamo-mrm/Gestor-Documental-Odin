@@ -39,7 +39,6 @@ public class DashboardController {
         List<Radicados> ultimosRadicados = radicadosRepository.findTop5UltimosRadicados();
         model.addAttribute("ultimosRadicados", ultimosRadicados);
 
-        // ✅ CORREGIDO: Apunta a la carpeta dashboard/Dashboard
-        return "dashboard/Dashboard";
+        return "dashboard/dashboard";
     }
 }
