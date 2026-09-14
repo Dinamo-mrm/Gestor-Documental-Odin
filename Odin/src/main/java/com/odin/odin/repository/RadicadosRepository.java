@@ -25,11 +25,6 @@ public interface RadicadosRepository extends JpaRepository<Radicados, Long> {
     @Query("SELECT COUNT(r) FROM Radicados r WHERE r.id_estado = 4")
     Long countRechazados();
 
-    /**
-     * La columna fecha_vencimiento se mantiene como texto en el modelo.
-     * Se usa SQL nativo y conversión segura a DATE para evitar comparaciones
-     * lexicográficas o incompatibilidades de tipos en PostgreSQL.
-     */
     @Query(value = "SELECT COUNT(*) FROM radicados " +
             "WHERE NULLIF(TRIM(fecha_vencimiento), '') IS NOT NULL " +
             "AND NULLIF(TRIM(fecha_vencimiento), '')::date < CURRENT_DATE " +
@@ -49,6 +44,22 @@ public interface RadicadosRepository extends JpaRepository<Radicados, Long> {
             "AND id_estado NOT IN (3,4) " +
             "ORDER BY NULLIF(TRIM(fecha_vencimiento), '')::date ASC", nativeQuery = true)
     List<Radicados> findProximosAVencer(@Param("dias") Integer dias);
+
+    @Query(value = "SELECT COUNT(*) FROM radicados " +
+            "WHERE id_usuario IS NULL OR id_usuario = 0", nativeQuery = true)
+    Long countSinAsignar();
+
+    @Query(value = "SELECT COUNT(*) FROM radicados " +
+            "WHERE id_estado = 3 " +
+            "AND fecha_cierre IS NOT NULL " +
+            "AND DATE(fecha_cierre) = CURRENT_DATE", nativeQuery = true)
+    Long countFinalizadosHoy();
+
+    @Query(value = "SELECT COUNT(*) FROM radicados " +
+            "WHERE NULLIF(TRIM(fecha_vencimiento), '') IS NOT NULL " +
+            "AND NULLIF(TRIM(fecha_vencimiento), '')::date BETWEEN CURRENT_DATE AND (CURRENT_DATE + 7) " +
+            "AND id_estado NOT IN (3,4)", nativeQuery = true)
+    Long countProximosAVencer();
 
     @Query("SELECT COUNT(r) FROM Radicados r WHERE r.id_estado = :estadoId")
     Long countByEstado(@Param("estadoId") Long estadoId);
