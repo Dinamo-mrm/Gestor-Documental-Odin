@@ -1,25 +1,25 @@
--- Migración para PostgreSQL/Supabase
--- Ejecutar una sola vez sobre la base de datos ODIN.
+-- Migración complementaria para PostgreSQL/Supabase.
+-- Las tablas historial_radicado y observaciones ya existen en Supabase.
+-- Este script NO las recrea ni modifica sus claves foráneas existentes.
 
-CREATE TABLE IF NOT EXISTS historial_radicado (
-    id_historial BIGSERIAL PRIMARY KEY,
-    id_radicado BIGINT NOT NULL,
-    id_usuario INTEGER NULL,
-    accion VARCHAR(80) NOT NULL,
-    descripcion VARCHAR(500) NOT NULL,
-    fecha VARCHAR(40) NOT NULL DEFAULT CURRENT_TIMESTAMP::text
-);
+ALTER TABLE public.radicados
+    ADD COLUMN IF NOT EXISTS fecha_cierre timestamp without time zone;
 
-CREATE TABLE IF NOT EXISTS observaciones (
-    id_observacion BIGSERIAL PRIMARY KEY,
-    id_radicado BIGINT NOT NULL,
-    id_usuario INTEGER NULL,
-    comentario VARCHAR(255) NOT NULL,
-    fecha VARCHAR(40) NOT NULL DEFAULT CURRENT_TIMESTAMP::text
-);
+ALTER TABLE public.radicados
+    ADD COLUMN IF NOT EXISTS id_usuario_cierre bigint;
 
-ALTER TABLE radicados ADD COLUMN IF NOT EXISTS fecha_cierre VARCHAR(40);
-ALTER TABLE radicados ADD COLUMN IF NOT EXISTS id_usuario_cierre INTEGER;
+CREATE INDEX IF NOT EXISTS idx_historial_radicado_id_radicado
+    ON public.historial_radicado (id_radicado);
 
-CREATE INDEX IF NOT EXISTS idx_historial_radicado ON historial_radicado(id_radicado);
-CREATE INDEX IF NOT EXISTS idx_observaciones_radicado ON observaciones(id_radicado);
+CREATE INDEX IF NOT EXISTS idx_observaciones_id_radicado
+    ON public.observaciones (id_radicado);
+
+CREATE INDEX IF NOT EXISTS idx_historial_radicado_fecha
+    ON public.historial_radicado (fecha);
+
+CREATE INDEX IF NOT EXISTS idx_observaciones_fecha
+    ON public.observaciones (fecha);
+
+-- Validación opcional de columnas esperadas:
+-- historial_radicado: id_historial, id_radicado, id_usuario, accion, descripcion, fecha
+-- observaciones: id_observacion, id_radicado, id_usuario, comentario, fecha
