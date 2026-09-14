@@ -1,17 +1,11 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | ODIN</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script><script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .chart-box { position: relative; min-height: 300px; }
-    </style>
+    <style>body{font-family:Inter,Arial,sans-serif}.chart-box{position:relative;min-height:300px}</style>
 </head>
 <body class="bg-[#f5f6f8] text-slate-800">
 <div class="min-h-screen flex">
@@ -20,106 +14,45 @@
     <div class="flex-1 min-w-0">
         <div th:replace="fragments/layout :: topbar('ODIN')"></div>
         <main class="px-4 md:px-8 py-6">
-            <section class="mb-8">
-                <h1 class="text-3xl font-extrabold text-slate-900 uppercase">Dashboard</h1>
-                <p class="text-sm text-slate-500 mt-2">Resumen operativo de la gestión documental de ODIN.</p>
-            </section>
+            <section class="mb-8"><h1 class="text-3xl font-extrabold text-slate-900 uppercase">Dashboard</h1><p class="text-sm text-slate-500 mt-2">Resumen operativo de la gestión documental de ODIN.</p></section>
 
             <section class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4 mt-6">
-                <a th:href="@{/view/tramites}" class="bg-white rounded-xl p-4 border shadow-sm hover:shadow-md transition">
-                    <p class="text-xs font-bold uppercase text-slate-500">Total radicados</p>
-                    <h2 class="text-2xl font-bold text-blue-600" th:text="${totalRadicados ?: 0}">0</h2>
-                </a>
-                <a th:href="@{/view/tramites(estado=1)}" class="bg-white rounded-xl p-4 border shadow-sm hover:shadow-md transition">
-                    <p class="text-xs font-bold uppercase text-slate-500">Pendientes</p>
-                    <h2 class="text-2xl font-bold text-yellow-600" th:text="${pendientes ?: 0}">0</h2>
-                </a>
-                <a th:href="@{/view/tramites(estado=2)}" class="bg-white rounded-xl p-4 border shadow-sm hover:shadow-md transition">
-                    <p class="text-xs font-bold uppercase text-slate-500">En trámite</p>
-                    <h2 class="text-2xl font-bold text-blue-500" th:text="${enTramite ?: 0}">0</h2>
-                </a>
-                <a th:href="@{/view/tramites(estado=3)}" class="bg-white rounded-xl p-4 border shadow-sm hover:shadow-md transition">
-                    <p class="text-xs font-bold uppercase text-slate-500">Finalizados</p>
-                    <h2 class="text-2xl font-bold text-green-600" th:text="${finalizados ?: 0}">0</h2>
-                </a>
-                <div class="bg-white rounded-xl p-4 border shadow-sm">
-                    <p class="text-xs font-bold uppercase text-slate-500">Rechazados</p>
-                    <h2 class="text-2xl font-bold text-rose-600" th:text="${rechazados ?: 0}">0</h2>
-                </div>
-                <a th:href="@{/view/tramites(vencimiento=vencidos)}" class="bg-white rounded-xl p-4 border border-red-200 shadow-sm hover:shadow-md transition">
-                    <p class="text-xs font-bold uppercase text-red-600">Vencidos</p>
-                    <h2 class="text-2xl font-bold text-red-700" th:text="${vencidos ?: 0}">0</h2>
-                </a>
-                <div class="bg-white rounded-xl p-4 border shadow-sm">
-                    <p class="text-xs font-bold uppercase text-slate-500">Usuarios</p>
-                    <h2 class="text-2xl font-bold text-indigo-600" th:text="${usuariosActivos ?: 0}">0</h2>
-                </div>
-                <div class="bg-white rounded-xl p-4 border shadow-sm">
-                    <p class="text-xs font-bold uppercase text-slate-500">Documentos</p>
-                    <h2 class="text-2xl font-bold text-cyan-600" th:text="${documentosCargados ?: 0}">0</h2>
-                </div>
+                <a th:href="@{/view/tramites}" class="card"><span>Total radicados</span><strong class="text-blue-600" th:text="${totalRadicados ?: 0}">0</strong></a>
+                <a th:href="@{/view/tramites(estado=1)}" class="card"><span>Pendientes</span><strong class="text-yellow-600" th:text="${pendientes ?: 0}">0</strong></a>
+                <a th:href="@{/view/tramites(estado=2)}" class="card"><span>En trámite</span><strong class="text-blue-500" th:text="${enTramite ?: 0}">0</strong></a>
+                <a th:href="@{/view/tramites(estado=3)}" class="card"><span>Finalizados</span><strong class="text-green-600" th:text="${finalizados ?: 0}">0</strong></a>
+                <div class="card"><span>Rechazados</span><strong class="text-rose-600" th:text="${rechazados ?: 0}">0</strong></div>
+                <a th:href="@{/view/tramites(vencimiento=vencidos)}" class="card border-red-200"><span class="text-red-600">Vencidos</span><strong class="text-red-700" th:text="${vencidos ?: 0}">0</strong></a>
+                <a th:href="@{/view/tramites(vencimiento=proximos)}" class="card"><span>Próximos a vencer</span><strong class="text-orange-600" th:text="${proximosAVencer ?: 0}">0</strong></a>
+                <a th:href="@{/view/tramites}" class="card"><span>Sin asignar</span><strong class="text-purple-600" th:text="${sinAsignar ?: 0}">0</strong></a>
+            </section>
+
+            <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                <div class="card"><span>Finalizados hoy</span><strong class="text-emerald-600" th:text="${finalizadosHoy ?: 0}">0</strong></div>
+                <div class="card"><span>Usuarios registrados</span><strong class="text-indigo-600" th:text="${usuariosActivos ?: 0}">0</strong></div>
+                <div class="card"><span>Documentos cargados</span><strong class="text-cyan-600" th:text="${documentosCargados ?: 0}">0</strong></div>
+                <div class="card"><span>Anexos pendientes</span><strong class="text-slate-600" th:text="${anexosPendientes ?: 0}">0</strong></div>
             </section>
 
             <section class="mt-8 grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                    <h3 class="font-bold text-slate-800 mb-4">Estado de los radicados</h3>
-                    <div class="chart-box"><canvas id="estadoChart"></canvas></div>
-                </div>
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                    <h3 class="font-bold text-slate-800 mb-4">Distribución general</h3>
-                    <div class="chart-box"><canvas id="dashboardChart"></canvas></div>
-                </div>
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6"><h3 class="font-bold mb-4">Estado de los radicados</h3><div class="chart-box"><canvas id="estadoChart"></canvas></div></div>
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6"><h3 class="font-bold mb-4">Distribución general</h3><div class="chart-box"><canvas id="dashboardChart"></canvas></div></div>
             </section>
 
-            <section class="mt-8">
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
-                        <div>
-                            <h3 class="font-bold text-slate-800">Últimos radicados</h3>
-                            <p class="text-xs text-slate-500">Registros más recientes ingresados al sistema.</p>
-                        </div>
-                        <a th:href="@{/view/tramites}" class="text-sm font-semibold text-emerald-700 hover:underline">Ver gestión integral</a>
-                    </div>
-                    <div class="overflow-auto max-h-80">
-                        <table class="w-full text-sm">
-                            <thead><tr class="border-b">
-                                <th class="text-left py-2">Número</th><th class="text-left py-2">Asunto</th><th class="text-left py-2">Estado</th><th class="text-left py-2">Fecha</th>
-                            </tr></thead>
-                            <tbody>
-                            <tr class="border-b hover:bg-slate-50" th:each="r : ${ultimosRadicados}">
-                                <td class="py-2 font-medium" th:text="${r.numero_radicado}">-</td>
-                                <td class="py-2" th:text="${r.asunto}">-</td>
-                                <td class="py-2 whitespace-nowrap">
-                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs" th:if="${r.id_estado == 1}">Pendiente</span>
-                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs" th:if="${r.id_estado == 2}">En proceso</span>
-                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs" th:if="${r.id_estado == 3}">Finalizado</span>
-                                    <span class="px-2 py-1 bg-rose-100 text-rose-800 rounded-full text-xs" th:if="${r.id_estado == 4}">Rechazado</span>
-                                </td>
-                                <td class="py-2" th:text="${r.fecha_radicado}">-</td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(ultimosRadicados)}"><td class="py-4 text-center text-slate-500" colspan="4">No hay radicados registrados.</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
+            <section class="mt-8"><div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                <div class="flex flex-col md:flex-row md:justify-between gap-3 mb-4"><div><h3 class="font-bold">Últimos radicados</h3><p class="text-xs text-slate-500">Registros más recientes ingresados al sistema.</p></div><a th:href="@{/view/tramites}" class="text-sm font-semibold text-emerald-700 hover:underline">Ver gestión integral</a></div>
+                <div class="overflow-auto max-h-80"><table class="w-full text-sm"><thead><tr class="border-b"><th class="text-left py-2">Número</th><th class="text-left py-2">Asunto</th><th class="text-left py-2">Estado</th><th class="text-left py-2">Fecha</th></tr></thead><tbody>
+                <tr class="border-b hover:bg-slate-50" th:each="r : ${ultimosRadicados}"><td class="py-2 font-medium" th:text="${r.numero_radicado}">-</td><td class="py-2" th:text="${r.asunto}">-</td><td class="py-2 whitespace-nowrap"><span class="badge bg-yellow-100 text-yellow-800" th:if="${r.id_estado == 1}">Pendiente</span><span class="badge bg-blue-100 text-blue-800" th:if="${r.id_estado == 2}">En proceso</span><span class="badge bg-green-100 text-green-800" th:if="${r.id_estado == 3}">Finalizado</span><span class="badge bg-rose-100 text-rose-800" th:if="${r.id_estado == 4}">Rechazado</span></td><td class="py-2" th:text="${r.fecha_radicado}">-</td></tr>
+                <tr th:if="${#lists.isEmpty(ultimosRadicados)}"><td colspan="4" class="py-4 text-center text-slate-500">No hay radicados registrados.</td></tr>
+                </tbody></table></div>
+            </div></section>
         </main>
     </div>
 </div>
+<style>.card{background:#fff;border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;box-shadow:0 1px 2px #0000000d;transition:.2s;display:block}.card:hover{box-shadow:0 4px 12px #00000014}.card span{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b}.card strong{display:block;font-size:1.55rem;font-weight:800;margin-top:.25rem}.badge{padding:.25rem .5rem;border-radius:9999px;font-size:.7rem}</style>
 <script defer th:src="@{/js/script.js}"></script>
 <script th:inline="javascript">
-    const pendientes = [[${pendientes ?: 0}]];
-    const enTramite = [[${enTramite ?: 0}]];
-    const finalizados = [[${finalizados ?: 0}]];
-    const rechazados = [[${rechazados ?: 0}]];
-    const vencidos = [[${vencidos ?: 0}]];
-    const labels = ['Pendientes', 'En trámite', 'Finalizados', 'Rechazados', 'Vencidos'];
-    const values = [pendientes, enTramite, finalizados, rechazados, vencidos];
-    const colors = ['#FBBF24', '#60A5FA', '#34D399', '#F87171', '#991B1B'];
-    const doughnut = document.getElementById('estadoChart');
-    if (doughnut) new Chart(doughnut, { type: 'doughnut', data: { labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
-    const bars = document.getElementById('dashboardChart');
-    if (bars) new Chart(bars, { type: 'bar', data: { labels, datasets: [{ label: 'Radicados', data: values, backgroundColor: colors, borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }, plugins: { legend: { display: false } } } });
-</script>
-</body>
-</html>
+const labels=['Pendientes','En trámite','Finalizados','Rechazados','Vencidos'];const values=[[[${pendientes?:0}]],[[${enTramite?:0}]],[[${finalizados?:0}]],[[${rechazados?:0}]],[[${vencidos?:0}]]];const colors=['#FBBF24','#60A5FA','#34D399','#F87171','#991B1B'];
+const d=document.getElementById('estadoChart');if(d)new Chart(d,{type:'doughnut',data:{labels,datasets:[{data:values,backgroundColor:colors,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
+const b=document.getElementById('dashboardChart');if(b)new Chart(b,{type:'bar',data:{labels,datasets:[{label:'Radicados',data:values,backgroundColor:colors,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,ticks:{precision:0}}},plugins:{legend:{display:false}}}});
+</script></body></html>
