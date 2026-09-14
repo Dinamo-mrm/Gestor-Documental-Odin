@@ -9,18 +9,55 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface RadicadosRepository extends JpaRepository<Radicados, Long> {
+
     @Query("SELECT r FROM Radicados r ORDER BY r.id_radicado DESC")
     List<Radicados> findTop5UltimosRadicados();
-    @Query("SELECT COUNT(r) FROM Radicados r WHERE r.id_estado = 1") Long countPendientes();
-    @Query("SELECT COUNT(r) FROM Radicados r WHERE r.id_estado = 2") Long countEnTramite();
-    @Query("SELECT COUNT(r) FROM Radicados r WHERE r.id_estado = 3") Long countFinalizados();
-    @Query("SELECT COUNT(r) FROM Radicados r WHERE r.id_estado = 4") Long countRechazados();
-    @Query("SELECT COUNT(r) FROM Radicados r WHERE r.fecha_vencimiento IS NOT NULL AND r.fecha_vencimiento < :fecha AND r.id_estado NOT IN (3,4)") Long countVencidos(@Param("fecha") String fecha);
-    @Query("SELECT r FROM Radicados r WHERE r.fecha_vencimiento IS NOT NULL AND r.fecha_vencimiento < :fecha AND r.id_estado NOT IN (3,4) ORDER BY r.fecha_vencimiento ASC") List<Radicados> findVencidos(@Param("fecha") String fecha);
-    @Query("SELECT COUNT(r) FROM Radicados r WHERE r.id_estado = :estadoId") Long countByEstado(@Param("estadoId") Long estadoId);
+
+    @Query("SELECT COUNT(r) FROM Radicados r WHERE r.id_estado = 1")
+    Long countPendientes();
+
+    @Query("SELECT COUNT(r) FROM Radicados r WHERE r.id_estado = 2")
+    Long countEnTramite();
+
+    @Query("SELECT COUNT(r) FROM Radicados r WHERE r.id_estado = 3")
+    Long countFinalizados();
+
+    @Query("SELECT COUNT(r) FROM Radicados r WHERE r.id_estado = 4")
+    Long countRechazados();
+
+    /**
+     * La columna fecha_vencimiento se mantiene como texto en el modelo.
+     * Se usa SQL nativo y conversión segura a DATE para evitar comparaciones
+     * lexicográficas o incompatibilidades de tipos en PostgreSQL.
+     */
+    @Query(value = "SELECT COUNT(*) FROM radicados " +
+            "WHERE NULLIF(TRIM(fecha_vencimiento), '') IS NOT NULL " +
+            "AND NULLIF(TRIM(fecha_vencimiento), '')::date < CURRENT_DATE " +
+            "AND id_estado NOT IN (3,4)", nativeQuery = true)
+    Long countVencidos();
+
+    @Query(value = "SELECT * FROM radicados " +
+            "WHERE NULLIF(TRIM(fecha_vencimiento), '') IS NOT NULL " +
+            "AND NULLIF(TRIM(fecha_vencimiento), '')::date < CURRENT_DATE " +
+            "AND id_estado NOT IN (3,4) " +
+            "ORDER BY NULLIF(TRIM(fecha_vencimiento), '')::date ASC", nativeQuery = true)
+    List<Radicados> findVencidos();
+
+    @Query(value = "SELECT * FROM radicados " +
+            "WHERE NULLIF(TRIM(fecha_vencimiento), '') IS NOT NULL " +
+            "AND NULLIF(TRIM(fecha_vencimiento), '')::date BETWEEN CURRENT_DATE AND (CURRENT_DATE + CAST(:dias AS integer)) " +
+            "AND id_estado NOT IN (3,4) " +
+            "ORDER BY NULLIF(TRIM(fecha_vencimiento), '')::date ASC", nativeQuery = true)
+    List<Radicados> findProximosAVencer(@Param("dias") Integer dias);
+
+    @Query("SELECT COUNT(r) FROM Radicados r WHERE r.id_estado = :estadoId")
+    Long countByEstado(@Param("estadoId") Long estadoId);
+
     @Query("SELECT r FROM Radicados r WHERE (:texto IS NULL OR :texto = '' OR LOWER(r.numero_radicado) LIKE LOWER(CONCAT('%', :texto, '%')) OR LOWER(r.asunto) LIKE LOWER(CONCAT('%', :texto, '%'))) AND (:estado IS NULL OR r.id_estado = :estado) AND (:dependencia IS NULL OR r.id_dependencia = :dependencia) AND (:tramite IS NULL OR r.id_tramite = :tramite) ORDER BY r.id_radicado DESC")
-    List<Radicados> buscar(@Param("texto") String texto,@Param("estado") Integer estado,@Param("dependencia") Long dependencia,@Param("tramite") Integer tramite);
-    @Modifying @Transactional
-    @Query(value="UPDATE radicados SET id_usuario=:usuario,id_dependencia=:dependencia WHERE id_radicado=:radicado",nativeQuery=true)
-    int actualizarAsignacion(@Param("radicado") Long radicado,@Param("usuario") Integer usuario,@Param("dependencia") Integer dependencia);
+    List<Radicados> buscar(@Param("texto") String texto, @Param("estado") Integer estado, @Param("dependencia") Long dependencia, @Param("tramite") Integer tramite);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE radicados SET id_usuario=:usuario, id_dependencia=:dependencia WHERE id_radicado=:radicado", nativeQuery = true)
+    int actualizarAsignacion(@Param("radicado") Long radicado, @Param("usuario") Integer usuario, @Param("dependencia") Integer dependencia);
 }
