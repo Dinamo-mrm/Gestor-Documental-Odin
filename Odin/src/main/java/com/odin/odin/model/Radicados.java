@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "radicados")
@@ -31,8 +32,8 @@ public class Radicados {
     @NotBlank(message = "la fecha de radicado es obligatoria") @Column(name = "fecha_radicado") private String fecha_radicado;
     @Column(name = "fecha_vencimiento") private String fecha_vencimiento;
     @Column(name = "fecha_limite") private String fecha_limite;
-    @Column(name = "fecha_cierre") private String fecha_cierre;
-    @Column(name = "id_usuario_cierre") private Integer id_usuario_cierre;
+    @Column(name = "fecha_cierre") private LocalDateTime fecha_cierre;
+    @Column(name = "id_usuario_cierre") private Long id_usuario_cierre;
     @ManyToOne(fetch = FetchType.EAGER) @JoinColumn(name = "id_tramite", insertable = false, updatable = false) private Tramites tramite;
     @ManyToOne(fetch = FetchType.EAGER) @JoinColumn(name = "id_usuario", insertable = false, updatable = false) private Usuarios usuario;
     @ManyToOne(fetch = FetchType.EAGER) @JoinColumn(name = "id_estado", insertable = false, updatable = false) private Estados estado;
