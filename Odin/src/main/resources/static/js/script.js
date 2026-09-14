@@ -9,49 +9,100 @@
             .map(el => el.value).filter(Boolean);
     }
 
-    async function patchRadicado(id, endpoint, payload) {
+    async function requestRadicado(id, endpoint, method, payload = {}) {
         const response = await fetch(`/api/radicados/${id}/${endpoint}`, {
-            method: 'PATCH', headers: jsonHeaders, body: JSON.stringify(payload)
+            method,
+            headers: jsonHeaders,
+            body: JSON.stringify(payload)
         });
-        if (!response.ok) throw new Error(`No se pudo actualizar el radicado ${id}`);
+        if (!response.ok) {
+            let detail = '';
+            try {
+                const data = await response.json();
+                detail = data.error ? `: ${data.error}` : '';
+            } catch (_) { /* respuesta sin JSON */ }
+            throw new Error(`No se pudo procesar el radicado ${id}${detail}`);
+        }
         return response.json();
     }
 
-    async function processSelected(endpoint, payloadFactory, message) {
+    async function processSelected(endpoint, method, payloadFactory, message) {
         const ids = selectedIds();
-        if (!ids.length) return alert('Seleccione al menos un radicado.');
+        if (!ids.length) {
+            alert('Seleccione al menos un radicado.');
+            return;
+        }
         if (!confirm(message)) return;
+
         try {
-            for (const id of ids) await patchRadicado(id, endpoint, payloadFactory());
+            for (const id of ids) {
+                await requestRadicado(id, endpoint, method, payloadFactory());
+            }
             alert('Operación realizada correctamente.');
             window.location.reload();
-        } catch (error) { alert(error.message); }
+        } catch (error) {
+            alert(error.message);
+        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
         const master = document.querySelector('thead input[type="checkbox"]');
-        if (master) master.addEventListener('change', () => {
-            document.querySelectorAll('tbody input[type="checkbox"]').forEach(cb => cb.checked = master.checked);
-        });
+        if (master) {
+            master.addEventListener('change', () => {
+                document.querySelectorAll('tbody input[type="checkbox"]')
+                    .forEach(cb => cb.checked = master.checked);
+            });
+        }
 
         const filterForm = document.querySelector('#formFiltros');
-        if (filterForm) filterForm.addEventListener('submit', e => {
-            e.preventDefault();
-            const params = new URLSearchParams(new FormData(filterForm));
-            window.location.href = `/view/tramites?${params.toString()}`;
-        });
+        if (filterForm) {
+            filterForm.addEventListener('submit', e => {
+                e.preventDefault();
+                const params = new URLSearchParams(new FormData(filterForm));
+                [...params.keys()].forEach(key => {
+                    if (!params.get(key)) params.delete(key);
+                });
+                window.location.href = `/view/tramites?${params.toString()}`;
+            });
+        }
 
-        const buttons = [...document.querySelectorAll('[data-action]')];
-        buttons.forEach(button => button.addEventListener('click', () => {
-            const action = button.dataset.action;
-            if (action === 'estado') {
-                const value = prompt('Ingrese el ID del nuevo estado:');
-                if (value) processSelected('estado', () => ({estado: Number(value)}), '¿Cambiar el estado de los radicados seleccionados?');
-            }
-            if (action === 'asignar') {
-                const value = prompt('Ingrese el ID del usuario responsable:');
-                if (value) processSelected('asignar', () => ({usuario: Number(value)}), '¿Asignar los radicados seleccionados?');
-            }
-        }));
+        document.querySelectorAll('[data-action]').forEach(button => {
+            button.addEventListener('click', () => {
+                const action = button.dataset.action;
+
+                if (action === 'estado') {
+                    const estado = prompt('Ingrese el ID del nuevo estado:');
+                    if (estado && Number(estado) > 0) {
+                        processSelected('estado', 'PATCH', () => ({estado: Number(estado)}),
+                            '¿Cambiar el estado de los radicados seleccionados?');
+                    }
+                }
+
+                if (action === 'asignar') {
+                    const usuario = prompt('Ingrese el ID del usuario responsable:');
+                    if (usuario && Number(usuario) > 0) {
+                        processSelected('asignar', 'PATCH', () => ({usuario: Number(usuario)}),
+                            '¿Asignar los radicados seleccionados al usuario indicado?');
+                    }
+                }
+
+                if (action === 'reasignar') {
+                    const usuarioNuevo = prompt('Ingrese el ID del nuevo usuario responsable:');
+                    if (!usuarioNuevo || Number(usuarioNuevo) <= 0) return;
+                    const dependenciaNueva = prompt('Ingrese el ID de la nueva dependencia:');
+                    if (!dependenciaNueva || Number(dependenciaNueva) <= 0) return;
+
+                    processSelected('reasignar', 'POST', () => ({
+                        usuarioNuevo: Number(usuarioNuevo),
+                        dependenciaNueva: Number(dependenciaNueva)
+                    }), '¿Confirmar la reasignación de los radicados seleccionados?');
+                }
+
+                if (action === 'cerrar') {
+                    processSelected('cerrar', 'PATCH', () => ({}),
+                        '¿Cerrar los radicados seleccionados? Esta acción cambiará su estado a finalizado.');
+                }
+            });
+        });
     });
 })();
