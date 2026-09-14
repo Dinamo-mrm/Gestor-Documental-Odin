@@ -3,191 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Dashboard</title>
-
+    <title>Dashboard | ODIN</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
-
     <style>
         body { font-family: 'Inter', sans-serif; }
+        .chart-box { position: relative; min-height: 300px; }
     </style>
 </head>
-
 <body class="bg-[#f5f6f8] text-slate-800">
-
 <div class="min-h-screen flex">
-
-    <!-- SIDEBAR -->
     <div th:replace="fragments/layout :: sidebar('dashboard')"></div>
-
     <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay"></div>
-
-    <!-- CONTENIDO -->
     <div class="flex-1 min-w-0">
-
-        <!-- TOPBAR -->
         <div th:replace="fragments/layout :: topbar('ODIN')"></div>
-
         <main class="px-4 md:px-8 py-6">
-
-            <!-- ENCABEZADO -->
             <section class="mb-8">
                 <h1 class="text-3xl font-extrabold text-slate-900 uppercase">Dashboard</h1>
-                <p class="text-sm text-slate-500 mt-2">Resumen general del sistema ODIN.</p>
+                <p class="text-sm text-slate-500 mt-2">Resumen operativo de la gestión documental de ODIN.</p>
             </section>
 
-            <!-- TARJETAS -->
-            <section class="grid grid-cols-2 md:grid-cols-4 gap-5 mt-6">
-
-                <div class="bg-white rounded-xl p-5 border shadow-sm">
-                    <p class="text-xs font-bold uppercase text-slate-500">Total Radicados</p>
-                    <h2 class="text-3xl font-bold text-blue-600"
-                        th:text="${totalRadicados != null ? totalRadicados : 0}">0</h2>
-                </div>
-
-                <div class="bg-white rounded-xl p-5 border shadow-sm">
+            <section class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4 mt-6">
+                <a th:href="@{/view/tramites}" class="bg-white rounded-xl p-4 border shadow-sm hover:shadow-md transition">
+                    <p class="text-xs font-bold uppercase text-slate-500">Total radicados</p>
+                    <h2 class="text-2xl font-bold text-blue-600" th:text="${totalRadicados ?: 0}">0</h2>
+                </a>
+                <a th:href="@{/view/tramites(estado=1)}" class="bg-white rounded-xl p-4 border shadow-sm hover:shadow-md transition">
                     <p class="text-xs font-bold uppercase text-slate-500">Pendientes</p>
-                    <h2 class="text-3xl font-bold text-yellow-600" th:text="${pendientes != null ? pendientes : 0}">
-                        0</h2>
-                </div>
-
-                <div class="bg-white rounded-xl p-5 border shadow-sm">
+                    <h2 class="text-2xl font-bold text-yellow-600" th:text="${pendientes ?: 0}">0</h2>
+                </a>
+                <a th:href="@{/view/tramites(estado=2)}" class="bg-white rounded-xl p-4 border shadow-sm hover:shadow-md transition">
+                    <p class="text-xs font-bold uppercase text-slate-500">En trámite</p>
+                    <h2 class="text-2xl font-bold text-blue-500" th:text="${enTramite ?: 0}">0</h2>
+                </a>
+                <a th:href="@{/view/tramites(estado=3)}" class="bg-white rounded-xl p-4 border shadow-sm hover:shadow-md transition">
                     <p class="text-xs font-bold uppercase text-slate-500">Finalizados</p>
-                    <h2 class="text-3xl font-bold text-green-600" th:text="${finalizados != null ? finalizados : 0}">
-                        0</h2>
+                    <h2 class="text-2xl font-bold text-green-600" th:text="${finalizados ?: 0}">0</h2>
+                </a>
+                <div class="bg-white rounded-xl p-4 border shadow-sm">
+                    <p class="text-xs font-bold uppercase text-slate-500">Rechazados</p>
+                    <h2 class="text-2xl font-bold text-rose-600" th:text="${rechazados ?: 0}">0</h2>
                 </div>
-
-                <div class="bg-white rounded-xl p-5 border shadow-sm">
-                    <p class="text-xs font-bold uppercase text-slate-500">Vencidos</p>
-                    <h2 class="text-3xl font-bold text-red-700" th:text="${vencidos != null ? vencidos : 0}">0</h2>
+                <a th:href="@{/view/tramites(vencimiento=vencidos)}" class="bg-white rounded-xl p-4 border border-red-200 shadow-sm hover:shadow-md transition">
+                    <p class="text-xs font-bold uppercase text-red-600">Vencidos</p>
+                    <h2 class="text-2xl font-bold text-red-700" th:text="${vencidos ?: 0}">0</h2>
+                </a>
+                <div class="bg-white rounded-xl p-4 border shadow-sm">
+                    <p class="text-xs font-bold uppercase text-slate-500">Usuarios</p>
+                    <h2 class="text-2xl font-bold text-indigo-600" th:text="${usuariosActivos ?: 0}">0</h2>
                 </div>
-
+                <div class="bg-white rounded-xl p-4 border shadow-sm">
+                    <p class="text-xs font-bold uppercase text-slate-500">Documentos</p>
+                    <h2 class="text-2xl font-bold text-cyan-600" th:text="${documentosCargados ?: 0}">0</h2>
+                </div>
             </section>
 
-            <!-- GRÁFICOS -->
             <section class="mt-8 grid grid-cols-1 xl:grid-cols-2 gap-6">
-
-                <!-- GRÁFICO DONA -->
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                    <h3 class="font-bold text-slate-800 mb-4">Estado de los Radicados</h3>
-                    <canvas id="estadoChart"></canvas>
+                    <h3 class="font-bold text-slate-800 mb-4">Estado de los radicados</h3>
+                    <div class="chart-box"><canvas id="estadoChart"></canvas></div>
                 </div>
-
-                <!-- GRÁFICO BARRAS -->
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                    <h3 class="font-bold text-slate-800 mb-4">Distribución General</h3>
-                    <canvas id="dashboardChart"></canvas>
+                    <h3 class="font-bold text-slate-800 mb-4">Distribución general</h3>
+                    <div class="chart-box"><canvas id="dashboardChart"></canvas></div>
                 </div>
-
             </section>
 
-            <!-- ÚLTIMOS RADICADOS -->
             <section class="mt-8">
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                    <h3 class="font-bold text-slate-800 mb-4">Últimos Radicados</h3>
-
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+                        <div>
+                            <h3 class="font-bold text-slate-800">Últimos radicados</h3>
+                            <p class="text-xs text-slate-500">Registros más recientes ingresados al sistema.</p>
+                        </div>
+                        <a th:href="@{/view/tramites}" class="text-sm font-semibold text-emerald-700 hover:underline">Ver gestión integral</a>
+                    </div>
                     <div class="overflow-auto max-h-80">
                         <table class="w-full text-sm">
-                            <thead>
-                            <tr class="border-b">
-                                <th class="text-left py-2">Número</th>
-                                <th class="text-left py-2">Asunto</th>
-                                <th class="text-left py-2">Estado</th>
-                                <th class="text-left py-2">Fecha</th>
-                            </tr>
-                            </thead>
+                            <thead><tr class="border-b">
+                                <th class="text-left py-2">Número</th><th class="text-left py-2">Asunto</th><th class="text-left py-2">Estado</th><th class="text-left py-2">Fecha</th>
+                            </tr></thead>
                             <tbody>
                             <tr class="border-b hover:bg-slate-50" th:each="r : ${ultimosRadicados}">
                                 <td class="py-2 font-medium" th:text="${r.numero_radicado}">-</td>
                                 <td class="py-2" th:text="${r.asunto}">-</td>
-                                <td class="py-2">
-                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs"
-                                          th:if="${r.id_estado == 1}">Pendiente</span>
-                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
-                                          th:if="${r.id_estado == 2}">En Proceso</span>
-                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs"
-                                          th:if="${r.id_estado == 3}">Finalizado</span>
+                                <td class="py-2 whitespace-nowrap">
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs" th:if="${r.id_estado == 1}">Pendiente</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs" th:if="${r.id_estado == 2}">En proceso</span>
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs" th:if="${r.id_estado == 3}">Finalizado</span>
+                                    <span class="px-2 py-1 bg-rose-100 text-rose-800 rounded-full text-xs" th:if="${r.id_estado == 4}">Rechazado</span>
                                 </td>
                                 <td class="py-2" th:text="${r.fecha_radicado}">-</td>
                             </tr>
-                            <tr th:if="${#lists.isEmpty(ultimosRadicados)}">
-                                <td class="py-4 text-center text-slate-500" colspan="4">No hay radicados registrados
-                                </td>
-                            </tr>
+                            <tr th:if="${#lists.isEmpty(ultimosRadicados)}"><td class="py-4 text-center text-slate-500" colspan="4">No hay radicados registrados.</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </section>
-
         </main>
-
     </div>
-
 </div>
-
 <script defer th:src="@{/js/script.js}"></script>
 <script th:inline="javascript">
-    // ✅ VARIABLES CORREGIDAS
-    const totalRadicados = [[${totalRadicados != null ? totalRadicados : 0}]];
-    const pendientes = [[${pendientes != null ? pendientes : 0}]];
-    const finalizados = [[${finalizados != null ? finalizados : 0}]];
-    const vencidos = [[${vencidos != null ? vencidos : 0}]];
-    const enTramite = [[${enTramite != null ? enTramite : 0}]];
-    const rechazados = [[${rechazados != null ? rechazados : 0}]];
-
-    // GRÁFICO DONA
-    const estadoCanvas = document.getElementById('estadoChart');
-    if (estadoCanvas) {
-        new Chart(estadoCanvas, {
-            type: 'doughnut',
-            data: {
-                labels: ['Pendientes', 'En Trámite', 'Finalizados', 'Rechazados', 'Vencidos'],
-                datasets: [{
-                    data: [pendientes, enTramite, finalizados, rechazados, vencidos],
-                    backgroundColor: ['#FBBF24', '#60A5FA', '#34D399', '#F87171', '#991B1B'],
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-    }
-
-    // GRÁFICO BARRAS
-    const dashboardCanvas = document.getElementById('dashboardChart');
-    if (dashboardCanvas) {
-        new Chart(dashboardCanvas, {
-            type: 'bar',
-            data: {
-                labels: ['Pendientes', 'En Trámite', 'Finalizados', 'Rechazados', 'Vencidos'],
-                datasets: [{
-                    label: 'Radicados',
-                    data: [pendientes, enTramite, finalizados, rechazados, vencidos],
-                    backgroundColor: ['#FBBF24', '#60A5FA', '#34D399', '#F87171', '#991B1B'],
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: { beginAtZero: true }
-                }
-            }
-        });
-    }
+    const pendientes = [[${pendientes ?: 0}]];
+    const enTramite = [[${enTramite ?: 0}]];
+    const finalizados = [[${finalizados ?: 0}]];
+    const rechazados = [[${rechazados ?: 0}]];
+    const vencidos = [[${vencidos ?: 0}]];
+    const labels = ['Pendientes', 'En trámite', 'Finalizados', 'Rechazados', 'Vencidos'];
+    const values = [pendientes, enTramite, finalizados, rechazados, vencidos];
+    const colors = ['#FBBF24', '#60A5FA', '#34D399', '#F87171', '#991B1B'];
+    const doughnut = document.getElementById('estadoChart');
+    if (doughnut) new Chart(doughnut, { type: 'doughnut', data: { labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
+    const bars = document.getElementById('dashboardChart');
+    if (bars) new Chart(bars, { type: 'bar', data: { labels, datasets: [{ label: 'Radicados', data: values, backgroundColor: colors, borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }, plugins: { legend: { display: false } } } });
 </script>
-
 </body>
 </html>
