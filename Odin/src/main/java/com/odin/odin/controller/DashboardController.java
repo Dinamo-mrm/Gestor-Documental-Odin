@@ -28,10 +28,13 @@ public class DashboardController {
 
         model.addAttribute("totalRadicados", resumen.getTotalRadicados());
         model.addAttribute("pendientes", resumen.getPendientes());
-        model.addAttribute("vencidos", resumen.getVencidos());
         model.addAttribute("enTramite", resumen.getEnTramite());
         model.addAttribute("finalizados", resumen.getFinalizados());
         model.addAttribute("rechazados", resumen.getRechazados());
+        model.addAttribute("vencidos", resumen.getVencidos());
+        model.addAttribute("proximosAVencer", resumen.getProximosAVencer());
+        model.addAttribute("sinAsignar", resumen.getSinAsignar());
+        model.addAttribute("finalizadosHoy", resumen.getFinalizadosHoy());
         model.addAttribute("usuariosActivos", resumen.getUsuariosActivos());
         model.addAttribute("documentosCargados", resumen.getDocumentosCargados());
         model.addAttribute("anexosPendientes", resumen.getAnexosPendientes());
