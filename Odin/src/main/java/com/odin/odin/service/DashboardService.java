@@ -24,11 +24,13 @@ public class DashboardService {
         resumen.setFinalizados(valor(radicadosRepository.countFinalizados()));
         resumen.setRechazados(valor(radicadosRepository.countRechazados()));
         resumen.setVencidos(valor(radicadosRepository.countVencidos()));
+        resumen.setProximosAVencer(valor(radicadosRepository.countProximosAVencer()));
+        resumen.setSinAsignar(valor(radicadosRepository.countSinAsignar()));
+        resumen.setFinalizadosHoy(valor(radicadosRepository.countFinalizadosHoy()));
         resumen.setUsuariosActivos(valor(usuariosRepository.count()));
         resumen.setDocumentosCargados(valor(documentosRepository.count()));
 
-        // La tabla de anexos aún no está definida en el modelo actual.
-        // Se mantiene en cero hasta contar con su repositorio real.
+        // No se calcula hasta que exista una tabla/repositorio de anexos pendiente.
         resumen.setAnexosPendientes(0L);
 
         return resumen;
