@@ -26,8 +26,15 @@ public class TramitesView {
                         @RequestParam(required=false) Integer estado,
                         @RequestParam(required=false) Long dependencia,
                         @RequestParam(required=false) Integer tramite,
+                        @RequestParam(required=false) String vencimiento,
                         Model model) {
-        model.addAttribute("radicados", radicadosRepository.buscar(texto, estado, dependencia, tramite));
+        if ("vencidos".equalsIgnoreCase(vencimiento)) {
+            model.addAttribute("radicados", radicadosRepository.findVencidos());
+        } else if ("proximos".equalsIgnoreCase(vencimiento)) {
+            model.addAttribute("radicados", radicadosRepository.findProximosAVencer(3));
+        } else {
+            model.addAttribute("radicados", radicadosRepository.buscar(texto, estado, dependencia, tramite));
+        }
         model.addAttribute("tramites", tramitesRepository.findAll());
         model.addAttribute("estados", estadosRepository.findAll());
         model.addAttribute("dependencias", dependenciasRepository.findAll());
@@ -36,6 +43,7 @@ public class TramitesView {
         model.addAttribute("estadoFiltro", estado);
         model.addAttribute("dependenciaFiltro", dependencia);
         model.addAttribute("tramiteFiltro", tramite);
+        model.addAttribute("vencimientoFiltro", vencimiento);
         model.addAttribute("totalRadicados", radicadosRepository.count());
         model.addAttribute("totalTramites", tramitesRepository.count());
         model.addAttribute("pendientes", radicadosRepository.countPendientes());
