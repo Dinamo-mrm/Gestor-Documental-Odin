@@ -10,6 +10,9 @@ public class DashboardResumen {
     private Long finalizados;
     private Long rechazados;
     private Long vencidos;
+    private Long proximosAVencer;
+    private Long sinAsignar;
+    private Long finalizadosHoy;
     private Long usuariosActivos;
     private Long documentosCargados;
     private Long anexosPendientes;
