@@ -2,8 +2,10 @@ package com.odin.odin.repository;
 
 import com.odin.odin.model.Radicados;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -42,4 +44,11 @@ public interface RadicadosRepository extends JpaRepository<Radicados, Long> {
                            @Param("estado") Integer estado,
                            @Param("dependencia") Long dependencia,
                            @Param("tramite") Integer tramite);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE radicados SET id_usuario = :usuario, id_dependencia = :dependencia WHERE id_radicado = :radicado", nativeQuery = true)
+    int actualizarAsignacion(@Param("radicado") Long radicado,
+                             @Param("usuario") Integer usuario,
+                             @Param("dependencia") Integer dependencia);
 }
