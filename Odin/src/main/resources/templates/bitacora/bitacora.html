@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitácora | ODIN</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="bg-[#f5f6f8] text-slate-800">
+<div class="min-h-screen flex">
+    <div th:replace="fragments/layout :: sidebar('bitacora')"></div>
+    <div class="flex-1 min-w-0">
+        <div th:replace="fragments/layout :: topbar('BITÁCORA')"></div>
+        <main class="px-4 md:px-8 py-6">
+            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-6">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-slate-900">Bitácora del sistema</h1>
+                    <p class="text-sm text-slate-500 mt-2">Trazabilidad de las acciones realizadas sobre los radicados.</p>
+                </div>
+                <a th:href="@{/view/tramites}" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-green-700 text-white text-sm font-semibold hover:bg-green-800">Gestión de trámites</a>
+            </div>
+
+            <section class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 mb-6">
+                <form method="get" th:action="@{/view/bitacora}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">ID radicado</label>
+                        <input type="number" name="radicado" th:value="${radicadoFiltro}" min="1" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Ej. 125">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">ID usuario</label>
+                        <input type="number" name="usuario" th:value="${usuarioFiltro}" min="1" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Ej. 7">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Acción</label>
+                        <select name="accion" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                            <option value="">Todas</option>
+                            <option value="radicacion" th:selected="${accionFiltro == 'radicacion'}">Radicación</option>
+                            <option value="modificacion" th:selected="${accionFiltro == 'modificacion'}">Modificación</option>
+                            <option value="cambio_estado" th:selected="${accionFiltro == 'cambio_estado'}">Cambio de estado</option>
+                            <option value="asignacion" th:selected="${accionFiltro == 'asignacion'}">Asignación</option>
+                            <option value="reasignacion" th:selected="${accionFiltro == 'reasignacion'}">Reasignación</option>
+                            <option value="observacion" th:selected="${accionFiltro == 'observacion'}">Observación</option>
+                            <option value="cierre" th:selected="${accionFiltro == 'cierre'}">Cierre</option>
+                            <option value="eliminacion" th:selected="${accionFiltro == 'eliminacion'}">Eliminación</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <button type="submit" class="flex-1 px-4 py-2 rounded-lg bg-slate-800 text-white text-sm font-semibold hover:bg-slate-900">Filtrar</button>
+                        <a th:href="@{/view/bitacora}" class="px-4 py-2 rounded-lg border border-slate-300 text-sm font-semibold hover:bg-slate-50">Limpiar</a>
+                    </div>
+                </form>
+            </section>
+
+            <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+                    <div>
+                        <h2 class="font-bold text-slate-800">Registro de actividad</h2>
+                        <p class="text-xs text-slate-500">Se muestran hasta los 100 eventos más recientes cuando no se aplica un filtro.</p>
+                    </div>
+                    <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold" th:text="${#lists.size(registros) + ' registros'}">0 registros</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-slate-50 border-b">
+                        <tr>
+                            <th class="text-left px-5 py-3">Fecha</th>
+                            <th class="text-left px-5 py-3">Radicado</th>
+                            <th class="text-left px-5 py-3">Usuario</th>
+                            <th class="text-left px-5 py-3">Acción</th>
+                            <th class="text-left px-5 py-3">Descripción</th>
+                            <th class="text-left px-5 py-3">Detalle</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro : ${registros}" class="border-b hover:bg-slate-50">
+                            <td class="px-5 py-3 whitespace-nowrap" th:text="${registro.fecha != null ? #temporals.format(registro.fecha, 'dd/MM/yyyy HH:mm:ss') : '-'}">-</td>
+                            <td class="px-5 py-3 font-semibold">
+                                <a th:href="@{'/view/radicados/detalle/' + ${registro.id_radicado}}" th:text="${registro.id_radicado}" class="text-green-700 hover:underline">-</a>
+                            </td>
+                            <td class="px-5 py-3" th:text="${registro.id_usuario}">-</td>
+                            <td class="px-5 py-3 whitespace-nowrap">
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700" th:text="${registro.accion}">-</span>
+                            </td>
+                            <td class="px-5 py-3 max-w-xl" th:text="${registro.descripcion}">-</td>
+                            <td class="px-5 py-3"><a th:href="@{'/view/radicados/detalle/' + ${registro.id_radicado}}" class="text-blue-700 hover:underline">Ver radicado</a></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(registros)}"><td colspan="6" class="px-5 py-10 text-center text-slate-500">No existen registros de bitácora para los filtros seleccionados.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+</body>
+</html>
