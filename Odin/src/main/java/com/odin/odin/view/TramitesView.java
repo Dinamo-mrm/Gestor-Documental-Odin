@@ -11,8 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Controller
 @RequestMapping("/view/tramites")
@@ -43,7 +41,10 @@ public class TramitesView {
         model.addAttribute("pendientes", radicadosRepository.countPendientes());
         model.addAttribute("enProceso", radicadosRepository.countEnTramite());
         model.addAttribute("finalizados", radicadosRepository.countFinalizados());
-        model.addAttribute("vencidos", radicadosRepository.countVencidos(LocalDate.now().format(DateTimeFormatter.ISO_DATE)));
+        model.addAttribute("vencidos", radicadosRepository.countVencidos());
+        model.addAttribute("radicadosVencidos", radicadosRepository.findVencidos());
+        model.addAttribute("proximosAVencer", radicadosRepository.findProximosAVencer(3));
+        model.addAttribute("diasAlertaVencimiento", 3);
         return "tramites/ges_tramites";
     }
 
