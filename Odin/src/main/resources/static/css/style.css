@@ -2181,3 +2181,99 @@ background:var(--verde-sena);
 color:white;
 
 }
+/* =========================================================
+   ODIN
+   ACCESIBILIDAD Y CONTRASTE DE FORMULARIOS
+   ========================================================= */
+
+.input,
+.form-control,
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+
+    background-color: #ffffff;
+
+    color: #0f172a;
+
+    border: 1px solid #cbd5e1;
+
+    min-height: 44px;
+
+    outline: none;
+
+    transition:
+        border-color .15s ease,
+        box-shadow .15s ease,
+        background-color .15s ease;
+}
+
+
+/* TEXTAREA */
+
+textarea.input,
+textarea.form-control,
+textarea {
+
+    min-height: 110px;
+
+}
+
+
+/* PLACEHOLDERS */
+
+.input::placeholder,
+.form-control::placeholder,
+input::placeholder,
+textarea::placeholder {
+
+    color: #64748b;
+
+    opacity: 1;
+
+}
+
+
+/* FOCUS */
+
+.input:focus,
+.form-control:focus,
+input:focus,
+select:focus,
+textarea:focus {
+
+    border-color: #168500;
+
+    box-shadow:
+        0 0 0 3px rgba(22, 133, 0, .12);
+
+    background-color: #ffffff;
+
+}
+
+
+/* CAMPOS READONLY Y DESHABILITADOS */
+
+input[readonly],
+input:disabled,
+select:disabled,
+textarea:disabled {
+
+    background-color: #f1f5f9;
+
+    color: #475569;
+
+    opacity: 1;
+
+}
+
+
+/* OPCIONES DE SELECT */
+
+select option {
+
+    color: #0f172a;
+
+    background: #ffffff;
+
+}

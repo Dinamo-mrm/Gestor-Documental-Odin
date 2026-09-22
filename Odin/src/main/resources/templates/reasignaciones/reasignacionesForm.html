@@ -1,143 +1,91 @@
-<!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario Reasignación</title>
+package com.odin.odin.view;
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+import com.odin.odin.model.HistorialRadicado;
+import com.odin.odin.repository.HistorialRadicadoRepository;
 
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-    </style>
-</head>
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-<body class="bg-[#f5f6f8] text-slate-800">
+import java.util.List;
 
-<div class="min-h-screen flex">
+@Controller
+public class BitacoraView {
 
-    <div th:replace="fragments/layout :: sidebar('reasignaciones')"></div>
+@Autowired
+private HistorialRadicadoRepository historialRepository;
 
-    <div id="overlay" class="fixed inset-0 bg-black/40 z-20 hidden"></div>
+@GetMapping("/view/bitacora")
+public String bitacora(
+@RequestParam(required = false)
+Long radicado,
 
-    <div class="flex-1 min-w-0">
+@RequestParam(required = false)
+Long usuario,
 
-        <div th:replace="fragments/layout :: topbar('ODIN')"></div>
+@RequestParam(required = false)
+String accion,
 
-        <main class="px-4 md:px-8 py-6">
+Model model) {
 
-            <section class="mb-5">
-                <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 uppercase">
-                    Módulo de Reasignaciones
-                </h1>
-                <p class="text-sm text-slate-500 mt-1">
-                    Gestión institucional de reasignaciones del sistema ODIN
-                </p>
-            </section>
+List<HistorialRadicado> registros;
 
-            <form th:action="@{/view/reasignaciones/save}"
-                  th:object="${reasignaciones}"
-                  method="post"
-                  novalidate>
+    if (radicado != null) {
 
-                <input type="hidden" th:field="*{id_reasignacion}" />
+    registros =
+    historialRepository
+    .findByRadicadoOrderByFechaDesc(
+    radicado
+    );
 
-                <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+    } else if (usuario != null) {
 
-                    <section class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+    registros =
+    historialRepository
+    .findByUsuarioOrderByFechaDesc(
+    usuario
+    );
 
-                        <div class="px-5 py-4 border-b border-slate-100">
-                            <h2 class="text-sm font-extrabold text-slate-900 uppercase flex items-center gap-2">
-                                📋 Información del Radicado y Origen
-                            </h2>
-                        </div>
+    } else if (
+    accion != null
+    && !accion.isBlank()
+    ) {
 
-                        <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+    registros =
+    historialRepository
+    .findByAccionIgnoreCaseOrderByFechaDesc(
+    accion.trim()
+    );
 
-                            <div class="md:col-span-2">
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                    Radicado
-                                </label>
-                                <input type="number" th:field="*{id_radicado}" required
-                                       placeholder="ID Radicado"
-                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
-                            </div>
+    } else {
 
-                            <div class="md:col-span-2">
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                    Usuario Anterior
-                                </label>
-                                <input type="number" th:field="*{id_usuario_anterior}" required
-                                       placeholder="ID Usuario Anterior"
-                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
-                            </div>
+    registros =
+    historialRepository
+    .findTop100ByOrderByFechaDesc();
+    }
 
-                        </div>
-                    </section>
+    model.addAttribute(
+    "registros",
+    registros
+    );
 
-                    <section class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+    model.addAttribute(
+    "radicadoFiltro",
+    radicado
+    );
 
-                        <div class="px-5 py-4 border-b border-slate-100">
-                            <h2 class="text-sm font-extrabold text-slate-900 uppercase flex items-center gap-2">
-                                🔄 Asignación de Destino
-                            </h2>
-                        </div>
+    model.addAttribute(
+    "usuarioFiltro",
+    usuario
+    );
 
-                        <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+    model.addAttribute(
+    "accionFiltro",
+    accion
+    );
 
-                            <div class="md:col-span-2">
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                    Usuario Nuevo
-                                </label>
-                                <input type="number" th:field="*{id_usuario_nuevo}" required
-                                       placeholder="ID Usuario Nuevo"
-                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
-                            </div>
-
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                    Dependencia Nueva
-                                </label>
-                                <input type="number" th:field="*{id_dependencia_nueva}" required
-                                       placeholder="ID Dependencia Nueva"
-                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
-                            </div>
-
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                    Fecha
-                                </label>
-                                <input type="text" th:field="*{fecha}" required
-                                       placeholder="Fecha de la reasignación"
-                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
-                            </div>
-
-                        </div>
-                    </section>
-
-                </div>
-
-                <div class="flex justify-end gap-3 mt-5">
-                    <a th:href="@{/view/reasignaciones}"
-                       class="rounded-lg border border-green-600 bg-white px-6 py-2.5 text-sm font-semibold text-green-700 hover:bg-green-50 transition">
-                        Limpiar / Volver
-                    </a>
-
-                    <button type="submit"
-                            class="rounded-lg bg-[#168500] px-7 py-2.5 text-sm font-bold text-white hover:bg-[#0f6d00] transition">
-                        ▶ Guardar Reasignación
-                    </button>
-                </div>
-
-            </form>
-
-        </main>
-    </div>
-</div>
-
-<script th:src="@{/js/script.js}" defer></script>
-
-</body>
-</html>
+    return "bitacora/bitacora";
+    }
+    }
