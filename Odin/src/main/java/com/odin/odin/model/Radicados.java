@@ -175,9 +175,6 @@ public class Radicados {
     private String responsable;
 
     @Transient
-    private String prioridad;
-
-    @Transient
     private String observaciones;
 
     @Transient
@@ -203,9 +200,6 @@ public class Radicados {
 
     @Transient
     private String etiquetas;
-
-    @Transient
-    private String confidencialidad;
 
     @Transient
     private String fechaLimite;
