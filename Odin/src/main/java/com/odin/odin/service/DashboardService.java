@@ -4,11 +4,9 @@ import com.odin.odin.dto.DashboardResumen;
 import com.odin.odin.repository.DocumentosRepository;
 import com.odin.odin.repository.RadicadosRepository;
 import com.odin.odin.repository.UsuariosRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class DashboardService {
 
     private final RadicadosRepository radicadosRepository;
