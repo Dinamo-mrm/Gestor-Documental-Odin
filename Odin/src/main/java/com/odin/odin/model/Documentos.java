@@ -38,4 +38,21 @@ public class Documentos
 
     @NotBlank(message = "La fecha_subida es obligatoria")
     private String fecha_subida;
+    // GENERATED_EXPLICIT_ACCESSORS
+    public Long getId_documento() { return id_documento; }
+    public void setId_documento(Long value) { this.id_documento = value; }
+    public Long getId_radicado() { return id_radicado; }
+    public void setId_radicado(Long value) { this.id_radicado = value; }
+    public Integer getTamano() { return tamano; }
+    public void setTamano(Integer value) { this.tamano = value; }
+    public String getNombre() { return nombre; }
+    public void setNombre(String value) { this.nombre = value; }
+    public String getNombre_archivo() { return nombre_archivo; }
+    public void setNombre_archivo(String value) { this.nombre_archivo = value; }
+    public String getRuta_archivo() { return ruta_archivo; }
+    public void setRuta_archivo(String value) { this.ruta_archivo = value; }
+    public String getTipo() { return tipo; }
+    public void setTipo(String value) { this.tipo = value; }
+    public String getFecha_subida() { return fecha_subida; }
+    public void setFecha_subida(String value) { this.fecha_subida = value; }
 }
