@@ -44,4 +44,6 @@ public class Series
 
     @Column(name = "informacion_publica", length = 50)
     private String informacion_publica;
+    public Long getId_serie() { return id_serie; }
+    public void setId_serie(Long id_serie) { this.id_serie = id_serie; }
 }
