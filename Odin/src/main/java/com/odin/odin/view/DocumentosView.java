@@ -1,54 +1,59 @@
 package com.odin.odin.view;
 
+import com.odin.odin.model.Documentos;
 import com.odin.odin.repository.DocumentosRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
+@RequestMapping("/view/documentos")
 public class DocumentosView {
-    @Autowired
-    private DocumentosRepository documentosRepository;
+    private final DocumentosRepository documentosRepository;
 
-    @GetMapping("/view/documentos")
-    public String lista(Model model)
-    {
+    public DocumentosView(DocumentosRepository documentosRepository) {
+        this.documentosRepository = documentosRepository;
+    }
+
+    @GetMapping
+    public String lista(Model model) {
         model.addAttribute("documentos", documentosRepository.findAll());
-        return "usuarios/usuarios";
-
+        return "documentos/documentos";
     }
 
-    @GetMapping("/view/documentos/form")
+    @GetMapping("/form")
     public String form(Model model) {
-        model.addAttribute("documentos", new DocumentosView());
-        return "documentostosForm";
+        model.addAttribute("documentos", new Documentos());
+        return "documentos/documentosForm";
     }
 
-    @PostMapping("/view/documentos/save")
-    public String save(@ModelAttribute DocumentosView documentosView, RedirectAttributes ra) {
-        ra.addFlashAttribute("mensaje", "documentos registrado exitosamente");
-        return "redirect:/view/documentos";
-    }
-
-    @GetMapping("/view/docuemntos/edit/{id}")
-    public <Documentos> String edit(@PathVariable Long id, Model model) {
-        Documentos documentos = (Documentos) documentosRepository.findById(id).orElse(null);
+    @GetMapping("/edit/{id}")
+    public String edit(@PathVariable Long id, Model model, RedirectAttributes ra) {
+        Documentos documentos = documentosRepository.findById(id).orElse(null);
+        if (documentos == null) {
+            ra.addFlashAttribute("error", "El documento no existe.");
+            return "redirect:/view/documentos";
+        }
         model.addAttribute("documentos", documentos);
-        return "documentosForm";
+        return "documentos/documentosForm";
     }
 
-    @PostMapping("/view/documentos/delete/{id}")
-    public String delete(@PathVariable Long id, RedirectAttributes ra) {
-        DocumentosView.deleteById(id);
-        ra.addFlashAttribute("mensaje", "Documentos deletado exitosamente");
+    @PostMapping("/save")
+    public String save(@ModelAttribute("documentos") Documentos documentos, RedirectAttributes ra) {
+        documentosRepository.save(documentos);
+        ra.addFlashAttribute("mensaje", "Documento registrado exitosamente.");
         return "redirect:/view/documentos";
     }
 
-    private static void deleteById(Long id) {
+    @PostMapping("/delete/{id}")
+    public String delete(@PathVariable Long id, RedirectAttributes ra) {
+        if (documentosRepository.existsById(id)) {
+            documentosRepository.deleteById(id);
+            ra.addFlashAttribute("mensaje", "Documento eliminado exitosamente.");
+        } else {
+            ra.addFlashAttribute("error", "El documento no existe.");
+        }
+        return "redirect:/view/documentos";
     }
 }
