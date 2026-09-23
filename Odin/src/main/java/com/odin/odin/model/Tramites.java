@@ -103,4 +103,25 @@ public class Tramites {
     }
     public Long getIdTramite() { return idTramite; }
     public void setIdTramite(Long idTramite) { this.idTramite = idTramite; }
+    // GENERATED_EXPLICIT_ACCESSORS
+    public String getNombre() { return nombre; }
+    public void setNombre(String value) { this.nombre = value; }
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String value) { this.descripcion = value; }
+    public Integer getDiasRespuesta() { return diasRespuesta; }
+    public void setDiasRespuesta(Integer value) { this.diasRespuesta = value; }
+    public String getPrioridadDefault() { return prioridadDefault; }
+    public void setPrioridadDefault(String value) { this.prioridadDefault = value; }
+    public Boolean getRequiereRespuesta() { return requiereRespuesta; }
+    public void setRequiereRespuesta(Boolean value) { this.requiereRespuesta = value; }
+    public LocalDateTime getFechaCreacion() { return fechaCreacion; }
+    public void setFechaCreacion(LocalDateTime value) { this.fechaCreacion = value; }
+    public LocalDateTime getFechaActualizacion() { return fechaActualizacion; }
+    public void setFechaActualizacion(LocalDateTime value) { this.fechaActualizacion = value; }
+    public LocalDateTime getFechaLimite() { return fechaLimite; }
+    public void setFechaLimite(LocalDateTime value) { this.fechaLimite = value; }
+    public Dependencias getDependenciaResponsable() { return dependenciaResponsable; }
+    public void setDependenciaResponsable(Dependencias value) { this.dependenciaResponsable = value; }
+    public Estados getEstadoInicial() { return estadoInicial; }
+    public void setEstadoInicial(Estados value) { this.estadoInicial = value; }
 }
