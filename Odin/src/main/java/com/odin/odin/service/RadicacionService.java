@@ -34,6 +34,7 @@ import java.util.UUID;
 public class RadicacionService {
 
     private static final DateTimeFormatter FECHA = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter FECHA_HORA = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final long MAX_FILE_SIZE = 10L * 1024L * 1024L;
     private static final List<String> MIME_PERMITIDOS = List.of(
             "application/pdf",
@@ -89,7 +90,7 @@ public class RadicacionService {
             preservarDatosInmutables(radicado, existente);
         } else {
             radicado.setNumero_radicado(generarNumeroRadicado());
-            radicado.setFecha_radicado(LocalDate.now().format(FECHA));
+            radicado.setFecha_radicado(LocalDateTime.now().format(FECHA_HORA));
         }
 
         aplicarReglasDelTramite(radicado, tramite);
@@ -298,7 +299,7 @@ public class RadicacionService {
 
     private LocalDate parseFecha(String fecha) {
         try {
-            return LocalDate.parse(fecha, FECHA);
+            return LocalDate.parse(fecha.substring(0, Math.min(10, fecha.length())), FECHA);
         } catch (Exception ex) {
             return LocalDate.now();
         }
