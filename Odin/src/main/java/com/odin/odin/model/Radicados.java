@@ -52,8 +52,14 @@ public class Radicados {
     @Column(name = "codigo_serie", length = 50)
     private String codigo_serie;
 
+    @Column(name = "id_serie")
+    private Long id_serie;
+
     @Column(name = "codigo_subserie", length = 60)
     private String codigo_subserie;
+
+    @Column(name = "id_subserie")
+    private Long id_subserie;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(
@@ -90,6 +96,18 @@ public class Radicados {
 
     @Column(name = "fecha_limite")
     private String fecha_limite;
+
+    @Column(name = "tipo_radicado")
+    private String tipo_radicado;
+
+    @Column(name = "medio_recepcion")
+    private String medio_recepcion;
+
+    @Column(name = "prioridad")
+    private String prioridad;
+
+    @Column(name = "confidencialidad")
+    private String confidencialidad;
 
     @Column(name = "fecha_cierre")
     private LocalDateTime fecha_cierre;
