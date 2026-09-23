@@ -461,6 +461,7 @@
 
                                         <option th:each="s : ${series}"
                                                 th:value="${s.codigo_serie}"
+                                                th:attr="data-serie-id=${s.id_serie}"
                                                 th:text="${s.codigo_serie + ' - ' + s.nombre_serie}">
                                         </option>
 
