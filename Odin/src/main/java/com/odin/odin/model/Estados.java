@@ -21,4 +21,9 @@ public class Estados {
     @NotBlank(message = "El nombre del estado es obligatorio")
     @Column(name = "nombre", nullable = false)
     private String nombre;
+    // GENERATED_EXPLICIT_ACCESSORS
+    public Integer getId_estado() { return id_estado; }
+    public void setId_estado(Integer value) { this.id_estado = value; }
+    public String getNombre() { return nombre; }
+    public void setNombre(String value) { this.nombre = value; }
 }
