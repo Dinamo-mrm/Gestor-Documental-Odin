@@ -9,6 +9,7 @@ import com.odin.odin.repository.DependenciasRepository;
 import com.odin.odin.repository.DocumentosRepository;
 import com.odin.odin.repository.RadicadosRepository;
 import com.odin.odin.repository.SubseriesRepository;
+import com.odin.odin.repository.SeriesRepository;
 import com.odin.odin.repository.TramitesRepository;
 import com.odin.odin.repository.UsuariosRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +47,7 @@ public class RadicacionService {
     private final DependenciasRepository dependenciasRepository;
     private final UsuariosRepository usuariosRepository;
     private final SubseriesRepository subseriesRepository;
+    private final SeriesRepository seriesRepository;
     private final DocumentosRepository documentosRepository;
 
     @Value("${app.upload-dir:uploads}")
@@ -57,12 +59,14 @@ public class RadicacionService {
             DependenciasRepository dependenciasRepository,
             UsuariosRepository usuariosRepository,
             SubseriesRepository subseriesRepository,
+            SeriesRepository seriesRepository,
             DocumentosRepository documentosRepository) {
         this.radicadosRepository = radicadosRepository;
         this.tramitesRepository = tramitesRepository;
         this.dependenciasRepository = dependenciasRepository;
         this.usuariosRepository = usuariosRepository;
         this.subseriesRepository = subseriesRepository;
+        this.seriesRepository = seriesRepository;
         this.documentosRepository = documentosRepository;
     }
 
@@ -164,7 +168,7 @@ public class RadicacionService {
             if (!texto(r.getCodigo_serie())) {
                 throw new IllegalArgumentException("La subserie requiere una serie documental");
             }
-            var serie = subseriesRepository.findSerieByCodigo(r.getCodigo_serie())
+            var serie = seriesRepository.findByCodigoSerie(r.getCodigo_serie())
                     .orElseThrow(() -> new IllegalArgumentException("La serie documental seleccionada no existe"));
             if (!subserie.getId_serie().equals(serie.getId_serie())) {
                 throw new IllegalArgumentException("La subserie no pertenece a la serie seleccionada");
