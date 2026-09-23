@@ -186,6 +186,9 @@ public class RadicacionService {
         if (texto(r.getTipoRadicacion())) {
             r.setTipo_radicado(r.getTipoRadicacion().trim().toUpperCase());
         }
+        if (texto(r.getCanalRecepcion())) {
+            r.setMedio_recepcion(r.getCanalRecepcion().trim());
+        }
         if (texto(r.getConfidencialidad())) {
             r.setConfidencialidad(normalizarConfidencialidad(r.getConfidencialidad()));
         }
