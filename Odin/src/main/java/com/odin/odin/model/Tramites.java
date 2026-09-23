@@ -101,4 +101,6 @@ public class Tramites {
         this.idDependenciaResponsable =
                 idDependenciaResponsable;
     }
+    public Long getIdTramite() { return idTramite; }
+    public void setIdTramite(Long idTramite) { this.idTramite = idTramite; }
 }
