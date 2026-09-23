@@ -234,14 +234,11 @@ public class RadicadosController {
                         .get()
                         .getId_usuario();
 
-        Observaciones observacion =
-                Observaciones
-                        .builder()
-                        .id_radicado(id)
-                        .id_usuario(idUsuario)
-                        .comentario(comentario)
-                        .fecha(LocalDateTime.now())
-                        .build();
+        Observaciones observacion = new Observaciones();
+        observacion.setId_radicado(id);
+        observacion.setId_usuario(idUsuario);
+        observacion.setComentario(comentario);
+        observacion.setFecha(LocalDateTime.now());
 
         Observaciones saved =
                 observacionesRepository
@@ -847,14 +844,11 @@ public class RadicadosController {
 
         if (!observacion.isBlank()) {
 
-            Observaciones nuevaObservacion =
-                    Observaciones
-                            .builder()
-                            .id_radicado(id)
-                            .id_usuario(idUsuarioActual)
-                            .comentario(observacion)
-                            .fecha(LocalDateTime.now())
-                            .build();
+            Observaciones nuevaObservacion = new Observaciones();
+            nuevaObservacion.setId_radicado(id);
+            nuevaObservacion.setId_usuario(idUsuarioActual);
+            nuevaObservacion.setComentario(observacion);
+            nuevaObservacion.setFecha(LocalDateTime.now());
 
             observacionesRepository
                     .save(nuevaObservacion);
