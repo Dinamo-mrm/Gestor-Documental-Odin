@@ -134,6 +134,14 @@ public class RadicacionService {
         if (!usuariosRepository.existsById(r.getId_usuario())) {
             throw new IllegalArgumentException("El responsable seleccionado no existe");
         }
+        if (texto(r.getTipoRadicacion())
+                && !r.getTipoRadicacion().matches("(?i)ENTRADA|SALIDA|INTERNA")) {
+            throw new IllegalArgumentException("El tipo de radicación no es válido");
+        }
+        if (texto(r.getPrioridad())
+                && !r.getPrioridad().matches("(?i)BAJA|MEDIA|ALTA|URGENTE")) {
+            throw new IllegalArgumentException("La prioridad no es válida");
+        }
 
         if (tramite.getIdDependenciaResponsable() == null) {
             throw new IllegalArgumentException("El trámite no tiene dependencia responsable configurada");
