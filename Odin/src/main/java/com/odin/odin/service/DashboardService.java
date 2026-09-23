@@ -15,6 +15,14 @@ public class DashboardService {
     private final UsuariosRepository usuariosRepository;
     private final DocumentosRepository documentosRepository;
 
+    public DashboardService(RadicadosRepository radicadosRepository,
+                            UsuariosRepository usuariosRepository,
+                            DocumentosRepository documentosRepository) {
+        this.radicadosRepository = radicadosRepository;
+        this.usuariosRepository = usuariosRepository;
+        this.documentosRepository = documentosRepository;
+    }
+
     public DashboardResumen obtenerResumen() {
         DashboardResumen resumen = new DashboardResumen();
 
