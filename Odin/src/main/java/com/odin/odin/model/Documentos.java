@@ -53,6 +53,12 @@ public class Documentos
     public void setRuta_archivo(String value) { this.ruta_archivo = value; }
     public String getTipo() { return tipo; }
     public void setTipo(String value) { this.tipo = value; }
+    public String getMime_type() { return mime_type; }
+    public void setMime_type(String value) { this.mime_type = value; }
+    public String getChecksum() { return checksum; }
+    public void setChecksum(String value) { this.checksum = value; }
+    public Integer getVersion_actual() { return version_actual; }
+    public void setVersion_actual(Integer value) { this.version_actual = value; }
     public String getFecha_subida() { return fecha_subida; }
     public void setFecha_subida(String value) { this.fecha_subida = value; }
 }
