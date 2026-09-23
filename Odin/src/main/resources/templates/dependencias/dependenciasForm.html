@@ -1,126 +1,631 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario Dependencia</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title th:text="${dependencias.id_dependencia != null ? 'Editar dependencia | ODIN' : 'Nueva dependencia | ODIN'}">
+        Dependencia | ODIN
+    </title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
 
     <style>
-        body { font-family: 'Inter', sans-serif; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
     </style>
+
 </head>
+
 
 <body class="bg-[#f5f6f8] text-slate-800">
 
+
 <div class="min-h-screen flex">
 
-    <div th:replace="fragments/layout :: sidebar('dependencias')"></div>
 
-    <div id="overlay" class="fixed inset-0 bg-black/40 z-20 hidden"></div>
+    <!-- =========================================================
+         SIDEBAR
+    ========================================================== -->
+
+    <div th:replace="~{fragments/layout :: sidebar('dependencias')}"></div>
+
+
+    <!-- =========================================================
+         OVERLAY SIDEBAR
+    ========================================================== -->
+
+    <div th:replace="~{fragments/layout :: sidebarOverlay}"></div>
+
+
+    <!-- =========================================================
+         CONTENIDO PRINCIPAL
+    ========================================================== -->
 
     <div class="flex-1 min-w-0">
 
-        <div th:replace="fragments/layout :: topbar('ODIN')"></div>
 
-        <main class="px-4 md:px-8 py-6">
+        <!-- TOPBAR -->
 
-            <section class="mb-5">
-                <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 uppercase">
-                    Módulo de Dependencias
-                </h1>
-                <p class="text-sm text-slate-500 mt-1">
-                    Gestión institucional de dependencias del sistema ODIN
-                </p>
+        <div th:replace="~{fragments/layout :: topbar('Dependencias')}"></div>
+
+
+        <main class="px-4
+                     md:px-8
+                     lg:px-10
+                     py-7
+                     max-w-[1200px]">
+
+
+            <!-- =================================================
+                 VOLVER
+            ================================================== -->
+
+            <a th:href="@{/view/dependencias}"
+               class="inline-flex
+                      items-center
+                      gap-2
+                      text-sm
+                      font-medium
+                      text-slate-500
+                      hover:text-[#168500]
+                      transition
+                      mb-6">
+
+
+                <svg width="17"
+                     height="17"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
+
+                    <path d="m15 18-6-6 6-6"/>
+
+                </svg>
+
+
+                Volver a dependencias
+
+            </a>
+
+
+            <!-- =================================================
+                 ENCABEZADO
+            ================================================== -->
+
+            <section class="mb-7
+                            flex
+                            items-start
+                            gap-4">
+
+
+                <!-- ICONO -->
+
+                <div class="w-12
+                            h-12
+                            rounded-2xl
+                            bg-green-50
+                            text-[#168500]
+                            flex
+                            items-center
+                            justify-center
+                            flex-none">
+
+
+                    <svg width="23"
+                         height="23"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8">
+
+                        <path d="M3 21h18"/>
+
+                        <path d="M6 21V7l6-4 6 4v14"/>
+
+                        <path d="M9 10h1"/>
+
+                        <path d="M14 10h1"/>
+
+                        <path d="M9 14h1"/>
+
+                        <path d="M14 14h1"/>
+
+                    </svg>
+
+
+                </div>
+
+
+                <!-- TEXTO -->
+
+                <div>
+
+
+                    <div class="text-[10px]
+                                font-bold
+                                uppercase
+                                tracking-[.16em]
+                                text-[#168500]
+                                mb-1">
+
+                        Estructura institucional
+
+                    </div>
+
+
+                    <h1 class="text-2xl
+                               md:text-3xl
+                               font-extrabold
+                               text-slate-900"
+                        th:text="${dependencias.id_dependencia != null ? 'Editar dependencia' : 'Crear nueva dependencia'}">
+
+                        Crear nueva dependencia
+
+                    </h1>
+
+
+                    <p class="text-sm
+                              text-slate-500
+                              mt-2">
+
+                        Define la identificación, descripción y disponibilidad
+                        de la dependencia.
+
+                    </p>
+
+
+                </div>
+
+
             </section>
+
+
+            <!-- =================================================
+                 FORMULARIO
+            ================================================== -->
 
             <form th:action="@{/view/dependencias/save}"
                   th:object="${dependencias}"
-                  method="post"
-                  novalidate>
+                  method="post">
 
-                <input type="hidden" th:field="*{id_dependencia}" />
 
-                <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+                <!-- ID -->
 
-                    <!-- INFORMACIÓN PRINCIPAL -->
-                    <section class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                <input type="hidden"
+                       th:field="*{id_dependencia}">
 
-                        <div class="px-5 py-4 border-b border-slate-100">
-                            <h2 class="text-sm font-extrabold text-slate-900 uppercase flex items-center gap-2">
-                                🏢 Información de la Dependencia
+
+                <!-- =============================================
+                     TARJETA INFORMACIÓN
+                ============================================== -->
+
+                <section class="rounded-2xl
+                                border
+                                border-slate-200
+                                bg-white
+                                shadow-sm
+                                overflow-hidden">
+
+
+                    <!-- CABECERA -->
+
+                    <div class="px-6
+                                py-5
+                                border-b
+                                border-slate-100
+                                flex
+                                items-center
+                                gap-3">
+
+
+                        <div class="w-9
+                                    h-9
+                                    rounded-xl
+                                    bg-green-50
+                                    text-[#168500]
+                                    flex
+                                    items-center
+                                    justify-center">
+
+
+                            <svg width="19"
+                                 height="19"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="1.8">
+
+                                <path d="M4 21V5
+                                         a2 2 0 0 1 2-2
+                                         h12
+                                         a2 2 0 0 1 2 2
+                                         v16"/>
+
+                                <path d="M9 7h6"/>
+
+                                <path d="M9 11h6"/>
+
+                                <path d="M9 15h6"/>
+
+                            </svg>
+
+
+                        </div>
+
+
+                        <div>
+
+
+                            <h2 class="text-sm
+                                       font-bold
+                                       text-slate-900">
+
+                                Información de la dependencia
+
                             </h2>
-                        </div>
 
-                        <div class="p-5 grid grid-cols-1 gap-4">
 
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                    Nombre
-                                </label>
-                                <input type="text" th:field="*{nombre}" required
-                                       placeholder="Nombre de la dependencia"
-                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
-                            </div>
+                            <p class="text-xs
+                                      text-slate-400
+                                      mt-0.5">
 
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                    Dependencia (código / sigla)
-                                </label>
-                                <input type="text" th:field="*{dependencia}" required
-                                       placeholder="Ej: RRHH, TIC, ADMIN"
-                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
-                            </div>
+                                Datos utilizados en la asignación y
+                                gestión documental.
 
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                    Descripción
-                                </label>
-                                <textarea th:field="*{descripcion}" required rows="3"
-                                          placeholder="Descripción de la dependencia"
-                                          class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white resize-none"></textarea>
-                            </div>
+                            </p>
 
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                    Estado
-                                </label>
-                                <select th:field="*{estado}" required
-                                        class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
-                                    <option value="">Seleccione</option>
-                                    <option value="Activo">Activo</option>
-                                    <option value="Inactivo">Inactivo</option>
-                                </select>
-                            </div>
 
                         </div>
-                    </section>
 
-                </div>
 
-                <!-- BOTONES -->
-                <div class="flex justify-end gap-3 mt-5">
+                    </div>
+
+
+                    <!-- CAMPOS -->
+
+                    <div class="p-6
+                                grid
+                                grid-cols-1
+                                md:grid-cols-2
+                                gap-5">
+
+
+                        <!-- =====================================
+                             NOMBRE
+                        ====================================== -->
+
+                        <div>
+
+
+                            <label for="nombre"
+                                   class="block
+                                          text-[10px]
+                                          font-bold
+                                          text-slate-500
+                                          uppercase
+                                          tracking-[.08em]
+                                          mb-2">
+
+                                Nombre
+
+                            </label>
+
+
+                            <input type="text"
+                                   id="nombre"
+                                   th:field="*{nombre}"
+                                   required
+                                   placeholder="Ej. Gestión Documental"
+                                   class="w-full
+                                          rounded-xl
+                                          border
+                                          border-slate-200
+                                          bg-slate-50
+                                          px-4
+                                          py-3
+                                          text-sm
+                                          text-slate-700
+                                          outline-none
+                                          transition
+                                          focus:bg-white
+                                          focus:border-[#168500]
+                                          focus:ring-4
+                                          focus:ring-green-50">
+
+
+                        </div>
+
+
+                        <!-- =====================================
+                             CÓDIGO / SIGLA
+                        ====================================== -->
+
+                        <div>
+
+
+                            <label for="dependencia"
+                                   class="block
+                                          text-[10px]
+                                          font-bold
+                                          text-slate-500
+                                          uppercase
+                                          tracking-[.08em]
+                                          mb-2">
+
+                                Código / sigla
+
+                            </label>
+
+
+                            <input type="text"
+                                   id="dependencia"
+                                   th:field="*{dependencia}"
+                                   required
+                                   placeholder="Ej. GDO"
+                                   class="w-full
+                                          rounded-xl
+                                          border
+                                          border-slate-200
+                                          bg-slate-50
+                                          px-4
+                                          py-3
+                                          text-sm
+                                          text-slate-700
+                                          uppercase
+                                          outline-none
+                                          transition
+                                          focus:bg-white
+                                          focus:border-[#168500]
+                                          focus:ring-4
+                                          focus:ring-green-50">
+
+
+                        </div>
+
+
+                        <!-- =====================================
+                             DESCRIPCIÓN
+                        ====================================== -->
+
+                        <div class="md:col-span-2">
+
+
+                            <label for="descripcion"
+                                   class="block
+                                          text-[10px]
+                                          font-bold
+                                          text-slate-500
+                                          uppercase
+                                          tracking-[.08em]
+                                          mb-2">
+
+                                Descripción
+
+                            </label>
+
+
+                            <textarea id="descripcion"
+                                      th:field="*{descripcion}"
+                                      required
+                                      rows="4"
+                                      placeholder="Describe la función principal de esta dependencia..."
+                                      class="w-full
+                                             rounded-xl
+                                             border
+                                             border-slate-200
+                                             bg-slate-50
+                                             px-4
+                                             py-3
+                                             text-sm
+                                             text-slate-700
+                                             outline-none
+                                             resize-none
+                                             transition
+                                             focus:bg-white
+                                             focus:border-[#168500]
+                                             focus:ring-4
+                                             focus:ring-green-50">
+                            </textarea>
+
+
+                        </div>
+
+
+                        <!-- =====================================
+                             ESTADO
+                        ====================================== -->
+
+                        <div>
+
+
+                            <label for="estado"
+                                   class="block
+                                          text-[10px]
+                                          font-bold
+                                          text-slate-500
+                                          uppercase
+                                          tracking-[.08em]
+                                          mb-2">
+
+                                Estado
+
+                            </label>
+
+
+                            <select id="estado"
+                                    th:field="*{estado}"
+                                    required
+                                    class="w-full
+                                           rounded-xl
+                                           border
+                                           border-slate-200
+                                           bg-slate-50
+                                           px-4
+                                           py-3
+                                           text-sm
+                                           text-slate-700
+                                           outline-none
+                                           transition
+                                           focus:bg-white
+                                           focus:border-[#168500]
+                                           focus:ring-4
+                                           focus:ring-green-50">
+
+
+                                <option value="">
+                                    Seleccione
+                                </option>
+
+
+                                <option value="Activo">
+                                    Activo
+                                </option>
+
+
+                                <option value="Inactivo">
+                                    Inactivo
+                                </option>
+
+
+                            </select>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </section>
+
+
+                <!-- =================================================
+                     ACCIONES
+                ================================================== -->
+
+                <div class="flex
+                            flex-col-reverse
+                            sm:flex-row
+                            justify-end
+                            gap-3
+                            mt-6">
+
+
+                    <!-- CANCELAR -->
+
                     <a th:href="@{/view/dependencias}"
-                       class="rounded-lg border border-green-600 bg-white px-6 py-2.5 text-sm font-semibold text-green-700 hover:bg-green-50 transition">
-                        Limpiar / Volver
+                       class="inline-flex
+                              items-center
+                              justify-center
+                              rounded-xl
+                              border
+                              border-slate-200
+                              bg-white
+                              px-6
+                              py-3
+                              text-sm
+                              font-semibold
+                              text-slate-600
+                              hover:bg-slate-50
+                              transition">
+
+                        Cancelar
+
                     </a>
 
+
+                    <!-- GUARDAR -->
+
                     <button type="submit"
-                            class="rounded-lg bg-[#168500] px-7 py-2.5 text-sm font-bold text-white hover:bg-[#0f6d00] transition">
-                        ▶ Guardar Dependencia
+                            class="inline-flex
+                                   items-center
+                                   justify-center
+                                   gap-2
+                                   rounded-xl
+                                   bg-[#168500]
+                                   px-7
+                                   py-3
+                                   text-sm
+                                   font-bold
+                                   text-white
+                                   shadow-sm
+                                   hover:bg-[#106b00]
+                                   transition">
+
+
+                        <svg width="17"
+                             height="17"
+                             viewBox="0 0 24 24"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="2">
+
+                            <path d="M19 21H5
+                                     a2 2 0 0 1-2-2
+                                     V5
+                                     a2 2 0 0 1 2-2
+                                     h11
+                                     l5 5
+                                     v11
+                                     a2 2 0 0 1-2 2Z"/>
+
+                            <path d="M17 21v-8H7v8"/>
+
+                            <path d="M7 3v5h8"/>
+
+                        </svg>
+
+
+                        <span th:text="${dependencias.id_dependencia != null ? 'Guardar cambios' : 'Crear dependencia'}">
+
+                            Guardar dependencia
+
+                        </span>
+
+
                     </button>
+
+
                 </div>
+
 
             </form>
 
+
         </main>
+
+
     </div>
+
+
 </div>
 
-<script th:src="@{/js/script.js}" defer></script>
+
+<!-- =========================================================
+     JAVASCRIPT GLOBAL
+========================================================= -->
+
+<script th:src="@{/js/script.js}"
+        defer>
+</script>
+
 
 </body>
+
 </html>

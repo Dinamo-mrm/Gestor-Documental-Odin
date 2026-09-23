@@ -25,14 +25,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
 import java.util.UUID;
 
 @Controller
@@ -253,10 +250,6 @@ public class RadicadosView {
             Radicados radicado,
             String uri) {
 
-        /*
-         * Generamos número automáticamente
-         * cuando el formulario no lo trae.
-         */
         if (!tieneTexto(
                 radicado.getNumero_radicado()
         )) {
@@ -274,9 +267,6 @@ public class RadicadosView {
             );
         }
 
-        /*
-         * Fecha de radicación.
-         */
         if (!tieneTexto(
                 radicado.getFecha_radicado()
         )) {
@@ -293,10 +283,6 @@ public class RadicadosView {
             radicado.setFecha_radicado(fecha);
         }
 
-        /*
-         * Evita mandar "" hacia las FK
-         * de serie y subserie.
-         */
         if (!tieneTexto(
                 radicado.getCodigo_serie()
         )) {
@@ -355,26 +341,25 @@ public class RadicadosView {
                         radicado.getResponsable()
                 );
 
-        /*
-         * TRÁMITE
-         */
         if (!tieneNumero(
                 radicado.getId_tramite()
         )) {
 
-            radicado.setId_tramite(
+            Integer tramiteId =
                     primerId(
                             tipoPQRSId,
                             tipoDocId,
                             prioridadId,
                             1
-                    )
+                    );
+
+            radicado.setId_tramite(
+                    tramiteId != null
+                            ? tramiteId.longValue()
+                            : null
             );
         }
 
-        /*
-         * ESTADO
-         */
         if (!tieneNumero(
                 radicado.getId_estado()
         )) {
@@ -387,12 +372,6 @@ public class RadicadosView {
             );
         }
 
-        /*
-         * DEPENDENCIA
-         *
-         * Esta es una de las correcciones
-         * más importantes.
-         */
         Integer idDepElegido =
                 primerId(
                         dependenciaId,
@@ -406,36 +385,31 @@ public class RadicadosView {
                         ? null
                         : dependenciasRepository
                         .findById(
-                                idDepElegido
-                                        .longValue()
+                                idDepElegido.longValue()
                         )
                         .orElse(null);
 
-        /*
-         * Persistimos la relación real.
-         */
         radicado.setDependencias(
                 depBaseDatos
         );
 
-        /*
-         * USUARIO RESPONSABLE
-         */
         if (!tieneNumero(
                 radicado.getId_usuario()
         )) {
 
-            radicado.setId_usuario(
+            Integer usuarioId =
                     idValorODefecto(
                             responsableId,
                             2
-                    )
+                    );
+
+            radicado.setId_usuario(
+                    usuarioId != null
+                            ? usuarioId.longValue()
+                            : null
             );
         }
 
-        /*
-         * REMITENTE
-         */
         if (!tieneTexto(
                 radicado.getRemitente()
         )) {
@@ -448,9 +422,6 @@ public class RadicadosView {
             );
         }
 
-        /*
-         * ASUNTO
-         */
         if (!tieneTexto(
                 radicado.getAsunto()
         )) {
@@ -525,14 +496,11 @@ public class RadicadosView {
                         new Documentos();
 
                 documento.setId_radicado(
-                        (long)
-                                radicado
-                                        .getId_radicado()
+                        radicado.getId_radicado()
                 );
 
                 documento.setTamano(
-                        (int)
-                                archivo.getSize()
+                        (int) archivo.getSize()
                 );
 
                 documento.setNombre(
@@ -615,10 +583,10 @@ public class RadicadosView {
     }
 
     private boolean tieneNumero(
-            Integer valor) {
+            Number valor) {
 
         return valor != null
-                && valor > 0;
+                && valor.longValue() > 0;
     }
 
     private Integer convertirAEnteroSeguro(

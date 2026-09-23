@@ -1,236 +1,1606 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>ODIN - Sistema</title>
-</head>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <body>
 
-<!-- ===================== SIDEBAR ===================== -->
-<div th:fragment="sidebar(activeMenu)"
-     id="main-sidebar"
-     class="w-64 bg-white border-r border-slate-200 min-h-screen flex flex-col font-sans">
 
-    <!-- LOGO -->
-    <div class="h-16 flex items-center justify-center border-b border-slate-200 px-6">
-        <div class="flex items-center gap-2.5 w-full">
-            <div class="w-9 h-9 bg-green-700 rounded-xl flex items-center justify-center text-white shadow-md shadow-green-700/20">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
-                </svg>
+<!-- =========================================================
+     SIDEBAR
+     AUTOCONTENIDO:
+     - Submenús
+     - Estado activo
+     - Responsive
+     - Logout
+========================================================= -->
+
+<aside th:fragment="sidebar(activeMenu)"
+       id="sidebar"
+       class="odin-sidebar">
+
+    <!-- =====================================================
+         LOGO
+    ====================================================== -->
+
+    <div class="odin-sidebar-header">
+
+        <a th:href="@{/view/dashboard}"
+           class="odin-brand">
+
+            <div class="odin-brand-icon">
+                O
             </div>
-            <span class="font-bold text-slate-800 text-xl tracking-tight">ODIN</span>
-        </div>
+
+            <div class="odin-brand-text">
+                <strong>ODIN</strong>
+                <span>Gestión Documental</span>
+            </div>
+
+        </a>
+
+
+        <!-- SOLO MÓVIL -->
+
+        <button type="button"
+                class="odin-sidebar-close"
+                aria-label="Cerrar menú"
+                onclick="odinCloseSidebar()">
+
+            ✕
+
+        </button>
+
     </div>
 
-    <!-- MENU DE NAVEGACIÓN -->
-    <nav class="flex-1 px-3 py-4 space-y-1 text-sm font-medium">
 
-        <!-- INICIO -->
+    <!-- =====================================================
+         NAVEGACIÓN
+    ====================================================== -->
+
+    <nav class="odin-sidebar-nav">
+
+
+        <!-- =================================================
+             DASHBOARD
+        ================================================== -->
+
         <a th:href="@{/view/dashboard}"
-           th:classappend="${activeMenu == 'dashboard'} ? 'bg-green-50 text-green-700 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75 group-hover:opacity-100">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-            </svg>
-            <span>Panel de Inicio</span>
+           class="odin-sidebar-item"
+           th:classappend="${activeMenu == 'dashboard'}
+                ? ' odin-sidebar-item-active'
+                : ''">
+
+            <span class="odin-sidebar-icon">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8">
+
+                    <rect x="3"
+                          y="3"
+                          width="7"
+                          height="7"
+                          rx="1"/>
+
+                    <rect x="14"
+                          y="3"
+                          width="7"
+                          height="7"
+                          rx="1"/>
+
+                    <rect x="3"
+                          y="14"
+                          width="7"
+                          height="7"
+                          rx="1"/>
+
+                    <rect x="14"
+                          y="14"
+                          width="7"
+                          height="7"
+                          rx="1"/>
+
+                </svg>
+
+            </span>
+
+            <span>Dashboard</span>
+
         </a>
 
-        <!-- DESPLEGABLE: CONTROL DE ACCESO (USUARIOS Y ROLES) -->
-        <div class="dropdown-container">
-            <button onclick="toggleDropdown('dropdown-usuarios')"
-                    type="button"
-                    class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all duration-200 focus:outline-none group">
-                <div class="flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75 group-hover:opacity-100">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+
+
+        <!-- =================================================
+             CONTROL DE ACCESO
+        ================================================== -->
+
+        <div class="odin-sidebar-dropdown"
+             sec:authorize="hasAnyAuthority(
+                'admin_usuarios',
+                'admin_roles',
+                'ver_usuarios'
+             )">
+
+
+            <button type="button"
+                    class="odin-sidebar-item odin-sidebar-dropdown-button"
+
+                    th:classappend="${activeMenu == 'usuarios'
+                                  || activeMenu == 'roles'}
+                        ? ' odin-sidebar-parent-active'
+                        : ''"
+
+                    th:attr="aria-expanded=${activeMenu == 'usuarios'
+                                           || activeMenu == 'roles'}"
+
+                    data-submenu="accessSubmenu"
+
+                    onclick="odinToggleSubmenu(
+                        'accessSubmenu',
+                        this
+                    )">
+
+
+                <span class="odin-sidebar-icon">
+
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8">
+
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+
+                        <circle cx="9"
+                                cy="7"
+                                r="4"/>
+
+                        <path d="M19 8v6"/>
+
+                        <path d="M22 11h-6"/>
+
                     </svg>
-                    <span>Control de Acceso</span>
-                </div>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200 dynamic-arrow" id="arrow-dropdown-usuarios">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+
+                </span>
+
+
+                <span>
+                    Control de Acceso
+                </span>
+
+
+                <svg class="odin-sidebar-chevron"
+
+                     th:classappend="${activeMenu == 'usuarios'
+                                   || activeMenu == 'roles'}
+                        ? ' odin-chevron-open'
+                        : ''"
+
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
+
+                    <path d="m9 18 6-6-6-6"/>
+
                 </svg>
+
             </button>
 
-            <div id="dropdown-usuarios" class="hidden pl-11 pr-2 py-1 space-y-1 bg-slate-50/70 rounded-lg mt-0.5 border border-slate-100">
+
+
+            <!-- SUBMENÚ CONTROL DE ACCESO -->
+
+            <div id="accessSubmenu"
+                 class="odin-sidebar-submenu"
+
+                 th:classappend="${activeMenu == 'usuarios'
+                               || activeMenu == 'roles'}
+                    ? ''
+                    : ' odin-hidden'">
+
+
+                <!-- USUARIOS -->
+
                 <a th:href="@{/view/usuarios}"
-                   th:classappend="${activeMenu == 'usuarios'} ? 'text-green-700 font-semibold' : 'text-slate-600 hover:text-slate-900'"
-                   class="block px-2 py-2 rounded-md transition text-[13px]">
-                    Gestión de Usuarios
+                   class="odin-sidebar-subitem"
+
+                   sec:authorize="hasAnyAuthority(
+                        'admin_usuarios',
+                        'ver_usuarios'
+                   )"
+
+                   th:classappend="${activeMenu == 'usuarios'}
+                        ? ' odin-sidebar-subitem-active'
+                        : ''">
+
+                    Usuarios
+
                 </a>
+
+
+                <!-- ROLES -->
+
                 <a th:href="@{/view/roles}"
-                   th:classappend="${activeMenu == 'roles'} ? 'text-green-700 font-semibold' : 'text-slate-600 hover:text-slate-900'"
-                   class="block px-2 py-2 rounded-md transition text-[13px]">
+                   class="odin-sidebar-subitem"
+
+                   sec:authorize="hasAuthority('admin_roles')"
+
+                   th:classappend="${activeMenu == 'roles'}
+                        ? ' odin-sidebar-subitem-active'
+                        : ''">
+
                     Roles y Permisos
+
                 </a>
+
             </div>
+
         </div>
 
-        <!-- DEPENDENCIAS -->
+
+
+        <!-- =================================================
+             DEPENDENCIAS
+        ================================================== -->
+
         <a th:href="@{/view/dependencias}"
-           th:classappend="${activeMenu == 'dependencias'} ? 'bg-green-50 text-green-700 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75 group-hover:opacity-100">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v14.25M21.621 15.75H18.75m-.75-12h2.25m-.75 3h1.5m-1.5 3h1.5m-1.5 3H18.75M13.5 3.75h.008v.008H13.5V3.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM13.5 7.5h.008v.008H13.5V7.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21V5.25A2.25 2.25 0 0 0 8.25 3H4.5A2.25 2.25 0 0 0 2.25 5.25V21h8.25ZM10.5 21h7.5V10.5a2.25 2.25 0 0 0-2.25-2.25h-5.25V21Z" />
-            </svg>
-            <span>Dependencias</span>
-        </a>
+           class="odin-sidebar-item"
 
-        <!-- RADICACIÓN -->
-        <a th:href="@{/view/radicados}"
-           th:classappend="${activeMenu == 'radicacion_Documental'} ? 'bg-green-50 text-green-700 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75 group-hover:opacity-100">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-            </svg>
-            <span>Radicación de Documentos</span>
-        </a>
+           sec:authorize="hasAuthority('ver_dependencias')"
 
-        <!-- DESPLEGABLE: GESTIÓN DOCUMENTAL (SERIES, SUBSERIES Y CONSULTA) -->
-        <div class="dropdown-container">
-            <button onclick="toggleDropdown('dropdown-consulta')"
-                    type="button"
-                    class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all duration-200 focus:outline-none group">
-                <div class="flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75 group-hover:opacity-100">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                    </svg>
-                    <span>Gestión Documental</span>
-                </div>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200 dynamic-arrow" id="arrow-dropdown-consulta">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+           th:classappend="${activeMenu == 'dependencias'}
+                ? ' odin-sidebar-item-active'
+                : ''">
+
+
+            <span class="odin-sidebar-icon">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8">
+
+                    <path d="M3 21h18"/>
+
+                    <path d="M5 21V8l7-5 7 5v13"/>
+
+                    <path d="M9 21v-6h6v6"/>
+
                 </svg>
+
+            </span>
+
+
+            <span>
+                Dependencias
+            </span>
+
+        </a>
+
+
+
+        <!-- =================================================
+             RADICADOS
+        ================================================== -->
+
+        <a th:href="@{/view/radicados}"
+           class="odin-sidebar-item"
+
+           sec:authorize="hasAuthority('ver_radicados')"
+
+           th:classappend="${activeMenu == 'radicados'}
+                ? ' odin-sidebar-item-active'
+                : ''">
+
+
+            <span class="odin-sidebar-icon">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8">
+
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+
+                    <path d="M14 2v6h6"/>
+
+                    <path d="M8 13h8"/>
+
+                    <path d="M8 17h8"/>
+
+                </svg>
+
+            </span>
+
+
+            <span>
+                Radicados
+            </span>
+
+        </a>
+
+
+
+        <!-- =================================================
+             REASIGNACIONES
+        ================================================== -->
+
+        <a th:href="@{/view/reasignaciones}"
+           class="odin-sidebar-item"
+
+           sec:authorize="hasAuthority('trasladar_radicado')"
+
+           th:classappend="${activeMenu == 'reasignaciones'}
+                ? ' odin-sidebar-item-active'
+                : ''">
+
+
+            <span class="odin-sidebar-icon">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8">
+
+                    <path d="M17 3l4 4-4 4"/>
+
+                    <path d="M3 7h18"/>
+
+                    <path d="M7 21l-4-4 4-4"/>
+
+                    <path d="M21 17H3"/>
+
+                </svg>
+
+            </span>
+
+
+            <span>
+                Reasignaciones
+            </span>
+
+        </a>
+
+
+
+        <!-- =================================================
+             GESTIÓN DOCUMENTAL
+        ================================================== -->
+
+        <div class="odin-sidebar-dropdown"
+             sec:authorize="hasAuthority('admin_ccd')">
+
+
+            <button type="button"
+                    class="odin-sidebar-item odin-sidebar-dropdown-button"
+
+                    th:classappend="${activeMenu == 'estados'
+                                  || activeMenu == 'series'
+                                  || activeMenu == 'subseries'}
+                        ? ' odin-sidebar-parent-active'
+                        : ''"
+
+                    th:attr="aria-expanded=${activeMenu == 'estados'
+                                           || activeMenu == 'series'
+                                           || activeMenu == 'subseries'}"
+
+                    data-submenu="documentSubmenu"
+
+                    onclick="odinToggleSubmenu(
+                        'documentSubmenu',
+                        this
+                    )">
+
+
+                <span class="odin-sidebar-icon">
+
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8">
+
+                        <path d="M4 4h16v16H4z"/>
+
+                        <path d="M8 8h8"/>
+
+                        <path d="M8 12h8"/>
+
+                        <path d="M8 16h5"/>
+
+                    </svg>
+
+                </span>
+
+
+                <span>
+                    Gestión Documental
+                </span>
+
+
+                <svg class="odin-sidebar-chevron"
+
+                     th:classappend="${activeMenu == 'estados'
+                                   || activeMenu == 'series'
+                                   || activeMenu == 'subseries'}
+                        ? ' odin-chevron-open'
+                        : ''"
+
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
+
+                    <path d="m9 18 6-6-6-6"/>
+
+                </svg>
+
             </button>
 
-            <div id="dropdown-consulta" class="hidden pl-11 pr-2 py-1 space-y-1 bg-slate-50/70 rounded-lg mt-0.5 border border-slate-100">
+
+
+            <!-- SUBMENÚ GESTIÓN DOCUMENTAL -->
+
+            <div id="documentSubmenu"
+                 class="odin-sidebar-submenu"
+
+                 th:classappend="${activeMenu == 'estados'
+                               || activeMenu == 'series'
+                               || activeMenu == 'subseries'}
+                    ? ''
+                    : ' odin-hidden'">
+
+
+                <!-- ESTADOS -->
+
                 <a th:href="@{/view/estados}"
-                   th:classappend="${activeMenu == 'consulta'} ? 'text-green-700 font-semibold' : 'text-slate-600 hover:text-slate-900'"
-                   class="block px-2 py-2 rounded-md transition text-[13px]">
-                    Consulta y Seguimiento
+                   class="odin-sidebar-subitem"
+
+                   th:classappend="${activeMenu == 'estados'}
+                        ? ' odin-sidebar-subitem-active'
+                        : ''">
+
+                    Estados
+
                 </a>
+
+
+                <!-- SERIES -->
+
                 <a th:href="@{/view/series}"
-                   th:classappend="${activeMenu == 'series'} ? 'text-green-700 font-semibold' : 'text-slate-600 hover:text-slate-900'"
-                   class="block px-2 py-2 rounded-md transition text-[13px]">
-                    Series Documentales
+                   class="odin-sidebar-subitem"
+
+                   th:classappend="${activeMenu == 'series'}
+                        ? ' odin-sidebar-subitem-active'
+                        : ''">
+
+                    Series
+
                 </a>
+
+
+                <!-- SUBSERIES -->
+
                 <a th:href="@{/view/subseries}"
-                   th:classappend="${activeMenu == 'subseries'} ? 'text-green-700 font-semibold' : 'text-slate-600 hover:text-slate-900'"
-                   class="block px-2 py-2 rounded-md transition text-[13px]">
-                    Subseries Documentales
+                   class="odin-sidebar-subitem"
+
+                   th:classappend="${activeMenu == 'subseries'}
+                        ? ' odin-sidebar-subitem-active'
+                        : ''">
+
+                    Subseries
+
                 </a>
+
             </div>
+
         </div>
 
-        <!-- TRÁMITES -->
+
+
+        <!-- =================================================
+             TRÁMITES
+        ================================================== -->
+
         <a th:href="@{/view/tramites}"
-           th:classappend="${activeMenu == 'tramites'} ? 'bg-green-50 text-green-700 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75 group-hover:opacity-100">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12a7.5 7.5 0 0 0 15 0m-15 0a7.5 7.5 0 1 1 15 0m-15 0H3m16.5 0H21m-1.5 0H12m-8.457 3.077 1.41-.513m14.095-5.13 1.41-.513M5.106 17.785l1.15-.827m11.379-8.16 1.15-.827M8.14 21.27l.707-1.03m7.45-.808.707-1.03M12 3v1.5m0 15V21m-4.743-10 1.41-.513m11.379 8.16-1.15-.827m-9.33 1.03-.707-1.03" />
-            </svg>
-            <span>Gestión de Trámites</span>
+           class="odin-sidebar-item"
+
+           sec:authorize="hasAuthority('ver_tramites')"
+
+           th:classappend="${activeMenu == 'tramites'}
+                ? ' odin-sidebar-item-active'
+                : ''">
+
+
+            <span class="odin-sidebar-icon">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8">
+
+                    <path d="M9 11l3 3L22 4"/>
+
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+
+                </svg>
+
+            </span>
+
+
+            <span>
+                Trámites
+            </span>
+
         </a>
 
-        <!-- REPORTES -->
-        <a href="#"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all duration-200 group">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75 group-hover:opacity-100">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v5.625c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 3 18.75v-5.625ZM13.5 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v10.125c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 13.5 18.75V8.625ZM8.25 4.125C8.25 3.504 8.754 3 9.375 3h2.25c.621 0 1.125.504 1.125 1.125v14.625c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 8.25 18.75V4.125Z" />
-            </svg>
-            <span>Reportes y Estadísticas</span>
+
+
+        <!-- =================================================
+             REPORTES
+        ================================================== -->
+
+        <a th:href="@{/view/reportes}"
+           class="odin-sidebar-item"
+
+           sec:authorize="hasAuthority('ver_reportes')"
+
+           th:classappend="${activeMenu == 'reportes'}
+                ? ' odin-sidebar-item-active'
+                : ''">
+
+
+            <span class="odin-sidebar-icon">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8">
+
+                    <path d="M4 19V9"/>
+
+                    <path d="M10 19V5"/>
+
+                    <path d="M16 19v-7"/>
+
+                    <path d="M22 19H2"/>
+
+                </svg>
+
+            </span>
+
+
+            <span>
+                Reportes
+            </span>
+
         </a>
+
 
     </nav>
 
-    <!-- PROCESAMIENTO JAVASCRIPT DEL COMPONENTE -->
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('main-sidebar');
-            const overlay = document.getElementById('overlay');
-            if (sidebar) sidebar.classList.toggle('-translate-x-full');
-            if (overlay) overlay.classList.toggle('hidden');
-        }
-
-        function toggleDropdown(dropdownId) {
-            const dropdown = document.getElementById(dropdownId);
-            const arrow = document.getElementById('arrow-' + dropdownId);
-
-            if (dropdown) {
-                const isHidden = dropdown.classList.contains('hidden');
-                if (isHidden) {
-                    dropdown.classList.remove('hidden');
-                    if (arrow) arrow.style.transform = "rotate(180deg)";
-                } else {
-                    dropdown.classList.add('hidden');
-                    if (arrow) arrow.style.transform = "rotate(0deg)";
-                }
-            }
-        }
-
-        function initMenuState() {
-            const currentPath = window.location.pathname;
-
-            if (currentPath.includes('/usuarios') || currentPath.includes('/roles')) {
-                const dp = document.getElementById('dropdown-usuarios');
-                const ar = document.getElementById('arrow-dropdown-usuarios');
-                if (dp) dp.classList.remove('hidden');
-                if (ar) ar.style.transform = "rotate(180deg)";
-            }
-            else if (currentPath.includes('/estados') || currentPath.includes('/series') || currentPath.includes('/subseries')) {
-                const dp = document.getElementById('dropdown-consulta');
-                const ar = document.getElementById('arrow-dropdown-consulta');
-                if (dp) dp.classList.remove('hidden');
-                if (ar) ar.style.transform = "rotate(180deg)";
-            }
-
-            const activeItem = document.querySelector('.bg-green-50, .bg-green-100, .font-semibold');
-            if (activeItem) {
-                const parentDropdown = activeItem.closest('[id^="dropdown-"]');
-                if (parentDropdown) {
-                    parentDropdown.classList.remove('hidden');
-                    const arrow = document.getElementById('arrow-' + parentDropdown.id);
-                    if (arrow) arrow.style.transform = "rotate(180deg)";
-                }
-            }
-        }
-
-        initMenuState();
-        document.addEventListener("DOMContentLoaded", initMenuState);
-    </script>
-</div>
 
 
-<!-- ===================== TOPBAR ===================== -->
-<div th:fragment="topbar(title)"
-     class="h-16 bg-green-700 text-white flex items-center justify-between px-6 shadow-sm font-sans">
+    <!-- =====================================================
+         FOOTER / USUARIO / LOGOUT
+    ====================================================== -->
 
-    <div class="flex items-center gap-3">
-        <button onclick="toggleSidebar()" class="md:hidden text-white focus:outline-none p-1 rounded hover:bg-green-800 transition">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-            </svg>
-        </button>
-        <span class="font-bold text-lg tracking-tight" th:text="${title}">ODIN</span>
-    </div>
+    <div class="odin-sidebar-footer">
 
-    <div class="flex items-center gap-5">
-        <button class="relative text-white/90 hover:text-white transition p-1 rounded-full hover:bg-green-800/50">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-            </svg>
-            <span class="absolute top-1 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-green-700"></span>
-        </button>
 
-        <div class="flex items-center gap-2.5 cursor-pointer group">
-            <div class="w-9 h-9 rounded-xl bg-white text-green-700 flex items-center justify-center font-bold shadow-sm group-hover:scale-105 transition-transform duration-200">
-                U
+        <div class="odin-sidebar-user">
+
+
+            <div class="odin-sidebar-avatar">
+
+                <span th:text="${#authentication != null
+                        && #authentication.name != null
+                        ? #strings.substring(
+                            #authentication.name,
+                            0,
+                            1
+                          ).toUpperCase()
+                        : 'U'}">
+
+                    U
+
+                </span>
+
             </div>
+
+
+            <div class="odin-sidebar-user-info">
+
+                <strong>
+                    Usuario ODIN
+                </strong>
+
+                <span th:text="${#authentication != null
+                        ? #authentication.name
+                        : 'Sesión activa'}">
+
+                    Sesión activa
+
+                </span>
+
+            </div>
+
         </div>
+
+
+
+        <!-- =================================================
+             LOGOUT REAL SPRING SECURITY
+        ================================================== -->
+
+        <form th:action="@{/logout}"
+              method="post"
+              class="odin-logout-form">
+
+
+            <button type="submit"
+                    class="odin-sidebar-logout-button">
+
+
+                <span class="odin-sidebar-icon">
+
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8">
+
+                        <path d="M10 17l5-5-5-5"/>
+
+                        <path d="M15 12H3"/>
+
+                        <path d="M21 19V5a2 2 0 0 0-2-2h-6"/>
+
+                    </svg>
+
+                </span>
+
+
+                <span>
+                    Cerrar sesión
+                </span>
+
+            </button>
+
+        </form>
+
     </div>
 
+
+
+    <!-- =====================================================
+         JAVASCRIPT DEL SIDEBAR
+         VA DENTRO DEL FRAGMENTO.
+         NO NECESITAS layoutScripts EN LAS VISTAS.
+    ====================================================== -->
+
+    <script>
+
+        /*
+         * =====================================================
+         * ABRIR / CERRAR SUBMENÚ
+         * =====================================================
+         */
+
+        window.odinToggleSubmenu = function (
+            submenuId,
+            button
+        ) {
+
+            const submenu =
+                document.getElementById(submenuId);
+
+
+            if (!submenu) {
+
+                console.error(
+                    "ODIN: no se encontró el submenu:",
+                    submenuId
+                );
+
+                return;
+
+            }
+
+
+            const wasHidden =
+                submenu.classList.contains(
+                    "odin-hidden"
+                );
+
+
+            /*
+             * ---------------------------------------------
+             * CERRAR OTROS SUBMENÚS
+             * ---------------------------------------------
+             */
+
+            document
+                .querySelectorAll(
+                    ".odin-sidebar-submenu"
+                )
+                .forEach(function (otherSubmenu) {
+
+
+                    if (otherSubmenu === submenu) {
+                        return;
+                    }
+
+
+                    otherSubmenu
+                        .classList
+                        .add("odin-hidden");
+
+
+                    const otherButton =
+                        document.querySelector(
+                            '[data-submenu="' +
+                            otherSubmenu.id +
+                            '"]'
+                        );
+
+
+                    if (!otherButton) {
+                        return;
+                    }
+
+
+                    otherButton.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+
+
+                    const otherChevron =
+                        otherButton.querySelector(
+                            ".odin-sidebar-chevron"
+                        );
+
+
+                    if (otherChevron) {
+
+                        otherChevron
+                            .classList
+                            .remove(
+                                "odin-chevron-open"
+                            );
+
+                    }
+
+                });
+
+
+
+            /*
+             * ---------------------------------------------
+             * ABRIR ACTUAL
+             * ---------------------------------------------
+             */
+
+            if (wasHidden) {
+
+
+                submenu
+                    .classList
+                    .remove("odin-hidden");
+
+
+                if (button) {
+
+
+                    button.setAttribute(
+                        "aria-expanded",
+                        "true"
+                    );
+
+
+                    const chevron =
+                        button.querySelector(
+                            ".odin-sidebar-chevron"
+                        );
+
+
+                    if (chevron) {
+
+                        chevron
+                            .classList
+                            .add(
+                                "odin-chevron-open"
+                            );
+
+                    }
+
+                }
+
+
+                return;
+
+            }
+
+
+
+            /*
+             * ---------------------------------------------
+             * CERRAR ACTUAL
+             * ---------------------------------------------
+             */
+
+            submenu
+                .classList
+                .add("odin-hidden");
+
+
+            if (button) {
+
+
+                button.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+
+                const chevron =
+                    button.querySelector(
+                        ".odin-sidebar-chevron"
+                    );
+
+
+                if (chevron) {
+
+                    chevron
+                        .classList
+                        .remove(
+                            "odin-chevron-open"
+                        );
+
+                }
+
+            }
+
+        };
+
+
+
+        /*
+         * =====================================================
+         * ABRIR SIDEBAR MÓVIL
+         * =====================================================
+         */
+
+        window.odinOpenSidebar = function () {
+
+
+            const sidebar =
+                document.getElementById(
+                    "sidebar"
+                );
+
+
+            const overlay =
+                document.getElementById(
+                    "overlay"
+                );
+
+
+            if (!sidebar) {
+                return;
+            }
+
+
+            sidebar
+                .classList
+                .add(
+                    "odin-sidebar-mobile-open"
+                );
+
+
+            if (overlay) {
+
+                overlay
+                    .classList
+                    .remove("hidden");
+
+            }
+
+
+            document
+                .body
+                .classList
+                .add("odin-no-scroll");
+
+        };
+
+
+
+        /*
+         * =====================================================
+         * CERRAR SIDEBAR MÓVIL
+         * =====================================================
+         */
+
+        window.odinCloseSidebar = function () {
+
+
+            const sidebar =
+                document.getElementById(
+                    "sidebar"
+                );
+
+
+            const overlay =
+                document.getElementById(
+                    "overlay"
+                );
+
+
+            if (sidebar) {
+
+                sidebar
+                    .classList
+                    .remove(
+                        "odin-sidebar-mobile-open"
+                    );
+
+            }
+
+
+            if (overlay) {
+
+                overlay
+                    .classList
+                    .add("hidden");
+
+            }
+
+
+            document
+                .body
+                .classList
+                .remove("odin-no-scroll");
+
+        };
+
+
+
+        /*
+         * =====================================================
+         * OVERLAY
+         * =====================================================
+         */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+
+                const overlay =
+                    document.getElementById(
+                        "overlay"
+                    );
+
+
+                if (overlay) {
+
+                    overlay.addEventListener(
+                        "click",
+                        function () {
+
+                            window
+                                .odinCloseSidebar();
+
+                        }
+                    );
+
+                }
+
+
+                /*
+                 * Si por cualquier razón una vista activa
+                 * quedó dentro de un submenú cerrado,
+                 * lo abrimos automáticamente.
+                 */
+
+                document
+                    .querySelectorAll(
+                        ".odin-sidebar-subitem-active"
+                    )
+                    .forEach(function (activeItem) {
+
+
+                        const submenu =
+                            activeItem.closest(
+                                ".odin-sidebar-submenu"
+                            );
+
+
+                        if (!submenu) {
+                            return;
+                        }
+
+
+                        submenu
+                            .classList
+                            .remove("odin-hidden");
+
+
+                        const button =
+                            document.querySelector(
+                                '[data-submenu="' +
+                                submenu.id +
+                                '"]'
+                            );
+
+
+                        if (!button) {
+                            return;
+                        }
+
+
+                        button.setAttribute(
+                            "aria-expanded",
+                            "true"
+                        );
+
+
+                        const chevron =
+                            button.querySelector(
+                                ".odin-sidebar-chevron"
+                            );
+
+
+                        if (chevron) {
+
+                            chevron
+                                .classList
+                                .add(
+                                    "odin-chevron-open"
+                                );
+
+                        }
+
+                    });
+
+            }
+        );
+
+
+
+        /*
+         * =====================================================
+         * ESCAPE
+         * =====================================================
+         */
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+
+                if (event.key !== "Escape") {
+                    return;
+                }
+
+
+                if (window.innerWidth < 768) {
+
+                    window
+                        .odinCloseSidebar();
+
+                }
+
+            }
+        );
+
+
+
+        /*
+         * =====================================================
+         * RESIZE
+         * =====================================================
+         */
+
+        window.addEventListener(
+            "resize",
+            function () {
+
+
+                if (window.innerWidth >= 768) {
+
+                    window
+                        .odinCloseSidebar();
+
+                }
+
+            }
+        );
+
+    </script>
+
+</aside>
+
+
+
+<!-- =========================================================
+     OVERLAY
+========================================================= -->
+
+<div th:fragment="sidebarOverlay"
+     id="overlay"
+     class="fixed inset-0 bg-black/40 z-30 hidden md:hidden"
+     onclick="odinCloseSidebar()">
 </div>
+
+
+
+<!-- =========================================================
+     TOPBAR
+========================================================= -->
+
+<header th:fragment="topbar(title)"
+        class="odin-topbar">
+
+
+    <!-- =====================================================
+         IZQUIERDA
+    ====================================================== -->
+
+    <div class="odin-topbar-left">
+
+
+        <!-- MOBILE MENU -->
+
+        <button type="button"
+                class="odin-mobile-menu-button"
+                aria-label="Abrir menú"
+                onclick="odinOpenSidebar()">
+
+
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2">
+
+                <path d="M4 6h16"/>
+
+                <path d="M4 12h16"/>
+
+                <path d="M4 18h16"/>
+
+            </svg>
+
+        </button>
+
+
+
+        <!-- TÍTULO -->
+
+        <div class="odin-topbar-title">
+
+            <span th:text="${title != null
+                    ? title
+                    : 'ODIN'}">
+
+                ODIN
+
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         DERECHA
+    ====================================================== -->
+
+    <div class="odin-topbar-right">
+
+
+        <!-- =================================================
+             NOTIFICACIONES
+        ================================================== -->
+
+        <button type="button"
+                class="odin-topbar-icon-button"
+                aria-label="Notificaciones">
+
+
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="1.8">
+
+
+                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
+
+
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+
+            </svg>
+
+        </button>
+
+
+
+        <!-- =================================================
+             MENÚ USUARIO
+        ================================================== -->
+
+        <div class="odin-user-menu"
+             id="odinUserMenu">
+
+
+            <button type="button"
+                    class="odin-user-button"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    onclick="odinToggleUserMenu(event, this)">
+
+
+                <!-- AVATAR -->
+
+                <div class="odin-user-avatar">
+
+                    <span th:text="${#authentication != null
+                            && #authentication.name != null
+                            ? #strings.substring(
+                                #authentication.name,
+                                0,
+                                1
+                              ).toUpperCase()
+                            : 'U'}">
+
+                        U
+
+                    </span>
+
+                </div>
+
+
+
+                <!-- DATOS -->
+
+                <div class="odin-user-text">
+
+                    <strong>
+                        Usuario
+                    </strong>
+
+
+                    <span th:text="${#authentication != null
+                            ? #authentication.name
+                            : 'Sesión activa'}">
+
+                        Sesión activa
+
+                    </span>
+
+                </div>
+
+
+
+                <!-- FLECHA -->
+
+                <svg class="odin-user-chevron"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
+
+                    <path d="m6 9 6 6 6-6"/>
+
+                </svg>
+
+            </button>
+
+
+
+            <!-- =================================================
+                 DROPDOWN
+            ================================================== -->
+
+            <div id="userDropdown"
+                 class="odin-user-dropdown odin-hidden">
+
+
+                <!-- INFO -->
+
+                <div class="odin-user-dropdown-header">
+
+
+                    <div class="odin-user-dropdown-avatar">
+
+                        <span th:text="${#authentication != null
+                                && #authentication.name != null
+                                ? #strings.substring(
+                                    #authentication.name,
+                                    0,
+                                    1
+                                  ).toUpperCase()
+                                : 'U'}">
+
+                            U
+
+                        </span>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            Sesión actual
+                        </strong>
+
+
+                        <span th:text="${#authentication != null
+                                ? #authentication.name
+                                : 'Usuario ODIN'}">
+
+                            Usuario ODIN
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="odin-user-dropdown-divider">
+                </div>
+
+
+
+                <!-- =================================================
+                     LOGOUT
+                ================================================== -->
+
+                <form th:action="@{/logout}"
+                      method="post">
+
+
+                    <button type="submit"
+                            class="odin-user-logout">
+
+
+                        <svg viewBox="0 0 24 24"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="1.8">
+
+
+                            <path d="M10 17l5-5-5-5"/>
+
+
+                            <path d="M15 12H3"/>
+
+
+                            <path d="M21 19V5a2 2 0 0 0-2-2h-6"/>
+
+                        </svg>
+
+
+                        <span>
+                            Cerrar sesión
+                        </span>
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT TOPBAR
+         TAMBIÉN AUTOCONTENIDO
+    ====================================================== -->
+
+    <script>
+
+        /*
+         * =====================================================
+         * MENÚ USUARIO
+         * =====================================================
+         */
+
+        window.odinToggleUserMenu = function (
+            event,
+            button
+        ) {
+
+
+            if (event) {
+
+                event.stopPropagation();
+
+            }
+
+
+            const dropdown =
+                document.getElementById(
+                    "userDropdown"
+                );
+
+
+            if (!dropdown) {
+                return;
+            }
+
+
+            const isHidden =
+                dropdown.classList.contains(
+                    "odin-hidden"
+                );
+
+
+            if (isHidden) {
+
+
+                dropdown
+                    .classList
+                    .remove("odin-hidden");
+
+
+                if (button) {
+
+                    button.setAttribute(
+                        "aria-expanded",
+                        "true"
+                    );
+
+                }
+
+
+            } else {
+
+
+                dropdown
+                    .classList
+                    .add("odin-hidden");
+
+
+                if (button) {
+
+                    button.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+
+                }
+
+            }
+
+        };
+
+
+
+        /*
+         * =====================================================
+         * CERRAR AL HACER CLICK FUERA
+         * =====================================================
+         */
+
+        document.addEventListener(
+            "click",
+            function (event) {
+
+
+                const userMenu =
+                    document.getElementById(
+                        "odinUserMenu"
+                    );
+
+
+                const dropdown =
+                    document.getElementById(
+                        "userDropdown"
+                    );
+
+
+                if (!userMenu || !dropdown) {
+                    return;
+                }
+
+
+                if (
+                    !userMenu.contains(
+                        event.target
+                    )
+                ) {
+
+                    dropdown
+                        .classList
+                        .add("odin-hidden");
+
+
+                    const button =
+                        userMenu.querySelector(
+                            ".odin-user-button"
+                        );
+
+
+                    if (button) {
+
+                        button.setAttribute(
+                            "aria-expanded",
+                            "false"
+                        );
+
+                    }
+
+                }
+
+            }
+        );
+
+
+
+        /*
+         * =====================================================
+         * ESCAPE
+         * =====================================================
+         */
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+
+                if (event.key !== "Escape") {
+                    return;
+                }
+
+
+                const dropdown =
+                    document.getElementById(
+                        "userDropdown"
+                    );
+
+
+                if (dropdown) {
+
+                    dropdown
+                        .classList
+                        .add("odin-hidden");
+
+                }
+
+
+                const button =
+                    document.querySelector(
+                        ".odin-user-button"
+                    );
+
+
+                if (button) {
+
+                    button.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+
+                }
+
+            }
+        );
+
+    </script>
+
+</header>
+
 
 </body>
 </html>

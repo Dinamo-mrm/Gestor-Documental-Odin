@@ -26,15 +26,15 @@ public class Reasignaciones {
     private Integer id_radicado;
 
     @Column(name = "id_usuario_anterior")
-    private Integer id_usuario_anterior;
+    private Long id_usuario_anterior;
 
     @NotNull(message = "El usuario nuevo es obligatorio")
     @Column(name = "id_usuario_nuevo")
-    private Integer id_usuario_nuevo;
+    private Long id_usuario_nuevo;
 
     @NotNull(message = "La dependencia nueva es obligatoria")
     @Column(name = "id_dependencia_nueva")
-    private Integer id_dependencia_nueva;
+    private Long id_dependencia_nueva;
 
     @NotNull(message = "La fecha es obligatoria")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")

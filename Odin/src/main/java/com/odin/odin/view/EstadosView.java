@@ -11,53 +11,129 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-//devuelve un archivo tipo HTML
 @Controller
-public class EstadosView
-{
-    //comuniaccion con la base de datos a tra vez del jpa
+public class EstadosView {
+
     @Autowired
     private EstadosRepository estadosRepository;
 
-    //llena la tabla que muetra la info de los usuarios
+    /*
+     * =========================================================
+     * LISTAR ESTADOS
+     * =========================================================
+     */
+
     @GetMapping("/view/estados")
-    public String lista(Model model)
-    {
-        model.addAttribute("estados", estadosRepository.findAll());
+    public String lista(Model model) {
+
+        model.addAttribute(
+                "estados",
+                estadosRepository.findAll()
+        );
+
         return "estados/estados";
     }
 
+    /*
+     * =========================================================
+     * FORMULARIO NUEVO ESTADO
+     * =========================================================
+     */
+
     @GetMapping("/view/estados/form")
-    public String form(Model model)
-    {
-        model.addAttribute("estados", new Estados());
+    public String form(Model model) {
+
+        model.addAttribute(
+                "estados",
+                new Estados()
+        );
+
         return "estados/estadosForm";
     }
 
-    //sirve para guardar la lista
+    /*
+     * =========================================================
+     * GUARDAR ESTADO
+     * =========================================================
+     */
+
     @PostMapping("/view/estados/save")
-    public String save(@ModelAttribute Estados estados, RedirectAttributes ra)
-    {
+    public String save(
+            @ModelAttribute Estados estados,
+            RedirectAttributes ra) {
+
         estadosRepository.save(estados);
-        ra.addFlashAttribute("mensaje", "Estado registrado con exito");
+
+        ra.addFlashAttribute(
+                "mensaje",
+                "Estado registrado con éxito"
+        );
+
         return "redirect:/view/estados";
     }
 
-    //editar estados
+    /*
+     * =========================================================
+     * EDITAR ESTADO
+     * =========================================================
+     */
+
     @GetMapping("/view/estados/edit/{id}")
-    public String edit(@PathVariable Long id, Model model)
-    {
-        Estados estados = estadosRepository.findById(id).orElse(null);
-        model.addAttribute("estados", estados);
-        return "estadosForm";
+    public String edit(
+            @PathVariable Integer id,
+            Model model,
+            RedirectAttributes ra) {
+
+        Estados estados = estadosRepository
+                .findById(id)
+                .orElse(null);
+
+        if (estados == null) {
+
+            ra.addFlashAttribute(
+                    "mensaje",
+                    "El estado solicitado no existe"
+            );
+
+            return "redirect:/view/estados";
+        }
+
+        model.addAttribute(
+                "estados",
+                estados
+        );
+
+        return "estados/estadosForm";
     }
 
-    //borrar estados
+    /*
+     * =========================================================
+     * ELIMINAR ESTADO
+     * =========================================================
+     */
+
     @PostMapping("/view/estados/delete/{id}")
-    public String delete(@PathVariable Long id, RedirectAttributes ra)
-    {
+    public String delete(
+            @PathVariable Integer id,
+            RedirectAttributes ra) {
+
+        if (!estadosRepository.existsById(id)) {
+
+            ra.addFlashAttribute(
+                    "mensaje",
+                    "El estado solicitado no existe"
+            );
+
+            return "redirect:/view/estados";
+        }
+
         estadosRepository.deleteById(id);
-        ra.addFlashAttribute("mensaje", "Estado eliminado con exito");
+
+        ra.addFlashAttribute(
+                "mensaje",
+                "Estado eliminado con éxito"
+        );
+
         return "redirect:/view/estados";
     }
 }

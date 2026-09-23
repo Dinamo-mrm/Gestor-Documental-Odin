@@ -1,251 +1,969 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Usuarios</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Usuarios | ODIN</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
 
     <style>
+
         body {
             font-family: 'Inter', sans-serif;
         }
+
+        .action {
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e2e8f0;
+            border-radius: 9px;
+            background: #ffffff;
+            color: #64748b;
+            transition: .18s;
+        }
+
+        .action svg {
+            width: 17px;
+            height: 17px;
+        }
+
+        .action:hover {
+            border-color: #bbf7d0;
+            background: #f0fdf4;
+            color: #168500;
+        }
+
+        .danger:hover {
+            border-color: #fecaca;
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
     </style>
+
 </head>
 
 <body class="bg-[#f5f6f8] text-slate-800">
 
+
 <div class="min-h-screen flex">
 
-    <!-- SIDEBAR -->
-    <div th:replace="fragments/layout :: sidebar('usuarios')"></div>
 
-    <div id="overlay" class="fixed inset-0 bg-black/40 z-20 hidden"></div>
+    <!-- SIDEBAR -->
+
+    <div th:replace="~{fragments/layout :: sidebar('usuarios')}"></div>
+
+
+    <!-- OVERLAY -->
+
+    <div th:replace="~{fragments/layout :: sidebarOverlay}"></div>
+
 
     <!-- CONTENIDO -->
+
     <div class="flex-1 min-w-0">
 
+
         <!-- TOPBAR -->
-        <div th:replace="fragments/layout :: topbar('ODIN')"></div>
 
-        <main class="px-4 md:px-8 py-6">
+        <div th:replace="~{fragments/layout :: topbar('Usuarios')}"></div>
 
-            <!-- ENCABEZADO -->
-            <section class="mb-6">
-                <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
 
-                    <div>
-                        <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight uppercase">
-                            Consulta y<br class="hidden md:block"> Seguimiento
-                        </h1>
-                        <p class="text-sm text-slate-500 mt-2">
-                            Administre y rastree el estado de los usuarios registrados en el sistema.
-                        </p>
+        <main class="px-4 md:px-8 lg:px-10 py-7">
+
+
+            <!-- =====================================================
+                 ENCABEZADO
+            ====================================================== -->
+
+            <section class="mb-7
+                            flex
+                            flex-col
+                            lg:flex-row
+                            lg:items-end
+                            lg:justify-between
+                            gap-5">
+
+
+                <div>
+
+
+                    <div class="flex
+                                items-center
+                                gap-2
+                                text-[11px]
+                                font-bold
+                                uppercase
+                                tracking-[.16em]
+                                text-[#168500]
+                                mb-2">
+
+
+                        <svg width="15"
+                             height="15"
+                             viewBox="0 0 24 24"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="2">
+
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+
+                            <circle cx="9"
+                                    cy="7"
+                                    r="4"/>
+
+                            <path d="M19 8v6"/>
+
+                            <path d="M22 11h-6"/>
+
+                        </svg>
+
+
+                        Control de acceso
+
                     </div>
 
-                    <div class="flex gap-3">
-                        <a th:href="@{/view/usuarios/form}"
-                           class="inline-flex items-center justify-center rounded-lg bg-[#2fa300] px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#248400] transition">
-                            nuevo usuario
-                        </a>
-                    </div>
+
+                    <h1 class="text-2xl
+                               md:text-3xl
+                               font-extrabold
+                               text-slate-900
+                               tracking-tight">
+
+                        Usuarios
+
+                    </h1>
+
+
+                    <p class="text-sm
+                              text-slate-500
+                              mt-2">
+
+                        Administra las cuentas, roles, dependencias
+                        y accesos de los usuarios de ODIN.
+
+                    </p>
+
+
                 </div>
+
+
+                <!-- NUEVO USUARIO -->
+
+                <a th:href="@{/view/usuarios/form}"
+                   class="inline-flex
+                          items-center
+                          justify-center
+                          gap-2
+                          rounded-xl
+                          bg-[#168500]
+                          px-5
+                          py-3
+                          text-sm
+                          font-bold
+                          text-white
+                          shadow-sm
+                          hover:bg-[#106b00]
+                          transition">
+
+
+                    <svg width="18"
+                         height="18"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="2">
+
+                        <path d="M12 5v14"/>
+
+                        <path d="M5 12h14"/>
+
+                    </svg>
+
+
+                    Nuevo usuario
+
+                </a>
+
+
             </section>
 
-            <!-- MENSAJE -->
-            <div th:if="${success}" class="mb-5">
-                <div class="rounded-lg border border-green-200 bg-green-50 px-5 py-3 text-sm text-green-800 shadow-sm"
-                     th:text="${success}">
-                </div>
+
+            <!-- =====================================================
+                 MENSAJES
+            ====================================================== -->
+
+            <div th:if="${mensaje}"
+                 class="mb-5
+                        rounded-xl
+                        border
+                        border-green-200
+                        bg-green-50
+                        px-5
+                        py-4
+                        text-sm
+                        font-medium
+                        text-green-800"
+                 th:text="${mensaje}">
             </div>
 
-            <!-- BUSCADOR -->
-            <section class="mb-5">
+
+            <div th:if="${error}"
+                 class="mb-5
+                        rounded-xl
+                        border
+                        border-red-200
+                        bg-red-50
+                        px-5
+                        py-4
+                        text-sm
+                        font-medium
+                        text-red-700"
+                 th:text="${error}">
+            </div>
+
+
+            <!-- =====================================================
+                 BUSCADOR / FILTRO
+            ====================================================== -->
+
+            <section class="mb-5
+                            grid
+                            grid-cols-1
+                            md:grid-cols-[1fr_220px]
+                            gap-3">
+
+
                 <div class="relative">
-                    <span class="absolute inset-y-0 left-4 flex items-center text-slate-400">
-                        🔍
+
+
+                    <span class="absolute
+                                 inset-y-0
+                                 left-4
+                                 flex
+                                 items-center
+                                 text-slate-400">
+
+
+                        <svg width="18"
+                             height="18"
+                             viewBox="0 0 24 24"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="2">
+
+                            <circle cx="11"
+                                    cy="11"
+                                    r="8"/>
+
+                            <path d="m21 21-4.35-4.35"/>
+
+                        </svg>
+
+
                     </span>
-                    <input type="text"
-                           placeholder="Buscar usuario, correo, identificación o responsable..."
-                           class="w-full rounded-lg border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-600 shadow-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100">
+
+
+                    <input id="userSearch"
+                           type="text"
+                           autocomplete="off"
+                           placeholder="Buscar por nombre, correo, identificación o teléfono..."
+                           class="w-full
+                                  rounded-xl
+                                  border
+                                  border-slate-200
+                                  bg-white
+                                  py-3.5
+                                  pl-12
+                                  pr-4
+                                  text-sm
+                                  shadow-sm
+                                  outline-none
+                                  focus:border-[#168500]
+                                  focus:ring-4
+                                  focus:ring-green-50">
+
+
                 </div>
+
+
+                <select id="stateFilter"
+                        class="rounded-xl
+                               border
+                               border-slate-200
+                               bg-white
+                               px-4
+                               py-3.5
+                               text-sm
+                               text-slate-600
+                               shadow-sm
+                               outline-none
+                               focus:border-[#168500]
+                               focus:ring-4
+                               focus:ring-green-50">
+
+
+                    <option value="">
+                        Todos los estados
+                    </option>
+
+                    <option value="activo">
+                        Activo
+                    </option>
+
+                    <option value="inactivo">
+                        Inactivo
+                    </option>
+
+
+                </select>
+
+
             </section>
 
-            <!-- CARD TABLA -->
-            <section class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
 
-                <!-- FILTROS -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 px-5 py-4 border-b border-slate-100">
+            <!-- =====================================================
+                 TABLA
+            ====================================================== -->
 
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                            Tipo de identificación
-                        </label>
-                        <select class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 outline-none focus:border-green-500">
-                            <option>Todos los tipos</option>
-                            <option>CC</option>
-                            <option>CE</option>
-                            <option>NIT</option>
-                        </select>
-                    </div>
+            <section class="rounded-2xl
+                            border
+                            border-slate-200
+                            bg-white
+                            shadow-sm
+                            overflow-hidden">
 
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                            Estado
-                        </label>
-                        <select class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 outline-none focus:border-green-500">
-                            <option>Estado</option>
-                            <option>Activo</option>
-                            <option>Inactivo</option>
-                        </select>
-                    </div>
+
+                <!-- CABECERA TABLA -->
+
+                <div class="px-6
+                            py-5
+                            border-b
+                            border-slate-100
+                            flex
+                            flex-col
+                            sm:flex-row
+                            sm:items-center
+                            sm:justify-between
+                            gap-2">
+
 
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                            Dependencia
-                        </label>
-                        <select class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 outline-none focus:border-green-500">
-                            <option>Todas</option>
-                        </select>
+
+                        <h2 class="text-sm
+                                   font-bold
+                                   text-slate-900">
+
+                            Usuarios registrados
+
+                        </h2>
+
+
+                        <p class="text-xs
+                                  text-slate-400
+                                  mt-1">
+
+                            Cuentas habilitadas en el sistema.
+
+                        </p>
+
                     </div>
 
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                            Acciones
-                        </label>
-                        <div class="flex gap-2">
-                            <a th:href="@{/view/usuarios/pdf}"
-                               class="flex-1 rounded-md border border-slate-200 px-3 py-2 text-center text-sm text-slate-600 hover:bg-slate-50">
-                                PDF
-                            </a>
-                            <a th:href="@{/view/usuarios/excel}"
-                               class="flex-1 rounded-md border border-slate-200 px-3 py-2 text-center text-sm text-slate-600 hover:bg-slate-50">
-                                Excel
-                            </a>
-                        </div>
-                    </div>
+
+                    <span class="inline-flex
+                                 items-center
+                                 self-start
+                                 sm:self-auto
+                                 rounded-lg
+                                 bg-slate-100
+                                 px-3
+                                 py-1.5
+                                 text-xs
+                                 font-bold
+                                 text-slate-600"
+                          th:text="${usuarios != null ? #lists.size(usuarios) + ' usuarios' : '0 usuarios'}">
+
+                        0 usuarios
+
+                    </span>
+
+
                 </div>
 
-                <!-- TABLA -->
+
                 <div class="overflow-x-auto">
+
+
                     <table class="min-w-full text-sm">
 
+
                         <thead>
-                        <tr class="bg-[#fafafa] border-b border-slate-100 text-[11px] uppercase tracking-wide text-slate-500">
-                            <th class="px-5 py-4 text-left font-bold">Usuario</th>
-                            <th class="px-5 py-4 text-left font-bold">Rol</th>
-                            <th class="px-5 py-4 text-left font-bold">Dependencia</th>
-                            <th class="px-5 py-4 text-left font-bold">Identificación</th>
-                            <th class="px-5 py-4 text-left font-bold">Correo</th>
-                            <th class="px-5 py-4 text-left font-bold">Estado</th>
-                            <th class="px-5 py-4 text-left font-bold">Teléfono</th>
-                            <th class="px-5 py-4 text-center font-bold">Acciones</th>
+
+
+                        <tr class="bg-slate-50/80
+                                   border-b
+                                   border-slate-100
+                                   text-[10px]
+                                   uppercase
+                                   tracking-[.1em]
+                                   text-slate-500">
+
+
+                            <th class="px-6 py-4 text-left">
+                                Usuario
+                            </th>
+
+                            <th class="px-6 py-4 text-left">
+                                Identificación
+                            </th>
+
+                            <th class="px-6 py-4 text-left">
+                                Rol
+                            </th>
+
+                            <th class="px-6 py-4 text-left">
+                                Dependencia
+                            </th>
+
+                            <th class="px-6 py-4 text-left">
+                                Contacto
+                            </th>
+
+                            <th class="px-6 py-4 text-left">
+                                Estado
+                            </th>
+
+                            <th class="px-6 py-4 text-center">
+                                Acciones
+                            </th>
+
+
                         </tr>
+
+
                         </thead>
+
 
                         <tbody class="divide-y divide-slate-100">
 
-                        <tr th:each="usuario : ${usuarios}" class="hover:bg-slate-50 transition">
 
-                            <td class="px-5 py-4">
-                                <div class="font-bold text-slate-800" th:text="${usuario.nombre}"></div>
-                                <div class="text-xs text-slate-400" th:text="'ID: ' + ${usuario.id_usuario}"></div>
-                            </td>
+                        <!-- =================================================
+                             FILA USUARIO
+                        ================================================== -->
 
-                            <td class="px-5 py-4 text-slate-600" th:text="${usuario.id_rol}"></td>
+                        <tr th:each="u : ${usuarios}"
+                            class="user-row
+                                   hover:bg-slate-50/70
+                                   transition"
+                            th:attr="data-state=${u.estado != null ? #strings.toLowerCase(u.estado) : ''}">
 
-                            <td class="px-5 py-4 text-slate-600" th:text="${usuario.id_dependencia}"></td>
 
-                            <td class="px-5 py-4">
-                                <div class="font-medium text-slate-700" th:text="${usuario.num_identificacion}"></div>
-                                <div class="text-xs text-slate-400" th:text="${usuario.tipo_identificacion}"></div>
-                            </td>
+                            <!-- USUARIO -->
 
-                            <td class="px-5 py-4 text-slate-600" th:text="${usuario.correo}"></td>
+                            <td class="px-6 py-4">
 
-                            <td class="px-5 py-4">
-                                <span th:if="${usuario.estado == 'Activo'}"
-                                      class="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">
-                                    Activo
-                                </span>
 
-                                <span th:if="${usuario.estado != 'Activo'}"
-                                      class="inline-flex rounded-full bg-yellow-100 px-3 py-1 text-xs font-bold text-yellow-700"
-                                      th:text="${usuario.estado}">
-                                </span>
-                            </td>
+                                <div class="flex
+                                            items-center
+                                            gap-3">
 
-                            <td class="px-5 py-4 text-slate-600" th:text="${usuario.telefono}"></td>
 
-                            <td class="px-5 py-4">
-                                <div class="flex items-center justify-center gap-3">
+                                    <div class="w-10
+                                                h-10
+                                                rounded-xl
+                                                bg-green-50
+                                                text-[#168500]
+                                                flex
+                                                items-center
+                                                justify-center
+                                                font-extrabold
+                                                flex-none"
+                                         th:text="${u.nombre != null && !#strings.isEmpty(u.nombre)
+                                                    ? #strings.toUpperCase(#strings.substring(u.nombre, 0, 1))
+                                                    : 'U'}">
 
-                                    <a th:href="@{'/view/usuarios/edit/' + ${usuario.id_usuario}}"
-                                       title="Editar"
-                                       class="text-slate-500 hover:text-green-700 transition">
-                                        ✏️
-                                    </a>
+                                        U
 
-                                    <form th:action="@{'/view/usuarios/delete/' + ${usuario.id_usuario}}"
-                                          method="post"
-                                          class="inline">
-                                        <button type="submit"
-                                                title="Eliminar"
-                                                class="text-slate-500 hover:text-red-600 transition"
-                                                onclick="return confirm('¿Está seguro que desea eliminar este Usuario?')">
-                                            🗑️
-                                        </button>
-                                    </form>
+                                    </div>
+
+
+                                    <div class="min-w-0">
+
+
+                                        <div class="font-bold
+                                                    text-slate-800"
+                                             th:text="${u.nombre}">
+
+                                            Usuario
+
+                                        </div>
+
+
+                                        <div class="text-xs
+                                                    text-slate-400
+                                                    mt-1"
+                                             th:text="${u.correo}">
+
+                                            correo@ejemplo.com
+
+                                        </div>
+
+
+                                    </div>
+
 
                                 </div>
+
+
                             </td>
+
+
+                            <!-- IDENTIFICACIÓN -->
+
+                            <td class="px-6 py-4">
+
+
+                                <div class="font-semibold
+                                            text-slate-700"
+                                     th:text="${u.num_identificacion}">
+
+                                    00000000
+
+                                </div>
+
+
+                                <div class="text-xs
+                                            text-slate-400
+                                            mt-1"
+                                     th:text="${u.tipo_identificacion}">
+
+                                    CC
+
+                                </div>
+
+
+                            </td>
+
+
+                            <!-- ROL -->
+
+                            <td class="px-6 py-4">
+
+
+                                <div class="inline-flex
+                                            items-center
+                                            rounded-lg
+                                            border
+                                            border-slate-200
+                                            bg-slate-50
+                                            px-3
+                                            py-1.5
+                                            text-xs
+                                            font-semibold
+                                            text-slate-600"
+                                     th:text="${'Rol ID ' + u.id_rol}">
+
+                                    Rol
+
+                                </div>
+
+
+                            </td>
+
+
+                            <!-- DEPENDENCIA -->
+
+                            <td class="px-6 py-4">
+
+
+                                <div class="inline-flex
+                                            items-center
+                                            rounded-lg
+                                            border
+                                            border-slate-200
+                                            bg-slate-50
+                                            px-3
+                                            py-1.5
+                                            text-xs
+                                            font-semibold
+                                            text-slate-600"
+                                     th:text="${'Dependencia ID ' + u.id_dependencia}">
+
+                                    Dependencia
+
+                                </div>
+
+
+                            </td>
+
+
+                            <!-- CONTACTO -->
+
+                            <td class="px-6 py-4">
+
+
+                                <div class="text-slate-700"
+                                     th:text="${u.telefono}">
+
+                                    Teléfono
+
+                                </div>
+
+
+                                <div class="text-xs
+                                            text-slate-400
+                                            mt-1
+                                            max-w-[200px]
+                                            truncate"
+                                     th:text="${u.direccion}">
+
+                                    Dirección
+
+                                </div>
+
+
+                            </td>
+
+
+                            <!-- ESTADO -->
+
+                            <td class="px-6 py-4">
+
+
+                                <!-- ACTIVO -->
+
+                                <span th:if="${u.estado != null && #strings.equalsIgnoreCase(u.estado, 'activo')}"
+                                      class="inline-flex
+                                             items-center
+                                             gap-1.5
+                                             rounded-full
+                                             bg-green-50
+                                             px-3
+                                             py-1.5
+                                             text-xs
+                                             font-bold
+                                             text-green-700">
+
+
+                                    <span class="w-1.5
+                                                 h-1.5
+                                                 rounded-full
+                                                 bg-green-500">
+                                    </span>
+
+
+                                    Activo
+
+                                </span>
+
+
+                                <!-- INACTIVO -->
+
+                                <span th:unless="${u.estado != null && #strings.equalsIgnoreCase(u.estado, 'activo')}"
+                                      class="inline-flex
+                                             items-center
+                                             gap-1.5
+                                             rounded-full
+                                             bg-slate-100
+                                             px-3
+                                             py-1.5
+                                             text-xs
+                                             font-bold
+                                             text-slate-600">
+
+
+                                    <span class="w-1.5
+                                                 h-1.5
+                                                 rounded-full
+                                                 bg-slate-400">
+                                    </span>
+
+
+                                    <span th:text="${u.estado != null ? #strings.capitalize(#strings.toLowerCase(u.estado)) : 'Sin estado'}">
+                                        Inactivo
+                                    </span>
+
+
+                                </span>
+
+
+                            </td>
+
+
+                            <!-- ACCIONES -->
+
+                            <td class="px-6 py-4">
+
+
+                                <div class="flex
+                                            justify-center
+                                            items-center
+                                            gap-2">
+
+
+                                    <!-- EDITAR -->
+
+                                    <a class="action"
+                                       th:href="@{'/view/usuarios/edit/' + ${u.id_usuario}}"
+                                       title="Editar usuario"
+                                       aria-label="Editar usuario">
+
+
+                                        <svg viewBox="0 0 24 24"
+                                             fill="none"
+                                             stroke="currentColor"
+                                             stroke-width="1.8">
+
+                                            <path d="M12 20h9"/>
+
+                                            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/>
+
+                                        </svg>
+
+
+                                    </a>
+
+
+                                    <!-- ELIMINAR -->
+
+                                    <form th:action="@{'/view/usuarios/delete/' + ${u.id_usuario}}"
+                                          method="post"
+                                          class="inline-flex">
+
+
+                                        <button type="submit"
+                                                class="action danger"
+                                                title="Eliminar usuario"
+                                                aria-label="Eliminar usuario"
+                                                onclick="return confirm('¿Está seguro que desea eliminar este usuario?')">
+
+
+                                            <svg viewBox="0 0 24 24"
+                                                 fill="none"
+                                                 stroke="currentColor"
+                                                 stroke-width="1.8">
+
+                                                <path d="M3 6h18"/>
+
+                                                <path d="M8 6V4h8v2"/>
+
+                                                <path d="M19 6l-1 14H6L5 6"/>
+
+                                                <path d="M10 11v5"/>
+
+                                                <path d="M14 11v5"/>
+
+                                            </svg>
+
+
+                                        </button>
+
+
+                                    </form>
+
+
+                                </div>
+
+
+                            </td>
+
+
                         </tr>
 
-                        <tr th:if="${#lists.isEmpty(usuarios)}">
-                            <td colspan="8" class="px-6 py-10 text-center text-slate-500">
-                                No hay usuarios registrados en este momento.
+
+                        <!-- =================================================
+                             SIN REGISTROS
+                        ================================================== -->
+
+                        <tr th:if="${usuarios == null || #lists.isEmpty(usuarios)}">
+
+
+                            <td colspan="7"
+                                class="px-6
+                                       py-14
+                                       text-center">
+
+
+                                <div class="w-12
+                                            h-12
+                                            mx-auto
+                                            rounded-xl
+                                            bg-slate-100
+                                            text-slate-400
+                                            flex
+                                            items-center
+                                            justify-center
+                                            mb-3">
+
+
+                                    <svg width="22"
+                                         height="22"
+                                         viewBox="0 0 24 24"
+                                         fill="none"
+                                         stroke="currentColor"
+                                         stroke-width="1.8">
+
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+
+                                        <circle cx="9"
+                                                cy="7"
+                                                r="4"/>
+
+                                        <path d="M19 8v6"/>
+
+                                        <path d="M22 11h-6"/>
+
+                                    </svg>
+
+
+                                </div>
+
+
+                                <p class="font-semibold
+                                          text-slate-700">
+
+                                    No hay usuarios registrados
+
+                                </p>
+
+
+                                <p class="text-xs
+                                          text-slate-400
+                                          mt-1">
+
+                                    Crea un usuario para comenzar.
+
+                                </p>
+
+
                             </td>
+
+
                         </tr>
+
 
                         </tbody>
+
+
                     </table>
+
+
                 </div>
 
-                <!-- FOOTER TABLA -->
-                <div class="flex items-center justify-between px-5 py-4 border-t border-slate-100 text-xs text-slate-500">
-                    <span th:text="'Mostrando ' + ${#lists.size(usuarios)} + ' usuarios registrados'">
-                        Mostrando usuarios registrados
-                    </span>
-
-                    <div class="flex items-center gap-2">
-                        <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-slate-100">
-                            ‹
-                        </button>
-                        <button class="w-8 h-8 rounded-md bg-[#2fa300] text-white font-bold">
-                            1
-                        </button>
-                        <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-slate-100">
-                            2
-                        </button>
-                        <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-slate-100">
-                            3
-                        </button>
-                        <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-slate-100">
-                            ›
-                        </button>
-                    </div>
-                </div>
 
             </section>
 
+
         </main>
+
+
     </div>
+
+
 </div>
 
-<script th:src="@{/js/script.js}" defer></script>
+
+<!-- =========================================================
+     FILTROS
+========================================================= -->
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const searchInput =
+            document.getElementById('userSearch');
+
+        const stateFilter =
+            document.getElementById('stateFilter');
+
+        const rows =
+            Array.from(
+                document.querySelectorAll('.user-row')
+            );
+
+
+        function filterUsers() {
+
+            const query =
+                searchInput.value
+                    .toLowerCase()
+                    .trim();
+
+            const state =
+                stateFilter.value
+                    .toLowerCase()
+                    .trim();
+
+
+            rows.forEach(function (row) {
+
+                const rowText =
+                    row.innerText
+                        .toLowerCase();
+
+                const rowState =
+                    (row.dataset.state || '')
+                        .toLowerCase();
+
+
+                const matchesQuery =
+                    query === '' ||
+                    rowText.includes(query);
+
+
+                const matchesState =
+                    state === '' ||
+                    rowState === state;
+
+
+                row.style.display =
+                    matchesQuery && matchesState
+                        ? ''
+                        : 'none';
+
+            });
+
+        }
+
+
+        searchInput.addEventListener(
+            'input',
+            filterUsers
+        );
+
+
+        stateFilter.addEventListener(
+            'change',
+            filterUsers
+        );
+
+    });
+
+</script>
+
+
+<script th:src="@{/js/script.js}"
+        defer>
+</script>
+
 
 </body>
+
 </html>

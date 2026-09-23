@@ -1,38 +1,72 @@
 package com.odin.odin.controller;
 
-import com.odin.odin.model.*;
-import com.odin.odin.repository.*;
+import com.odin.odin.model.HistorialRadicado;
+import com.odin.odin.model.Observaciones;
+import com.odin.odin.model.Radicados;
+import com.odin.odin.model.Reasignaciones;
+import com.odin.odin.model.Usuarios;
+
+import com.odin.odin.repository.DependenciasRepository;
+import com.odin.odin.repository.HistorialRadicadoRepository;
+import com.odin.odin.repository.ObservacionesRepository;
+import com.odin.odin.repository.RadicadosRepository;
+import com.odin.odin.repository.ReasignacionesRepository;
+import com.odin.odin.repository.UsuariosRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/radicados")
 public class RadicadosController {
 
-    @Autowired private RadicadosRepository radicadosRepository;
-    @Autowired private ReasignacionesRepository reasignacionesRepository;
-    @Autowired private HistorialRadicadoRepository historialRepository;
-    @Autowired private ObservacionesRepository observacionesRepository;
-    @Autowired private RolesRepository rolesRepository;
-    @Autowired private UsuariosRepository usuariosRepository;
-    @Autowired private DependenciasRepository dependenciasRepository;
+    @Autowired
+    private RadicadosRepository radicadosRepository;
 
+    @Autowired
+    private ReasignacionesRepository reasignacionesRepository;
+
+    @Autowired
+    private HistorialRadicadoRepository historialRepository;
+
+    @Autowired
+    private ObservacionesRepository observacionesRepository;
+
+    @Autowired
+    private UsuariosRepository usuariosRepository;
+
+    @Autowired
+    private DependenciasRepository dependenciasRepository;
+
+    @PreAuthorize("hasAuthority('ver_radicados')")
     @GetMapping
     public List<Radicados> getAll() {
         return radicadosRepository.findAll();
     }
 
+    @PreAuthorize("hasAuthority('ver_radicados')")
     @GetMapping("/buscar")
     public List<Radicados> buscar(
-            @RequestParam(required = false) String texto,
-            @RequestParam(required = false) Integer estado,
-            @RequestParam(required = false) Long dependencia,
-            @RequestParam(required = false) Integer tramite) {
+            @RequestParam(required = false)
+            String texto,
+
+            @RequestParam(required = false)
+            Integer estado,
+
+            @RequestParam(required = false)
+            Long dependencia,
+
+            @RequestParam(required = false)
+            Long tramite) {
 
         return radicadosRepository.buscar(
                 texto,
@@ -42,65 +76,96 @@ public class RadicadosController {
         );
     }
 
+    @PreAuthorize("hasAuthority('ver_radicados')")
     @GetMapping("/vencidos")
     public List<Radicados> vencidos() {
         return radicadosRepository.findVencidos();
     }
 
+    @PreAuthorize("hasAuthority('ver_radicados')")
     @GetMapping("/proximos-a-vencer")
     public List<Radicados> proximosAVencer(
-            @RequestParam(defaultValue = "3") Integer dias) {
+            @RequestParam(defaultValue = "3")
+            Integer dias) {
 
-        if (dias == null || dias < 0 || dias > 365) {
+        if (dias == null
+                || dias < 0
+                || dias > 365) {
+
             dias = 3;
         }
 
-        return radicadosRepository.findProximosAVencer(dias);
+        return radicadosRepository
+                .findProximosAVencer(dias);
     }
 
+    @PreAuthorize("hasAuthority('ver_radicados')")
     @GetMapping("/{id}")
     public ResponseEntity<Radicados> getById(
-            @PathVariable Long id) {
+            @PathVariable
+            Long id) {
 
         return radicadosRepository
                 .findById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElse(
+                        ResponseEntity
+                                .notFound()
+                                .build()
+                );
     }
 
+    @PreAuthorize("hasAuthority('ver_bitacora')")
     @GetMapping("/{id}/historial")
-    public ResponseEntity<List<HistorialRadicado>> historial(
-            @PathVariable Long id) {
+    public ResponseEntity<List<HistorialRadicado>>
+    historial(
+            @PathVariable
+            Long id) {
 
         if (!radicadosRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity
+                    .notFound()
+                    .build();
         }
 
         return ResponseEntity.ok(
-                historialRepository.findByRadicadoOrderByFechaDesc(id)
+                historialRepository
+                        .findByRadicadoOrderByFechaDesc(id)
         );
     }
 
+    @PreAuthorize("hasAuthority('ver_radicados')")
     @GetMapping("/{id}/reasignaciones")
-    public ResponseEntity<List<Reasignaciones>> reasignaciones(
-            @PathVariable Long id) {
+    public ResponseEntity<List<Reasignaciones>>
+    reasignaciones(
+            @PathVariable
+            Long id) {
 
         if (!radicadosRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity
+                    .notFound()
+                    .build();
         }
 
         return ResponseEntity.ok(
                 reasignacionesRepository
-                        .findByRadicadoOrderByFechaDesc(id.intValue())
+                        .findByRadicadoOrderByFechaDesc(
+                                id.intValue()
+                        )
         );
     }
 
+    @PreAuthorize("hasAuthority('ver_radicados')")
     @GetMapping("/{id}/observaciones")
-    public ResponseEntity<List<Observaciones>> observaciones(
-            @PathVariable Long id) {
+    public ResponseEntity<List<Observaciones>>
+    observaciones(
+            @PathVariable
+            Long id) {
 
         if (!radicadosRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity
+                    .notFound()
+                    .build();
         }
 
         return ResponseEntity.ok(
@@ -109,58 +174,78 @@ public class RadicadosController {
         );
     }
 
+    @PreAuthorize("hasAuthority('gestionar_documentos')")
     @PostMapping("/{id}/observaciones")
     public ResponseEntity<?> agregarObservacion(
-            @PathVariable Long id,
-            @RequestBody Map<String, Object> payload,
-            @RequestHeader(
-                    value = "X-User-Id",
-                    required = false
-            ) Long actor) {
+            @PathVariable
+            Long id,
 
-        if (!puedeModificar(actor)) {
-            return prohibido("agregar observaciones");
-        }
+            @RequestBody
+            Map<String, Object> payload,
+
+            Authentication authentication) {
 
         if (!radicadosRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity
+                    .notFound()
+                    .build();
         }
 
-        String comentario = texto(
-                payload.get("comentario")
-        );
+        Optional<Usuarios> usuarioActual =
+                obtenerUsuarioActual(
+                        authentication
+                );
 
-        Long usuario = actor != null
-                ? actor
-                : numeroLong(payload.get("usuario"));
+        if (usuarioActual.isEmpty()) {
+            return ResponseEntity
+                    .status(401)
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "No se pudo identificar el usuario autenticado"
+                            )
+                    );
+        }
 
-        if (comentario.isBlank()
-                || usuario == null
-                || !usuariosRepository.existsById(usuario)) {
+        String comentario =
+                texto(
+                        payload.get(
+                                "comentario"
+                        )
+                );
 
+        if (comentario.isBlank()) {
             return ResponseEntity
                     .badRequest()
                     .body(
                             Map.of(
                                     "error",
-                                    "Comentario y usuario válido son obligatorios"
+                                    "La observación no puede estar vacía"
                             )
                     );
         }
 
-        Observaciones saved =
-                observacionesRepository.save(
-                        Observaciones.builder()
-                                .id_radicado(id)
-                                .id_usuario(usuario)
-                                .comentario(comentario)
-                                .fecha(LocalDateTime.now())
-                                .build()
-                );
+        Long idUsuario =
+                usuarioActual
+                        .get()
+                        .getId_usuario();
 
-        registrar(
+        Observaciones observacion =
+                Observaciones
+                        .builder()
+                        .id_radicado(id)
+                        .id_usuario(idUsuario)
+                        .comentario(comentario)
+                        .fecha(LocalDateTime.now())
+                        .build();
+
+        Observaciones saved =
+                observacionesRepository
+                        .save(observacion);
+
+        registrarHistorial(
                 id,
-                usuario,
+                idUsuario,
                 "observacion",
                 comentario
         );
@@ -168,69 +253,142 @@ public class RadicadosController {
         return ResponseEntity.ok(saved);
     }
 
+    @PreAuthorize("hasAuthority('crear_radicado')")
     @PostMapping
-    public Radicados create(
-            @RequestBody Radicados radicado) {
+    public ResponseEntity<?> create(
+            @RequestBody
+            Radicados radicado,
+
+            Authentication authentication) {
+
+        Optional<Usuarios> usuarioActual =
+                obtenerUsuarioActual(
+                        authentication
+                );
+
+        if (usuarioActual.isEmpty()) {
+            return ResponseEntity
+                    .status(401)
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "Usuario autenticado no encontrado"
+                            )
+                    );
+        }
+
+        if (radicado.getId_usuario() == null) {
+
+            radicado.setId_usuario(
+                    usuarioActual
+                            .get()
+                            .getId_usuario()
+            );
+        }
 
         Radicados saved =
-                radicadosRepository.save(radicado);
+                radicadosRepository
+                        .save(radicado);
 
-        registrar(
+        registrarHistorial(
                 saved.getId_radicado(),
-                usuario(saved),
+                usuarioActual
+                        .get()
+                        .getId_usuario(),
                 "radicacion",
                 "Radicado creado"
         );
 
-        return saved;
+        return ResponseEntity.ok(saved);
     }
 
+    @PreAuthorize("hasAuthority('editar_radicado')")
     @PutMapping("/{id}")
     public ResponseEntity<?> update(
-            @PathVariable Long id,
-            @RequestBody Radicados radicado) {
+            @PathVariable
+            Long id,
 
-        return radicadosRepository
-                .findById(id)
-                .map(existing -> {
+            @RequestBody
+            Radicados radicado,
 
-                    radicado.setId_radicado(id);
+            Authentication authentication) {
 
-                    Radicados saved =
-                            radicadosRepository.save(radicado);
-
-                    registrar(
-                            id,
-                            usuario(saved),
-                            "modificacion",
-                            "Radicado actualizado"
-                    );
-
-                    return ResponseEntity.ok(saved);
-
-                })
-                .orElse(
-                        ResponseEntity.notFound().build()
+        Optional<Usuarios> usuarioActual =
+                obtenerUsuarioActual(
+                        authentication
                 );
-    }
 
-    @PatchMapping("/{id}/estado")
-    public ResponseEntity<?> cambiarEstado(
-            @PathVariable Long id,
-            @RequestBody Map<String, Object> payload,
-            @RequestHeader(
-                    value = "X-User-Id",
-                    required = false
-            ) Long actor) {
-
-        if (!puedeModificar(actor)) {
-            return prohibido("cambiar estados");
+        if (usuarioActual.isEmpty()) {
+            return ResponseEntity
+                    .status(401)
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "Usuario autenticado no encontrado"
+                            )
+                    );
         }
 
-        Integer nuevo =
-                numero(payload.get("estado"));
+        Optional<Radicados> existente =
+                radicadosRepository
+                        .findById(id);
 
-        if (nuevo == null || nuevo <= 0) {
+        if (existente.isEmpty()) {
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        }
+
+        radicado.setId_radicado(id);
+
+        Radicados saved =
+                radicadosRepository
+                        .save(radicado);
+
+        registrarHistorial(
+                id,
+                usuarioActual
+                        .get()
+                        .getId_usuario(),
+                "modificacion",
+                "Radicado actualizado"
+        );
+
+        return ResponseEntity.ok(saved);
+    }
+
+    @PreAuthorize("hasAuthority('gestionar_tramites')")
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<?> cambiarEstado(
+            @PathVariable
+            Long id,
+
+            @RequestBody
+            Map<String, Object> payload,
+
+            Authentication authentication) {
+
+        Optional<Usuarios> usuarioActual =
+                obtenerUsuarioActual(authentication);
+
+        if (usuarioActual.isEmpty()) {
+            return ResponseEntity
+                    .status(401)
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "Usuario autenticado no encontrado"
+                            )
+                    );
+        }
+
+        Integer nuevoEstado =
+                numero(
+                        payload.get("estado")
+                );
+
+        if (nuevoEstado == null
+                || nuevoEstado <= 0) {
 
             return ResponseEntity
                     .badRequest()
@@ -242,404 +400,604 @@ public class RadicadosController {
                     );
         }
 
-        return radicadosRepository
-                .findById(id)
-                .map(r -> {
+        Optional<Radicados> resultado =
+                radicadosRepository
+                        .findById(id);
 
-                    Integer anterior =
-                            r.getId_estado();
+        if (resultado.isEmpty()) {
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        }
 
-                    if (!transicionPermitida(
-                            anterior,
-                            nuevo
-                    )) {
+        Radicados radicado =
+                resultado.get();
 
-                        return ResponseEntity
-                                .badRequest()
-                                .body(
-                                        Map.of(
-                                                "error",
-                                                "Transición de estado no permitida: "
-                                                        + anterior
-                                                        + " -> "
-                                                        + nuevo
-                                        )
-                                );
-                    }
+        Integer estadoAnterior =
+                radicado.getId_estado();
 
-                    r.setId_estado(nuevo);
+        if (!transicionPermitida(
+                estadoAnterior,
+                nuevoEstado
+        )) {
 
-                    Radicados saved =
-                            radicadosRepository.save(r);
-
-                    registrar(
-                            id,
-                            actor != null
-                                    ? actor
-                                    : usuario(saved),
-                            "cambio_estado",
-                            "Estado "
-                                    + anterior
-                                    + " -> "
-                                    + nuevo
+            return ResponseEntity
+                    .badRequest()
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "Transición de estado no permitida: "
+                                            + estadoAnterior
+                                            + " -> "
+                                            + nuevoEstado
+                            )
                     );
+        }
 
-                    return ResponseEntity.ok(saved);
+        radicado.setId_estado(
+                nuevoEstado
+        );
 
-                })
-                .orElse(
-                        ResponseEntity.notFound().build()
-                );
+        Radicados saved =
+                radicadosRepository
+                        .save(radicado);
+
+        registrarHistorial(
+                id,
+                usuarioActual
+                        .get()
+                        .getId_usuario(),
+                "cambio_estado",
+                "Estado "
+                        + estadoAnterior
+                        + " -> "
+                        + nuevoEstado
+        );
+
+        return ResponseEntity.ok(saved);
     }
 
+    @PreAuthorize("hasAuthority('asignar_tramites')")
     @PatchMapping("/{id}/asignar")
     public ResponseEntity<?> asignar(
-            @PathVariable Long id,
-            @RequestBody Map<String, Object> payload,
-            @RequestHeader(
-                    value = "X-User-Id",
-                    required = false
-            ) Long actor) {
+            @PathVariable
+            Long id,
 
-        if (!puedeModificar(actor)) {
-            return prohibido("asignar radicados");
-        }
-
-        Integer nuevo =
-                numero(payload.get("usuario"));
-
-        if (nuevo == null
-                || nuevo <= 0
-                || !usuariosRepository
-                .existsById(nuevo.longValue())) {
-
-            return ResponseEntity
-                    .badRequest()
-                    .body(
-                            Map.of(
-                                    "error",
-                                    "Usuario responsable inexistente"
-                            )
-                    );
-        }
-
-        return radicadosRepository
-                .findById(id)
-                .map(r -> {
-
-                    Integer anterior =
-                            r.getId_usuario();
-
-                    r.setId_usuario(nuevo);
-
-                    Radicados saved =
-                            radicadosRepository.save(r);
-
-                    registrar(
-                            id,
-                            actor != null
-                                    ? actor
-                                    : nuevo.longValue(),
-                            "asignacion",
-                            "Responsable "
-                                    + anterior
-                                    + " -> "
-                                    + nuevo
-                    );
-
-                    return ResponseEntity.ok(saved);
-
-                })
-                .orElse(
-                        ResponseEntity.notFound().build()
-                );
-    }
-
-    @PostMapping("/{id}/reasignar")
-    public ResponseEntity<?> reasignar(
-            @PathVariable Long id,
-            @RequestBody Map<String, Object> payload,
-            @RequestHeader(
-                    value = "X-User-Id",
-                    required = false
-            ) Long actor) {
-
-        if (!puedeModificar(actor)) {
-            return prohibido("reasignar radicados");
-        }
-
-        Integer nuevo =
-                numero(payload.get("usuarioNuevo"));
-
-        Integer dependencia =
-                numero(payload.get("dependenciaNueva"));
-
-        if (nuevo == null
-                || dependencia == null
-                || nuevo <= 0
-                || dependencia <= 0
-                || !usuariosRepository
-                .existsById(nuevo.longValue())
-                || !dependenciasRepository
-                .existsById(dependencia.longValue())) {
-
-            return ResponseEntity
-                    .badRequest()
-                    .body(
-                            Map.of(
-                                    "error",
-                                    "Usuario o dependencia inválidos"
-                            )
-                    );
-        }
-
-        return radicadosRepository
-                .findById(id)
-                .map(r -> {
-
-                    Integer anterior =
-                            r.getId_usuario();
-
-                    int actualizados =
-                            radicadosRepository
-                                    .actualizarAsignacion(
-                                            id,
-                                            nuevo,
-                                            dependencia
-                                    );
-
-                    if (actualizados == 0) {
-
-                        return ResponseEntity
-                                .internalServerError()
-                                .body(
-                                        Map.of(
-                                                "error",
-                                                "No se actualizó la asignación"
-                                        )
-                                );
-                    }
-
-                    Reasignaciones re =
-                            new Reasignaciones();
-
-                    re.setId_radicado(
-                            id.intValue()
-                    );
-
-                    re.setId_usuario_anterior(
-                            anterior
-                    );
-
-                    re.setId_usuario_nuevo(
-                            nuevo
-                    );
-
-                    re.setId_dependencia_nueva(
-                            dependencia
-                    );
-
-                    re.setFecha(
-                            LocalDateTime.now()
-                    );
-
-                    reasignacionesRepository.save(re);
-
-                    registrar(
-                            id,
-                            actor != null
-                                    ? actor
-                                    : nuevo.longValue(),
-                            "reasignacion",
-                            "Responsable "
-                                    + anterior
-                                    + " -> "
-                                    + nuevo
-                    );
-
-                    return ResponseEntity.ok(
-                            radicadosRepository
-                                    .findById(id)
-                                    .orElse(r)
-                    );
-
-                })
-                .orElse(
-                        ResponseEntity.notFound().build()
-                );
-    }
-
-    @PatchMapping("/{id}/cerrar")
-    public ResponseEntity<?> cerrar(
-            @PathVariable Long id,
-            @RequestBody(required = false)
+            @RequestBody
             Map<String, Object> payload,
-            @RequestHeader(
-                    value = "X-User-Id",
-                    required = false
-            ) Long actor) {
 
-        if (!puedeModificar(actor)) {
-            return prohibido("cerrar radicados");
+            Authentication authentication) {
+
+        Optional<Usuarios> usuarioActual =
+                obtenerUsuarioActual(authentication);
+
+        if (usuarioActual.isEmpty()) {
+            return ResponseEntity
+                    .status(401)
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "Usuario autenticado no encontrado"
+                            )
+                    );
         }
 
-        return radicadosRepository
-                .findById(id)
-                .map(r -> {
-
-                    Integer anterior =
-                            r.getId_estado();
-
-                    Integer estado =
-                            payload == null
-                                    ? null
-                                    : numero(
-                                    payload.get("estado")
-                            );
-
-                    if (estado == null) {
-                        estado = 3;
-                    }
-
-                    if (!transicionPermitida(
-                            anterior,
-                            estado
-                    )) {
-
-                        return ResponseEntity
-                                .badRequest()
-                                .body(
-                                        Map.of(
-                                                "error",
-                                                "El radicado no puede cerrarse desde el estado actual"
-                                        )
-                                );
-                    }
-
-                    Long usuarioCierre =
-                            actor != null
-                                    ? actor
-                                    : usuario(r);
-
-                    if (usuarioCierre == null
-                            || !usuariosRepository
-                            .existsById(usuarioCierre)) {
-
-                        return ResponseEntity
-                                .badRequest()
-                                .body(
-                                        Map.of(
-                                                "error",
-                                                "Usuario de cierre inválido"
-                                        )
-                                );
-                    }
-
-                    r.setId_estado(estado);
-                    r.setFecha_cierre(
-                            LocalDateTime.now()
-                    );
-                    r.setId_usuario_cierre(
-                            usuarioCierre
-                    );
-
-                    Radicados saved =
-                            radicadosRepository.save(r);
-
-                    String obs =
-                            texto(
-                                    payload == null
-                                            ? null
-                                            : payload.get(
-                                            "observacion"
-                                    )
-                            );
-
-                    registrar(
-                            id,
-                            usuarioCierre,
-                            "cierre",
-                            obs.isBlank()
-                                    ? "Radicado cerrado"
-                                    : obs
-                    );
-
-                    if (!obs.isBlank()) {
-
-                        observacionesRepository.save(
-                                Observaciones.builder()
-                                        .id_radicado(id)
-                                        .id_usuario(
-                                                usuarioCierre
-                                        )
-                                        .comentario(obs)
-                                        .fecha(
-                                                LocalDateTime.now()
-                                        )
-                                        .build()
-                        );
-                    }
-
-                    return ResponseEntity.ok(saved);
-
-                })
-                .orElse(
-                        ResponseEntity.notFound().build()
+        Long nuevoUsuario =
+                numeroLong(
+                        payload.get("usuario")
                 );
+
+        if (nuevoUsuario == null
+                || nuevoUsuario <= 0) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "Usuario inválido"
+                            )
+                    );
+        }
+
+        if (!usuariosRepository.existsById(
+                nuevoUsuario
+        )) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "El usuario responsable no existe"
+                            )
+                    );
+        }
+
+        Optional<Radicados> resultado =
+                radicadosRepository
+                        .findById(id);
+
+        if (resultado.isEmpty()) {
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        }
+
+        Radicados radicado =
+                resultado.get();
+
+        Long usuarioAnterior =
+                radicado.getId_usuario();
+
+        radicado.setId_usuario(
+                nuevoUsuario
+        );
+
+        Radicados saved =
+                radicadosRepository
+                        .save(radicado);
+
+        registrarHistorial(
+                id,
+                usuarioActual
+                        .get()
+                        .getId_usuario(),
+                "asignacion",
+                "Responsable "
+                        + usuarioAnterior
+                        + " -> "
+                        + nuevoUsuario
+        );
+
+        return ResponseEntity.ok(saved);
     }
 
-    @GetMapping("/{id}/permisos")
-    public ResponseEntity<Map<String, Object>> permisos(
-            @PathVariable Long id,
-            @RequestParam Long usuario) {
+    @PreAuthorize("hasAuthority('trasladar_radicado')")
+    @PostMapping("/{id}/reasignar")
+    @Transactional
+    public ResponseEntity<?> reasignar(
+            @PathVariable
+            Long id,
 
-        if (!radicadosRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+            @RequestBody
+            Map<String, Object> payload,
+
+            Authentication authentication) {
+
+        Optional<Usuarios> usuarioActual =
+                obtenerUsuarioActual(authentication);
+
+        if (usuarioActual.isEmpty()) {
+            return ResponseEntity
+                    .status(401)
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "Usuario autenticado no encontrado"
+                            )
+                    );
         }
+
+        Long usuarioNuevo =
+                numeroLong(
+                        payload.get("usuarioNuevo")
+                );
+
+        Long dependenciaNueva =
+                numeroLong(
+                        payload.get("dependenciaNueva")
+                );
+
+        if (usuarioNuevo == null
+                || usuarioNuevo <= 0) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "Debe seleccionar un usuario de destino válido"
+                            )
+                    );
+        }
+
+        if (dependenciaNueva == null
+                || dependenciaNueva <= 0) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "Debe seleccionar una dependencia válida"
+                            )
+                    );
+        }
+
+        if (!usuariosRepository.existsById(
+                usuarioNuevo
+        )) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "El usuario de destino no existe"
+                            )
+                    );
+        }
+
+        if (!dependenciasRepository.existsById(
+                dependenciaNueva
+        )) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "La dependencia de destino no existe"
+                            )
+                    );
+        }
+
+        Optional<Radicados> resultado =
+                radicadosRepository
+                        .findById(id);
+
+        if (resultado.isEmpty()) {
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        }
+
+        Radicados radicado =
+                resultado.get();
+
+        Long usuarioAnterior =
+                radicado.getId_usuario();
+
+        int actualizados =
+                radicadosRepository
+                        .actualizarAsignacion(
+                                id,
+                                usuarioNuevo,
+                                dependenciaNueva
+                        );
+
+        if (actualizados == 0) {
+
+            return ResponseEntity
+                    .internalServerError()
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "No fue posible actualizar la asignación del radicado"
+                            )
+                    );
+        }
+
+        Reasignaciones reasignacion =
+                new Reasignaciones();
+
+        reasignacion.setId_radicado(
+                id.intValue()
+        );
+
+        reasignacion.setId_usuario_anterior(
+                usuarioAnterior
+        );
+
+        reasignacion.setId_usuario_nuevo(
+                usuarioNuevo
+        );
+
+        reasignacion.setId_dependencia_nueva(
+                dependenciaNueva
+        );
+
+        reasignacion.setFecha(
+                LocalDateTime.now()
+        );
+
+        reasignacionesRepository
+                .save(reasignacion);
+
+        registrarHistorial(
+                id,
+                usuarioActual
+                        .get()
+                        .getId_usuario(),
+                "reasignacion",
+                "Responsable "
+                        + usuarioAnterior
+                        + " -> "
+                        + usuarioNuevo
+                        + " | Dependencia destino: "
+                        + dependenciaNueva
+        );
 
         return ResponseEntity.ok(
-                Map.of(
-                        "usuario",
-                        usuario,
-                        "puedeModificar",
-                        puedeModificar(usuario)
-                )
+                radicadosRepository
+                        .findById(id)
+                        .orElse(radicado)
         );
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(
-            @PathVariable Long id) {
+    @PreAuthorize("hasAuthority('finalizar_radicado')")
+    @PatchMapping("/{id}/cerrar")
+    @Transactional
+    public ResponseEntity<?> cerrar(
+            @PathVariable
+            Long id,
 
-        if (!radicadosRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+            @RequestBody(required = false)
+            Map<String, Object> payload,
+
+            Authentication authentication) {
+
+        Optional<Usuarios> usuarioActual =
+                obtenerUsuarioActual(authentication);
+
+        if (usuarioActual.isEmpty()) {
+            return ResponseEntity
+                    .status(401)
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "Usuario autenticado no encontrado"
+                            )
+                    );
         }
 
-        Radicados r =
+        Optional<Radicados> resultado =
                 radicadosRepository
-                        .findById(id)
-                        .orElse(null);
+                        .findById(id);
 
-        Long actor =
-                usuario(r);
+        if (resultado.isEmpty()) {
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        }
 
-        registrar(
+        Radicados radicado =
+                resultado.get();
+
+        Integer estadoAnterior =
+                radicado.getId_estado();
+
+        Integer estadoFinal =
+                payload == null
+                        ? null
+                        : numero(
+                        payload.get("estado")
+                );
+
+        if (estadoFinal == null) {
+            estadoFinal = 3;
+        }
+
+        if (!transicionPermitida(
+                estadoAnterior,
+                estadoFinal
+        )) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "El radicado no puede finalizarse desde el estado actual"
+                            )
+                    );
+        }
+
+        Long idUsuarioActual =
+                usuarioActual
+                        .get()
+                        .getId_usuario();
+
+        radicado.setId_estado(
+                estadoFinal
+        );
+
+        radicado.setFecha_cierre(
+                LocalDateTime.now()
+        );
+
+        radicado.setId_usuario_cierre(
+                idUsuarioActual
+        );
+
+        Radicados saved =
+                radicadosRepository
+                        .save(radicado);
+
+        String observacion =
+                texto(
+                        payload == null
+                                ? null
+                                : payload.get(
+                                "observacion"
+                        )
+                );
+
+        registrarHistorial(
                 id,
-                actor,
+                idUsuarioActual,
+                "cierre",
+                observacion.isBlank()
+                        ? "Radicado cerrado"
+                        : observacion
+        );
+
+        if (!observacion.isBlank()) {
+
+            Observaciones nuevaObservacion =
+                    Observaciones
+                            .builder()
+                            .id_radicado(id)
+                            .id_usuario(idUsuarioActual)
+                            .comentario(observacion)
+                            .fecha(LocalDateTime.now())
+                            .build();
+
+            observacionesRepository
+                    .save(nuevaObservacion);
+        }
+
+        return ResponseEntity.ok(saved);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity<?> delete(
+            @PathVariable
+            Long id,
+
+            Authentication authentication) {
+
+        Optional<Usuarios> usuarioActual =
+                obtenerUsuarioActual(authentication);
+
+        if (usuarioActual.isEmpty()) {
+
+            return ResponseEntity
+                    .status(401)
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "Usuario autenticado no encontrado"
+                            )
+                    );
+        }
+
+        if (!radicadosRepository.existsById(id)) {
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        }
+
+        registrarHistorial(
+                id,
+                usuarioActual
+                        .get()
+                        .getId_usuario(),
                 "eliminacion",
                 "Radicado eliminado"
         );
 
-        radicadosRepository.deleteById(id);
+        radicadosRepository
+                .deleteById(id);
 
         return ResponseEntity
                 .noContent()
                 .build();
     }
 
+    @GetMapping("/usuario-actual")
+    public ResponseEntity<?> usuarioActual(
+            Authentication authentication) {
+
+        Optional<Usuarios> usuario =
+                obtenerUsuarioActual(authentication);
+
+        if (usuario.isEmpty()) {
+
+            return ResponseEntity
+                    .status(401)
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "No existe una sesión válida"
+                            )
+                    );
+        }
+
+        Usuarios u =
+                usuario.get();
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "id",
+                        u.getId_usuario(),
+
+                        "nombre",
+                        u.getNombre(),
+
+                        "correo",
+                        u.getCorreo(),
+
+                        "rol",
+                        u.getId_rol(),
+
+                        "dependencia",
+                        u.getId_dependencia()
+                )
+        );
+    }
+
+    private Optional<Usuarios> obtenerUsuarioActual(
+            Authentication authentication) {
+
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || authentication.getName() == null) {
+
+            return Optional.empty();
+        }
+
+        return usuariosRepository
+                .findByCorreoIgnoreCase(
+                        authentication.getName()
+                );
+    }
+
+    private void registrarHistorial(
+            Long idRadicado,
+            Long idUsuario,
+            String accion,
+            String descripcion) {
+
+        if (idRadicado == null
+                || idUsuario == null) {
+
+            return;
+        }
+
+        if (!usuariosRepository.existsById(
+                idUsuario
+        )) {
+
+            return;
+        }
+
+        HistorialRadicado historial =
+                HistorialRadicado
+                        .builder()
+                        .id_radicado(idRadicado)
+                        .id_usuario(idUsuario)
+                        .accion(accion)
+                        .descripcion(descripcion)
+                        .fecha(LocalDateTime.now())
+                        .build();
+
+        historialRepository
+                .save(historial);
+    }
+
     private boolean transicionPermitida(
             Integer actual,
             Integer nuevo) {
+
+        if (nuevo == null
+                || nuevo <= 0) {
+
+            return false;
+        }
 
         if (actual == null) {
             return true;
@@ -649,92 +1007,41 @@ public class RadicadosController {
             return false;
         }
 
-        if (actual == 3 || actual == 4) {
+        if (actual == 3
+                || actual == 4) {
+
             return false;
         }
 
-        return nuevo >= 1 && nuevo <= 4;
+        return nuevo >= 1
+                && nuevo <= 4;
     }
 
-    private void registrar(
-            Long id,
-            Long usuario,
-            String accion,
-            String descripcion) {
+    private Integer numero(
+            Object valor) {
 
-        if (id == null
-                || usuario == null
-                || !usuariosRepository
-                .existsById(usuario)) {
-
-            return;
+        if (valor == null) {
+            return null;
         }
-
-        historialRepository.save(
-                HistorialRadicado.builder()
-                        .id_radicado(id)
-                        .id_usuario(usuario)
-                        .accion(accion)
-                        .descripcion(descripcion)
-                        .fecha(LocalDateTime.now())
-                        .build()
-        );
-    }
-
-    private boolean puedeModificar(Long id) {
-
-        if (id == null) {
-            return true;
-        }
-
-        return usuariosRepository
-                .findById(id)
-                .map(Usuarios::getId_rol)
-                .flatMap(rolesRepository::findById)
-                .map(
-                        r ->
-                                rolPermitido(r.getRol())
-                                        || rolPermitido(
-                                        r.getNombre()
-                                )
-                )
-                .orElse(false);
-    }
-
-    private boolean rolPermitido(String r) {
-
-        if (r == null) {
-            return false;
-        }
-
-        String v =
-                r.toLowerCase();
-
-        return v.contains("admin")
-                || v.contains("coordin")
-                || v.contains("gestor")
-                || v.contains("oper")
-                || v.contains("recep");
-    }
-
-    private Long usuario(Radicados r) {
-
-        return r == null
-                || r.getId_usuario() == null
-                ? null
-                : r.getId_usuario().longValue();
-    }
-
-    private Integer numero(Object v) {
 
         try {
 
-            return v == null
-                    ? null
-                    : v instanceof Number
-                    ? ((Number) v).intValue()
-                    : Integer.valueOf(
-                    v.toString().trim()
+            if (valor instanceof Number) {
+                return ((Number) valor)
+                        .intValue();
+            }
+
+            String texto =
+                    valor
+                            .toString()
+                            .trim();
+
+            if (texto.isEmpty()) {
+                return null;
+            }
+
+            return Integer.valueOf(
+                    texto
             );
 
         } catch (Exception e) {
@@ -743,16 +1050,31 @@ public class RadicadosController {
         }
     }
 
-    private Long numeroLong(Object v) {
+    private Long numeroLong(
+            Object valor) {
+
+        if (valor == null) {
+            return null;
+        }
 
         try {
 
-            return v == null
-                    ? null
-                    : v instanceof Number
-                    ? ((Number) v).longValue()
-                    : Long.valueOf(
-                    v.toString().trim()
+            if (valor instanceof Number) {
+                return ((Number) valor)
+                        .longValue();
+            }
+
+            String texto =
+                    valor
+                            .toString()
+                            .trim();
+
+            if (texto.isEmpty()) {
+                return null;
+            }
+
+            return Long.valueOf(
+                    texto
             );
 
         } catch (Exception e) {
@@ -761,24 +1083,15 @@ public class RadicadosController {
         }
     }
 
-    private String texto(Object v) {
+    private String texto(
+            Object valor) {
 
-        return v == null
-                ? ""
-                : v.toString().trim();
-    }
+        if (valor == null) {
+            return "";
+        }
 
-    private ResponseEntity<Map<String, String>>
-    prohibido(String accion) {
-
-        return ResponseEntity
-                .status(403)
-                .body(
-                        Map.of(
-                                "error",
-                                "El rol no tiene permiso para "
-                                        + accion
-                        )
-                );
+        return valor
+                .toString()
+                .trim();
     }
 }

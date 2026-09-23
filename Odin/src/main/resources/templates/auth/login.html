@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Iniciar sesión | ODIN</title>
+
+    <!-- =====================================================
+         ESTILOS DEL PROYECTO
+    ====================================================== -->
+
+    <link rel="stylesheet"
+          th:href="@{/css/globals.css}">
+
+    <link rel="stylesheet"
+          th:href="@{/css/styleguide.css}">
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+</head>
+
+
+<body class="odin-login-page">
+
+<div class="odin-login-layout">
+
+
+    <!-- =====================================================
+         PANEL IZQUIERDO
+    ====================================================== -->
+
+    <section class="odin-login-left">
+
+
+        <!-- DECORACIÓN -->
+
+        <div class="odin-login-decoration odin-login-decoration-one"></div>
+
+        <div class="odin-login-decoration odin-login-decoration-two"></div>
+
+
+
+        <!-- =================================================
+             LOGO / MARCA
+        ================================================== -->
+
+        <div class="odin-login-brand">
+
+            <div class="odin-login-brand-icon">
+                O
+            </div>
+
+            <div class="odin-login-brand-text">
+
+                <strong>
+                    ODIN
+                </strong>
+
+                <span>
+                    Sistema de Gestión Documental
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             MENSAJE PRINCIPAL
+        ================================================== -->
+
+        <div class="odin-login-left-content">
+
+            <span class="odin-login-left-badge">
+                GESTIÓN DOCUMENTAL
+            </span>
+
+
+            <h1>
+                Información organizada.
+                <strong>
+                    Gestión bajo control.
+                </strong>
+            </h1>
+
+
+            <p class="odin-login-left-description">
+                Centraliza la radicación, seguimiento,
+                trazabilidad y gestión de documentos
+                institucionales desde un solo lugar.
+            </p>
+
+
+
+            <!-- BENEFICIOS -->
+
+            <div class="odin-login-benefits">
+
+
+                <div class="odin-login-benefit">
+
+                    <div class="odin-login-benefit-icon">
+                        ✓
+                    </div>
+
+                    <span>
+                        Radicación y seguimiento documental
+                    </span>
+
+                </div>
+
+
+                <div class="odin-login-benefit">
+
+                    <div class="odin-login-benefit-icon">
+                        ✓
+                    </div>
+
+                    <span>
+                        Gestión de trámites y responsables
+                    </span>
+
+                </div>
+
+
+                <div class="odin-login-benefit">
+
+                    <div class="odin-login-benefit-icon">
+                        ✓
+                    </div>
+
+                    <span>
+                        Control de usuarios, roles y permisos
+                    </span>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <div class="odin-login-left-footer">
+            ODIN · Sistema de Gestión Documental
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         PANEL DERECHO
+    ====================================================== -->
+
+    <main class="odin-login-right">
+
+
+        <div class="odin-login-box">
+
+
+            <!-- =================================================
+                 LOGO MÓVIL
+            ================================================== -->
+
+            <div class="odin-login-mobile-brand">
+
+                <div class="odin-login-mobile-icon">
+                    O
+                </div>
+
+                <div>
+
+                    <strong>
+                        ODIN
+                    </strong>
+
+                    <span>
+                        Sistema de Gestión Documental
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 ENCABEZADO
+            ================================================== -->
+
+            <div class="odin-login-header">
+
+                <span class="odin-login-eyebrow">
+                    ACCESO INSTITUCIONAL
+                </span>
+
+
+                <h2>
+                    Bienvenido a ODIN
+                </h2>
+
+
+                <p>
+                    Ingresa tus credenciales para acceder
+                    al sistema de gestión documental.
+                </p>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 ERROR DE AUTENTICACIÓN
+            ================================================== -->
+
+            <div th:if="${param.error}"
+                 class="odin-login-message odin-login-message-error">
+
+                <div class="odin-login-message-icon">
+                    !
+                </div>
+
+                <div>
+
+                    <strong>
+                        No fue posible iniciar sesión
+                    </strong>
+
+                    <span>
+                        Verifica tu correo y contraseña.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 ERROR DEL CONTROLADOR, SI EXISTE
+            ================================================== -->
+
+            <div th:if="${error}"
+                 class="odin-login-message odin-login-message-error">
+
+                <div class="odin-login-message-icon">
+                    !
+                </div>
+
+                <div>
+
+                    <strong>
+                        No fue posible iniciar sesión
+                    </strong>
+
+                    <span th:text="${error}">
+                        Verifica tus credenciales.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 RESET DE CONTRASEÑA, SI EXISTE
+            ================================================== -->
+
+            <div th:if="${param.reset}"
+                 class="odin-login-message odin-login-message-success">
+
+                <div class="odin-login-message-icon">
+                    ✓
+                </div>
+
+                <div>
+
+                    <strong>
+                        Contraseña actualizada
+                    </strong>
+
+                    <span>
+                        Ya puedes iniciar sesión.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 FORMULARIO
+            ================================================== -->
+
+            <form th:action="@{/login}"
+                  method="post"
+                  class="odin-login-form">
+
+
+                <!-- CORREO -->
+
+                <div class="odin-login-field">
+
+                    <label for="correo">
+                        Correo institucional
+                    </label>
+
+
+                    <div class="odin-login-input-container">
+
+                        <span class="odin-login-input-icon">
+                            @
+                        </span>
+
+
+                        <input
+                                id="correo"
+                                name="correo"
+                                type="email"
+                                autocomplete="username"
+                                placeholder="usuario@senacali.edu.co"
+                                required
+                                autofocus>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- CONTRASEÑA -->
+
+                <div class="odin-login-field">
+
+                    <label for="password">
+                        Contraseña
+                    </label>
+
+
+                    <div class="odin-login-input-container">
+
+                        <span class="odin-login-input-icon odin-login-password-icon">
+                            ●
+                        </span>
+
+
+                        <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                autocomplete="current-password"
+                                placeholder="Ingresa tu contraseña"
+                                required>
+
+
+                        <button
+                                id="togglePassword"
+                                type="button"
+                                class="odin-login-password-toggle">
+
+                            Ver
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <div style="text-align:right; margin-top:-8px; margin-bottom:18px;">
+                    <a th:href="@{/recuperar-password}" style="font-size:14px; text-decoration:none;">
+                        ¿Olvidaste tu contraseña?
+                    </a>
+                </div>
+
+                <!-- BOTÓN -->
+
+                <button
+                        type="submit"
+                        class="odin-login-submit">
+
+                    <span>
+                        Iniciar sesión
+                    </span>
+
+                    <span class="odin-login-submit-arrow">
+                        →
+                    </span>
+
+                </button>
+
+
+            </form>
+
+
+
+            <!-- =================================================
+                 ACCESO DE DESARROLLO
+            ================================================== -->
+
+            <div class="odin-login-development">
+
+
+                <div class="odin-login-development-header">
+
+                    <div class="odin-login-development-icon">
+                        DEV
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            Acceso de administrador
+                        </strong>
+
+                        <span>
+                            Credenciales temporales para pruebas
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="odin-login-development-data">
+
+
+                    <div>
+
+                        <span>
+                            Correo
+                        </span>
+
+                        <strong>
+                            admin@senacali.edu.co
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Contraseña
+                        </span>
+
+                        <strong>
+                            Admin123*
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <button
+                        id="fillAdminCredentials"
+                        type="button"
+                        class="odin-login-development-button">
+
+                    Usar credenciales de administrador
+
+                </button>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 SEGURIDAD
+            ================================================== -->
+
+            <div class="odin-login-security">
+
+                <span></span>
+
+                Acceso restringido a usuarios autorizados
+
+            </div>
+
+
+        </div>
+
+
+    </main>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const correo =
+            document.getElementById("correo");
+
+        const password =
+            document.getElementById("password");
+
+        const togglePassword =
+            document.getElementById("togglePassword");
+
+        const fillAdminCredentials =
+            document.getElementById("fillAdminCredentials");
+
+
+        /* =====================================================
+           MOSTRAR / OCULTAR CONTRASEÑA
+        ====================================================== */
+
+        if (togglePassword && password) {
+
+            togglePassword.addEventListener("click", function () {
+
+                const passwordVisible =
+                    password.type === "text";
+
+                password.type =
+                    passwordVisible
+                        ? "password"
+                        : "text";
+
+                togglePassword.textContent =
+                    passwordVisible
+                        ? "Ver"
+                        : "Ocultar";
+
+            });
+
+        }
+
+
+        /* =====================================================
+           CREDENCIALES ADMIN
+        ====================================================== */
+
+        if (
+            fillAdminCredentials &&
+            correo &&
+            password
+        ) {
+
+            fillAdminCredentials.addEventListener("click", function () {
+
+                correo.value =
+                    "admin@senacali.edu.co";
+
+                password.value =
+                    "Admin123*";
+
+                password.focus();
+
+            });
+
+        }
+
+    });
+
+</script>
+
+
+</body>
+</html>
