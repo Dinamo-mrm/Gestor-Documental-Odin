@@ -981,15 +981,12 @@ public class RadicadosController {
             return;
         }
 
-        HistorialRadicado historial =
-                HistorialRadicado
-                        .builder()
-                        .id_radicado(idRadicado)
-                        .id_usuario(idUsuario)
-                        .accion(accion)
-                        .descripcion(descripcion)
-                        .fecha(LocalDateTime.now())
-                        .build();
+        HistorialRadicado historial = new HistorialRadicado();
+        historial.setId_radicado(idRadicado);
+        historial.setId_usuario(idUsuario);
+        historial.setAccion(accion);
+        historial.setDescripcion(descripcion);
+        historial.setFecha(LocalDateTime.now());
 
         historialRepository
                 .save(historial);
