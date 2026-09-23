@@ -22,4 +22,16 @@ public class PasswordResetCode {
     private Boolean usado = false;
     public boolean estaExpirado() { return fechaExpiracion == null || LocalDateTime.now().isAfter(fechaExpiracion); }
     public boolean estaUsado() { return Boolean.TRUE.equals(usado); }
+    public Long getId() { return id; }
+    public void setId(Long value) { this.id = value; }
+    public Long getIdUsuario() { return idUsuario; }
+    public void setIdUsuario(Long value) { this.idUsuario = value; }
+    public String getCodigo() { return codigo; }
+    public void setCodigo(String value) { this.codigo = value; }
+    public java.time.LocalDateTime getFechaCreacion() { return fechaCreacion; }
+    public void setFechaCreacion(java.time.LocalDateTime value) { this.fechaCreacion = value; }
+    public java.time.LocalDateTime getFechaExpiracion() { return fechaExpiracion; }
+    public void setFechaExpiracion(java.time.LocalDateTime value) { this.fechaExpiracion = value; }
+    public Boolean getUsado() { return usado; }
+    public void setUsado(Boolean value) { this.usado = value; }
 }
