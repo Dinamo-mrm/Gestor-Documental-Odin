@@ -12,6 +12,7 @@ import com.odin.odin.repository.ObservacionesRepository;
 import com.odin.odin.repository.RadicadosRepository;
 import com.odin.odin.repository.ReasignacionesRepository;
 import com.odin.odin.repository.UsuariosRepository;
+import com.odin.odin.service.RadicacionService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,9 @@ public class RadicadosController {
 
     @Autowired
     private UsuariosRepository usuariosRepository;
+
+    @Autowired
+    private RadicacionService radicacionService;
 
     @Autowired
     private DependenciasRepository dependenciasRepository;
@@ -286,20 +290,24 @@ public class RadicadosController {
             );
         }
 
-        Radicados saved =
-                radicadosRepository
-                        .save(radicado);
+        try {
+            RadicacionService.ResultadoRadicacion resultado =
+                    radicacionService.guardar(radicado, null);
 
-        registrarHistorial(
-                saved.getId_radicado(),
-                usuarioActual
-                        .get()
-                        .getId_usuario(),
-                "radicacion",
-                "Radicado creado"
-        );
+            Radicados saved = resultado.radicado();
 
-        return ResponseEntity.ok(saved);
+            registrarHistorial(
+                    saved.getId_radicado(),
+                    usuarioActual.get().getId_usuario(),
+                    "radicacion",
+                    "Radicado creado"
+            );
+
+            return ResponseEntity.ok(saved);
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", ex.getMessage()));
+        }
     }
 
     @PreAuthorize("hasAuthority('editar_radicado')")
@@ -341,20 +349,24 @@ public class RadicadosController {
 
         radicado.setId_radicado(id);
 
-        Radicados saved =
-                radicadosRepository
-                        .save(radicado);
+        try {
+            RadicacionService.ResultadoRadicacion resultado =
+                    radicacionService.guardar(radicado, null);
 
-        registrarHistorial(
-                id,
-                usuarioActual
-                        .get()
-                        .getId_usuario(),
-                "modificacion",
-                "Radicado actualizado"
-        );
+            Radicados saved = resultado.radicado();
 
-        return ResponseEntity.ok(saved);
+            registrarHistorial(
+                    id,
+                    usuarioActual.get().getId_usuario(),
+                    "modificacion",
+                    "Radicado actualizado"
+            );
+
+            return ResponseEntity.ok(saved);
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", ex.getMessage()));
+        }
     }
 
     @PreAuthorize("hasAuthority('gestionar_tramites')")
