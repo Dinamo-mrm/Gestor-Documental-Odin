@@ -55,4 +55,6 @@ public class Subseries
 
     @Column(name = "observaciones_retencion", columnDefinition = "text")
     private String observaciones_retencion;
+    public Long getId_subserie() { return id_subserie; }
+    public void setId_subserie(Long id_subserie) { this.id_subserie = id_subserie; }
 }
