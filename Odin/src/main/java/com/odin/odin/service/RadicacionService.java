@@ -215,7 +215,7 @@ public class RadicacionService {
 
     private void aplicarClasificacion(Radicados r) {
         if (texto(r.getCodigo_serie())) {
-            var serie = subseriesRepository.findSerieByCodigo(r.getCodigo_serie())
+            var serie = seriesRepository.findByCodigoSerie(r.getCodigo_serie())
                     .orElseThrow(() -> new IllegalArgumentException("La serie documental seleccionada no existe"));
             r.setId_serie(serie.getId_serie());
         } else {
