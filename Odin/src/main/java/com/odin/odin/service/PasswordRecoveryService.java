@@ -30,7 +30,13 @@ public class PasswordRecoveryService {
         resetCodeRepository.findByIdUsuarioAndUsadoFalse(usuario.getId_usuario()).forEach(c -> { c.setUsado(true); resetCodeRepository.save(c); });
         String codigo = String.format("%06d", random.nextInt(1_000_000));
         LocalDateTime ahora = LocalDateTime.now();
-        resetCodeRepository.save(PasswordResetCode.builder().idUsuario(usuario.getId_usuario()).codigo(codigo).fechaCreacion(ahora).fechaExpiracion(ahora.plusMinutes(10)).usado(false).build());
+        PasswordResetCode resetCode = new PasswordResetCode();
+        resetCode.setIdUsuario(usuario.getId_usuario());
+        resetCode.setCodigo(codigo);
+        resetCode.setFechaCreacion(ahora);
+        resetCode.setFechaExpiracion(ahora.plusMinutes(10));
+        resetCode.setUsado(false);
+        resetCodeRepository.save(resetCode);
         emailService.enviarCodigoRecuperacion(usuario.getCorreo(), usuario.getNombre(), codigo);
     }
     public boolean validarCodigo(String correo, String codigo) {
