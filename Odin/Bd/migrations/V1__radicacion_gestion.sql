@@ -66,6 +66,8 @@ $$;
 
 DROP TRIGGER IF EXISTS trg_validar_clasificacion_radicado ON radicados;
 
+ALTER FUNCTION validar_clasificacion_radicado() SET search_path = public;
+
 CREATE TRIGGER trg_validar_clasificacion_radicado
 BEFORE INSERT OR UPDATE OF id_serie, id_subserie
 ON radicados
