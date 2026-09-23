@@ -139,6 +139,9 @@ public class RadicacionService {
         if (!usuariosRepository.existsById(r.getId_usuario())) {
             throw new IllegalArgumentException("El responsable seleccionado no existe");
         }
+        if (!texto(r.getTipoRadicacion())) {
+            throw new IllegalArgumentException("Debe seleccionar el tipo de radicación");
+        }
         if (texto(r.getTipoRadicacion())
                 && !r.getTipoRadicacion().matches("(?i)ENTRADA|SALIDA|INTERNA")) {
             throw new IllegalArgumentException("El tipo de radicación no es válido");
@@ -199,11 +202,14 @@ public class RadicacionService {
         if (texto(r.getTipoRadicacion())) {
             r.setTipo_radicado(r.getTipoRadicacion().trim().toUpperCase());
         }
-        if (texto(r.getCanalRecepcion())) {
-            r.setMedio_recepcion(r.getCanalRecepcion().trim());
+        if (!texto(r.getCanalRecepcion())) {
+            throw new IllegalArgumentException("Debe seleccionar el canal de recepción");
         }
+        r.setMedio_recepcion(r.getCanalRecepcion().trim());
         if (texto(r.getConfidencialidad())) {
             r.setConfidencialidad(normalizarConfidencialidad(r.getConfidencialidad()));
+        } else {
+            r.setConfidencialidad("PUBLICO");
         }
     }
 
