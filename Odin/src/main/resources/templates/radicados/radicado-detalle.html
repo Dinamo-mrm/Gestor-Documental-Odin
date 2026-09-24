@@ -1,10 +1,1150 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ODIN · Detalle del radicado</title><link rel="stylesheet" th:href="@{/css/global.css}"><link rel="stylesheet" th:href="@{/css/styleguide.css}"><link rel="stylesheet" th:href="@{/css/style.css}"></head>
-<body><div th:replace="fragments/layout :: sidebar('tramites')"></div><div th:replace="fragments/layout :: topbar('ODIN')"></div>
-<main class="main px-4 md:px-8 py-6"><header class="header"><div><h1>Detalle del radicado</h1><p>Consulta, observaciones y trazabilidad documental</p></div><a class="secondary" th:href="@{/view/tramites}">Volver a gestión</a></header>
-<section class="content"><div class="table-card" style="padding:24px"><h2 th:text="${radicado.numero_radicado}">Radicado</h2><div class="grid md:grid-cols-2 gap-4" style="margin-top:18px"><p><strong>Asunto:</strong> <span th:text="${radicado.asunto}">-</span></p><p><strong>Remitente:</strong> <span th:text="${radicado.remitente}">-</span></p><p><strong>Fecha radicación:</strong> <span th:text="${radicado.fecha_radicado}">-</span></p><p><strong>Vencimiento:</strong> <span th:text="${radicado.fecha_vencimiento ?: 'Sin fecha'}">-</span></p><p><strong>Estado:</strong> <span th:text="${radicado.estado != null ? radicado.estado.nombre : radicado.id_estado}">-</span></p><p><strong>Responsable:</strong> <span th:text="${radicado.usuario != null ? radicado.usuario.nombre : radicado.id_usuario}">-</span></p><p><strong>Fecha de cierre:</strong> <span th:text="${radicado.fecha_cierre ?: 'Abierto'}">-</span></p><p><strong>Usuario de cierre:</strong> <span th:text="${radicado.id_usuario_cierre ?: 'Pendiente'}">-</span></p><p><strong>Trámite:</strong> <span th:text="${radicado.tramite != null ? radicado.tramite.nombre : radicado.id_tramite}">-</span></p><p><strong>Dependencia:</strong> <span th:text="${radicado.dependencias != null ? radicado.dependencias.nombre : radicado.id_dependencia}">-</span></p><p><strong>Serie:</strong> <span th:text="${radicado.codigo_serie ?: '-'}">-</span></p><p><strong>Subserie:</strong> <span th:text="${radicado.codigo_subserie ?: '-'}">-</span></p></div></div>
-<div class="table-card" style="padding:24px;margin-top:20px"><h2>Observaciones persistentes</h2><form class="filters" style="margin-top:15px" th:action="@{'/api/radicados/' + ${radicado.id_radicado} + '/observaciones'}" method="post" onsubmit="return enviarObservacion(event,this)"><input name="comentario" required maxlength="255" placeholder="Escriba una observación"><input name="usuario" type="number" min="1" placeholder="ID usuario"><button class="primary" type="submit">Guardar observación</button></form><div class="overflow-x-auto" style="margin-top:15px"><table><thead><tr><th>Fecha</th><th>Usuario</th><th>Comentario</th></tr></thead><tbody><tr th:each="o : ${observaciones}"><td th:text="${o.fecha}">-</td><td th:text="${o.id_usuario ?: '-'}">-</td><td th:text="${o.comentario}">-</td></tr><tr th:if="${#lists.isEmpty(observaciones)}"><td colspan="3">No hay observaciones.</td></tr></tbody></table></div></div>
-<div class="table-card" style="padding:24px;margin-top:20px"><h2>Historial de movimientos</h2><div class="overflow-x-auto" style="margin-top:15px"><table><thead><tr><th>Fecha</th><th>Acción</th><th>Usuario</th><th>Descripción</th></tr></thead><tbody><tr th:each="h : ${historial}"><td th:text="${h.fecha}">-</td><td th:text="${h.accion}">-</td><td th:text="${h.id_usuario ?: '-'}">-</td><td th:text="${h.descripcion}">-</td></tr><tr th:if="${#lists.isEmpty(historial)}"><td colspan="4">No hay movimientos registrados.</td></tr></tbody></table></div></div>
-<div class="table-card" style="padding:24px;margin-top:20px"><h2>Documentos asociados</h2><div class="overflow-x-auto" style="margin-top:15px"><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Tamaño</th><th>Fecha</th><th>Ruta</th></tr></thead><tbody><tr th:each="d : ${documentos}"><td th:text="${d.nombre}">-</td><td th:text="${d.tipo}">-</td><td th:text="${d.tamano}">-</td><td th:text="${d.fecha_subida}">-</td><td th:text="${d.ruta_archivo}">-</td></tr><tr th:if="${#lists.isEmpty(documentos)}"><td colspan="5">No hay documentos asociados.</td></tr></tbody></table></div></div></section></main>
-<script>async function enviarObservacion(e,form){e.preventDefault();const data=Object.fromEntries(new FormData(form));const r=await fetch(form.action,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});if(!r.ok){alert('No se pudo guardar la observación');return false;}location.reload();return false;}</script></body></html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <!-- CSRF PARA LAS PETICIONES DEL JS -->
+
+    <meta name="_csrf"
+          th:content="${_csrf != null ? _csrf.token : ''}">
+
+    <meta name="_csrf_header"
+          th:content="${_csrf != null ? _csrf.headerName : ''}">
+
+
+    <title>Detalle del radicado | ODIN</title>
+
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+
+
+    <style>
+
+        body {
+            font-family: Inter, sans-serif;
+        }
+
+        .info-label {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: #94a3b8;
+        }
+
+        .info-value {
+            margin-top: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            overflow-wrap: anywhere;
+        }
+
+    </style>
+
+</head>
+
+
+<body class="bg-[#f5f6f8] text-slate-800">
+
+
+<div class="min-h-screen flex">
+
+
+    <!-- SIDEBAR -->
+
+    <div th:replace="~{fragments/layout :: sidebar('tramites')}"></div>
+
+
+    <!-- OVERLAY -->
+
+    <div th:replace="~{fragments/layout :: sidebarOverlay}"></div>
+
+
+    <!-- CONTENIDO -->
+
+    <div class="flex-1 min-w-0">
+
+
+        <!-- TOPBAR -->
+
+        <div th:replace="~{fragments/layout :: topbar('Gestión de Trámites')}"></div>
+
+
+        <main class="px-4
+                     md:px-8
+                     lg:px-10
+                     py-7
+                     max-w-[1500px]">
+
+
+            <!-- VOLVER -->
+
+            <a th:href="@{/view/tramites}"
+               class="inline-flex
+                      items-center
+                      gap-2
+                      text-sm
+                      font-semibold
+                      text-slate-500
+                      hover:text-[#168500]
+                      mb-6
+                      transition">
+
+
+                <svg width="17"
+                     height="17"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
+
+                    <path d="m15 18-6-6 6-6"/>
+
+                </svg>
+
+
+                Volver a gestión de trámites
+
+            </a>
+
+
+            <!-- ENCABEZADO -->
+
+            <section class="mb-7
+                            flex
+                            flex-col
+                            lg:flex-row
+                            lg:items-end
+                            lg:justify-between
+                            gap-5">
+
+
+                <div>
+
+
+                    <div class="flex
+                                items-center
+                                gap-2
+                                text-[11px]
+                                font-bold
+                                uppercase
+                                tracking-[.16em]
+                                text-[#168500]
+                                mb-2">
+
+
+                        <svg width="16"
+                             height="16"
+                             viewBox="0 0 24 24"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="2">
+
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+
+                            <path d="M14 2v6h6M8 13h8M8 17h6"/>
+
+                        </svg>
+
+
+                        Detalle documental
+
+                    </div>
+
+
+                    <h1 class="text-2xl
+                               md:text-3xl
+                               font-extrabold
+                               text-slate-900">
+
+                        Detalle del radicado
+
+                    </h1>
+
+
+                    <p class="text-sm
+                              text-slate-500
+                              mt-2">
+
+                        Consulta la información, observaciones,
+                        historial y documentos asociados.
+
+                    </p>
+
+
+                </div>
+
+
+                <!-- NÚMERO RADICADO -->
+
+                <div class="rounded-xl
+                            border
+                            border-green-200
+                            bg-green-50
+                            px-4
+                            py-3">
+
+
+                    <div class="text-[10px]
+                                font-bold
+                                uppercase
+                                tracking-[.08em]
+                                text-green-700">
+
+                        Número de radicado
+
+                    </div>
+
+
+                    <div class="text-base
+                                font-extrabold
+                                text-green-800
+                                mt-1"
+                         th:text="${radicado.numero_radicado}">
+
+                        RAD-0001
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+            <!-- =====================================================
+                 INFORMACIÓN PRINCIPAL
+            ====================================================== -->
+
+            <section class="rounded-2xl
+                            border
+                            border-slate-200
+                            bg-white
+                            shadow-sm
+                            overflow-hidden
+                            mb-6">
+
+
+                <div class="px-6
+                            py-5
+                            border-b
+                            border-slate-100
+                            flex
+                            items-center
+                            gap-3">
+
+
+                    <div class="w-9
+                                h-9
+                                rounded-xl
+                                bg-green-50
+                                text-[#168500]
+                                flex
+                                items-center
+                                justify-center">
+
+
+                        <svg width="19"
+                             height="19"
+                             viewBox="0 0 24 24"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="1.8">
+
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+
+                            <path d="M14 2v6h6"/>
+
+                        </svg>
+
+
+                    </div>
+
+
+                    <div>
+
+
+                        <h2 class="text-sm
+                                   font-bold
+                                   text-slate-900">
+
+                            Información del radicado
+
+                        </h2>
+
+
+                        <p class="text-xs
+                                  text-slate-400
+                                  mt-0.5">
+
+                            Datos principales del registro seleccionado.
+
+                        </p>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="p-6
+                            grid
+                            grid-cols-1
+                            sm:grid-cols-2
+                            xl:grid-cols-4
+                            gap-x-8
+                            gap-y-6">
+
+
+                    <!-- ASUNTO -->
+
+                    <div class="sm:col-span-2 xl:col-span-4">
+
+                        <div class="info-label">
+                            Asunto
+                        </div>
+
+                        <div class="info-value"
+                             th:text="${radicado.asunto ?: '-'}">
+
+                            -
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- REMITENTE -->
+
+                    <div>
+
+                        <div class="info-label">
+                            Remitente
+                        </div>
+
+                        <div class="info-value"
+                             th:text="${radicado.remitente ?: '-'}">
+
+                            -
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- FECHA RADICACIÓN -->
+
+                    <div>
+
+                        <div class="info-label">
+                            Fecha de radicación
+                        </div>
+
+                        <div class="info-value"
+                             th:text="${radicado.fecha_radicado ?: '-'}">
+
+                            -
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- FECHA VENCIMIENTO -->
+
+                    <div>
+
+                        <div class="info-label">
+                            Fecha de vencimiento
+                        </div>
+
+                        <div class="info-value"
+                             th:text="${radicado.fecha_vencimiento != null
+                                && !#strings.isEmpty(radicado.fecha_vencimiento)
+                                ? radicado.fecha_vencimiento
+                                : 'Sin fecha'}">
+
+                            Sin fecha
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ESTADO -->
+
+                    <div>
+
+                        <div class="info-label">
+                            Estado
+                        </div>
+
+                        <div class="info-value"
+                             th:text="${radicado.estado != null
+                                ? radicado.estado.nombre
+                                : (radicado.id_estado != null
+                                    ? radicado.id_estado
+                                    : '-')}">
+
+                            -
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TRÁMITE -->
+
+                    <div>
+
+                        <div class="info-label">
+                            Trámite
+                        </div>
+
+                        <div class="info-value"
+                             th:text="${radicado.tramite != null
+                                ? radicado.tramite.nombre
+                                : (radicado.id_tramite != null
+                                    ? radicado.id_tramite
+                                    : '-')}">
+
+                            -
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DEPENDENCIA -->
+
+                    <div>
+
+                        <div class="info-label">
+                            Dependencia
+                        </div>
+
+                        <div class="info-value"
+                             th:text="${radicado.dependencias != null
+                                ? radicado.dependencias.nombre
+                                : (radicado.id_dependencia != null
+                                    ? radicado.id_dependencia
+                                    : '-')}">
+
+                            -
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- RESPONSABLE -->
+
+                    <div>
+
+                        <div class="info-label">
+                            Responsable
+                        </div>
+
+                        <div class="info-value"
+                             th:text="${radicado.usuario != null
+                                ? radicado.usuario.nombre
+                                : (radicado.id_usuario != null
+                                    ? radicado.id_usuario
+                                    : 'Sin asignar')}">
+
+                            -
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SERIE -->
+
+                    <div>
+
+                        <div class="info-label">
+                            Serie
+                        </div>
+
+                        <div class="info-value"
+                             th:text="${radicado.codigo_serie ?: '-'}">
+
+                            -
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SUBSERIE -->
+
+                    <div>
+
+                        <div class="info-label">
+                            Subserie
+                        </div>
+
+                        <div class="info-value"
+                             th:text="${radicado.codigo_subserie ?: '-'}">
+
+                            -
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- FECHA CIERRE -->
+
+                    <div>
+
+                        <div class="info-label">
+                            Fecha de cierre
+                        </div>
+
+                        <div class="info-value"
+                             th:text="${radicado.fecha_cierre != null
+                                ? radicado.fecha_cierre
+                                : 'Abierto'}">
+
+                            Abierto
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- USUARIO CIERRE -->
+
+                    <div>
+
+                        <div class="info-label">
+                            Usuario de cierre
+                        </div>
+
+                        <div class="info-value"
+                             th:text="${radicado.id_usuario_cierre != null
+                                ? radicado.id_usuario_cierre
+                                : 'Pendiente'}">
+
+                            Pendiente
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+            <!-- =====================================================
+                 OBSERVACIONES
+            ====================================================== -->
+
+            <section class="rounded-2xl
+                            border
+                            border-slate-200
+                            bg-white
+                            shadow-sm
+                            overflow-hidden
+                            mb-6">
+
+
+                <div class="px-6
+                            py-5
+                            border-b
+                            border-slate-100">
+
+
+                    <h2 class="text-sm
+                               font-bold
+                               text-slate-900">
+
+                        Observaciones
+
+                    </h2>
+
+
+                    <p class="text-xs
+                              text-slate-400
+                              mt-1">
+
+                        Registra y consulta observaciones del radicado.
+
+                    </p>
+
+
+                </div>
+
+
+                <!-- NUEVA OBSERVACIÓN -->
+
+                <div class="p-6
+                            border-b
+                            border-slate-100">
+
+
+                    <form id="formObservacion"
+                          th:action="@{'/api/radicados/'
+                                    + ${radicado.id_radicado}
+                                    + '/observaciones'}"
+                          method="post"
+                          class="flex
+                                 flex-col
+                                 md:flex-row
+                                 gap-3">
+
+
+                        <input name="comentario"
+                               required
+                               maxlength="255"
+                               placeholder="Escribe una observación..."
+                               class="flex-1
+                                      rounded-xl
+                                      border
+                                      border-slate-200
+                                      bg-slate-50
+                                      px-4
+                                      py-3
+                                      text-sm
+                                      outline-none
+                                      focus:bg-white
+                                      focus:border-[#168500]
+                                      focus:ring-4
+                                      focus:ring-green-50">
+
+
+                        <button type="submit"
+                                class="inline-flex
+                                       items-center
+                                       justify-center
+                                       gap-2
+                                       rounded-xl
+                                       bg-[#168500]
+                                       px-5
+                                       py-3
+                                       text-sm
+                                       font-bold
+                                       text-white
+                                       hover:bg-[#106b00]
+                                       disabled:opacity-50">
+
+
+                            <svg width="17"
+                                 height="17"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="2">
+
+                                <path d="M12 5v14M5 12h14"/>
+
+                            </svg>
+
+
+                            Guardar observación
+
+                        </button>
+
+
+                    </form>
+
+
+                </div>
+
+
+                <!-- LISTADO OBSERVACIONES -->
+
+                <div class="overflow-x-auto">
+
+
+                    <table class="min-w-full text-sm">
+
+
+                        <thead>
+
+
+                        <tr class="bg-slate-50/80
+                                   border-b
+                                   border-slate-100
+                                   text-[10px]
+                                   uppercase
+                                   tracking-[.1em]
+                                   text-slate-500">
+
+
+                            <th class="px-6 py-4 text-left">
+                                Fecha
+                            </th>
+
+                            <th class="px-6 py-4 text-left">
+                                Usuario
+                            </th>
+
+                            <th class="px-6 py-4 text-left">
+                                Comentario
+                            </th>
+
+
+                        </tr>
+
+
+                        </thead>
+
+
+                        <tbody class="divide-y divide-slate-100">
+
+
+                        <tr th:each="o : ${observaciones}"
+                            class="hover:bg-slate-50/70">
+
+
+                            <td class="px-6
+                                       py-4
+                                       text-slate-500"
+                                th:text="${o.fecha}">
+
+                                -
+
+                            </td>
+
+
+                            <td class="px-6
+                                       py-4
+                                       font-semibold
+                                       text-slate-700"
+                                th:text="${o.id_usuario != null
+                                    ? o.id_usuario
+                                    : '-'}">
+
+                                -
+
+                            </td>
+
+
+                            <td class="px-6
+                                       py-4
+                                       text-slate-700"
+                                th:text="${o.comentario}">
+
+                                -
+
+                            </td>
+
+
+                        </tr>
+
+
+                        <tr th:if="${observaciones == null
+                                || #lists.isEmpty(observaciones)}">
+
+
+                            <td colspan="3"
+                                class="px-6
+                                       py-10
+                                       text-center
+                                       text-slate-400">
+
+                                No hay observaciones registradas.
+
+                            </td>
+
+
+                        </tr>
+
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+            </section>
+
+
+            <!-- =====================================================
+                 HISTORIAL
+            ====================================================== -->
+
+            <section class="rounded-2xl
+                            border
+                            border-slate-200
+                            bg-white
+                            shadow-sm
+                            overflow-hidden
+                            mb-6">
+
+
+                <div class="px-6
+                            py-5
+                            border-b
+                            border-slate-100">
+
+
+                    <h2 class="text-sm
+                               font-bold
+                               text-slate-900">
+
+                        Historial de movimientos
+
+                    </h2>
+
+
+                    <p class="text-xs
+                              text-slate-400
+                              mt-1">
+
+                        Trazabilidad de las acciones realizadas
+                        sobre el radicado.
+
+                    </p>
+
+
+                </div>
+
+
+                <div class="overflow-x-auto">
+
+
+                    <table class="min-w-full text-sm">
+
+
+                        <thead>
+
+
+                        <tr class="bg-slate-50/80
+                                   border-b
+                                   border-slate-100
+                                   text-[10px]
+                                   uppercase
+                                   tracking-[.1em]
+                                   text-slate-500">
+
+
+                            <th class="px-6 py-4 text-left">
+                                Fecha
+                            </th>
+
+                            <th class="px-6 py-4 text-left">
+                                Acción
+                            </th>
+
+                            <th class="px-6 py-4 text-left">
+                                Usuario
+                            </th>
+
+                            <th class="px-6 py-4 text-left">
+                                Descripción
+                            </th>
+
+
+                        </tr>
+
+
+                        </thead>
+
+
+                        <tbody class="divide-y divide-slate-100">
+
+
+                        <tr th:each="h : ${historial}"
+                            class="hover:bg-slate-50/70">
+
+
+                            <td class="px-6
+                                       py-4
+                                       text-slate-500"
+                                th:text="${h.fecha}">
+
+                                -
+
+                            </td>
+
+
+                            <td class="px-6
+                                       py-4
+                                       font-semibold
+                                       text-slate-700"
+                                th:text="${h.accion}">
+
+                                -
+
+                            </td>
+
+
+                            <td class="px-6
+                                       py-4
+                                       text-slate-600"
+                                th:text="${h.id_usuario != null
+                                    ? h.id_usuario
+                                    : '-'}">
+
+                                -
+
+                            </td>
+
+
+                            <td class="px-6
+                                       py-4
+                                       text-slate-700"
+                                th:text="${h.descripcion}">
+
+                                -
+
+                            </td>
+
+
+                        </tr>
+
+
+                        <tr th:if="${historial == null
+                                || #lists.isEmpty(historial)}">
+
+
+                            <td colspan="4"
+                                class="px-6
+                                       py-10
+                                       text-center
+                                       text-slate-400">
+
+                                No hay movimientos registrados.
+
+                            </td>
+
+
+                        </tr>
+
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+            </section>
+
+
+            <!-- =====================================================
+                 DOCUMENTOS
+            ====================================================== -->
+
+            <section class="rounded-2xl
+                            border
+                            border-slate-200
+                            bg-white
+                            shadow-sm
+                            overflow-hidden">
+
+
+                <div class="px-6
+                            py-5
+                            border-b
+                            border-slate-100">
+
+
+                    <h2 class="text-sm
+                               font-bold
+                               text-slate-900">
+
+                        Documentos asociados
+
+                    </h2>
+
+
+                    <p class="text-xs
+                              text-slate-400
+                              mt-1">
+
+                        Archivos registrados para este radicado.
+
+                    </p>
+
+
+                </div>
+
+
+                <div class="overflow-x-auto">
+
+
+                    <table class="min-w-full text-sm">
+
+
+                        <thead>
+
+
+                        <tr class="bg-slate-50/80
+                                   border-b
+                                   border-slate-100
+                                   text-[10px]
+                                   uppercase
+                                   tracking-[.1em]
+                                   text-slate-500">
+
+
+                            <th class="px-6 py-4 text-left">
+                                Nombre
+                            </th>
+
+                            <th class="px-6 py-4 text-left">
+                                Tipo
+                            </th>
+
+                            <th class="px-6 py-4 text-left">
+                                Tamaño
+                            </th>
+
+                            <th class="px-6 py-4 text-left">
+                                Fecha
+                            </th>
+
+                            <th class="px-6 py-4 text-left">
+                                Ruta
+                            </th>
+
+
+                        </tr>
+
+
+                        </thead>
+
+
+                        <tbody class="divide-y divide-slate-100">
+
+
+                        <tr th:each="d : ${documentos}"
+                            class="hover:bg-slate-50/70">
+
+
+                            <td class="px-6
+                                       py-4
+                                       font-semibold
+                                       text-slate-700"
+                                th:text="${d.nombre}">
+
+                                -
+
+                            </td>
+
+
+                            <td class="px-6
+                                       py-4
+                                       text-slate-600"
+                                th:text="${d.tipo}">
+
+                                -
+
+                            </td>
+
+
+                            <td class="px-6
+                                       py-4
+                                       text-slate-600"
+                                th:text="${d.tamano}">
+
+                                -
+
+                            </td>
+
+
+                            <td class="px-6
+                                       py-4
+                                       text-slate-500"
+                                th:text="${d.fecha_subida}">
+
+                                -
+
+                            </td>
+
+
+                            <td class="px-6
+                                       py-4
+                                       text-xs
+                                       text-slate-500
+                                       max-w-[320px]
+                                       break-all"
+                                th:text="${d.ruta_archivo}">
+
+                                -
+
+                            </td>
+
+
+                        </tr>
+
+
+                        <tr th:if="${documentos == null
+                                || #lists.isEmpty(documentos)}">
+
+
+                            <td colspan="5"
+                                class="px-6
+                                       py-10
+                                       text-center
+                                       text-slate-400">
+
+                                No hay documentos asociados.
+
+                            </td>
+
+
+                        </tr>
+
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+            </section>
+
+
+        </main>
+
+
+    </div>
+
+
+</div>
+
+
+<!-- JS GENERAL DE ODIN -->
+
+<script th:src="@{/js/script.js}"
+        defer>
+</script>
+
+
+</body>
+
+</html>

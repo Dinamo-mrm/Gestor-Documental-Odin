@@ -16,7 +16,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
 
-    <!-- CORREGIDO: ERA global.css -->
     <link rel="stylesheet"
           th:href="@{/css/globals.css}">
 
@@ -25,6 +24,14 @@
 
     <link rel="stylesheet"
           th:href="@{/css/style.css}">
+
+
+    <!-- CSRF -->
+    <meta name="_csrf"
+          th:content="${_csrf != null ? _csrf.token : ''}">
+
+    <meta name="_csrf_header"
+          th:content="${_csrf != null ? _csrf.headerName : ''}">
 
 
     <style>
@@ -36,10 +43,8 @@
 
 
         .tramite-card {
-
             border: 1px solid #e5e7eb;
             border-radius: 12px;
-
             background: #ffffff;
 
             box-shadow:
@@ -48,7 +53,6 @@
 
 
         .kpi-card {
-
             padding: 17px;
 
             border: 1px solid #e5e7eb;
@@ -59,7 +63,6 @@
 
 
         .kpi-card small {
-
             display: block;
 
             color: #64748b;
@@ -74,7 +77,6 @@
 
 
         .kpi-card strong {
-
             display: block;
 
             margin-top: 6px;
@@ -89,7 +91,6 @@
 
 
         .odin-input {
-
             width: 100%;
             height: 40px;
 
@@ -109,7 +110,6 @@
 
 
         .odin-input:focus {
-
             border-color: #39a900;
 
             box-shadow:
@@ -118,7 +118,6 @@
 
 
         .odin-button-primary {
-
             display: inline-flex;
 
             align-items: center;
@@ -128,6 +127,7 @@
 
             padding: 0 15px;
 
+            border: 0;
             border-radius: 8px;
 
             background: #39a900;
@@ -144,15 +144,12 @@
 
 
         .odin-button-primary:hover {
-
             background: #2f9200;
-
             text-decoration: none;
         }
 
 
         .odin-button-secondary {
-
             display: inline-flex;
 
             align-items: center;
@@ -179,15 +176,18 @@
 
 
         .odin-button-secondary:hover {
-
             background: #f8fafc;
-
             text-decoration: none;
         }
 
 
-        .status-badge {
+        .odin-button-secondary:disabled {
+            opacity: .45;
+            cursor: not-allowed;
+        }
 
+
+        .status-badge {
             display: inline-flex;
 
             padding: 4px 8px;
@@ -204,10 +204,76 @@
             white-space: nowrap;
         }
 
+
+        /* =====================================================
+           PAGINACIÓN
+        ====================================================== */
+
+        .pagination-page {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            min-width: 36px;
+            height: 36px;
+
+            padding: 0 8px;
+
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+
+            background: #ffffff;
+
+            color: #475569;
+
+            font-size: 11px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: .15s ease;
+        }
+
+
+        .pagination-page:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+
+        .pagination-page.active {
+            border-color: #39a900;
+
+            background: #39a900;
+
+            color: #ffffff;
+        }
+
+
+        .pagination-page.active:hover {
+            background: #2f9200;
+        }
+
+
+        .pagination-dots {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            width: 28px;
+            height: 36px;
+
+            color: #94a3b8;
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
     </style>
 
 </head>
-
 
 
 <body class="text-slate-800">
@@ -241,7 +307,6 @@
 
         <div th:replace="~{fragments/layout :: topbar('Trámites')}">
         </div>
-
 
 
         <main class="px-4
@@ -298,7 +363,6 @@
                 </div>
 
 
-
                 <div class="flex
                             flex-wrap
                             gap-2">
@@ -324,7 +388,6 @@
 
 
             </section>
-
 
 
             <!-- =================================================
@@ -359,7 +422,6 @@
             </div>
 
 
-
             <!-- =================================================
                  KPIS
             ================================================== -->
@@ -379,13 +441,10 @@
 
                     <strong class="text-amber-600"
                             th:text="${pendientes ?: 0}">
-
                         0
-
                     </strong>
 
                 </div>
-
 
 
                 <div class="kpi-card">
@@ -396,13 +455,10 @@
 
                     <strong class="text-blue-600"
                             th:text="${enProceso ?: 0}">
-
                         0
-
                     </strong>
 
                 </div>
-
 
 
                 <div class="kpi-card">
@@ -413,13 +469,10 @@
 
                     <strong class="text-green-600"
                             th:text="${finalizados ?: 0}">
-
                         0
-
                     </strong>
 
                 </div>
-
 
 
                 <a th:href="@{/view/tramites(vencimiento='vencidos')}"
@@ -435,13 +488,10 @@
 
                     <strong class="text-red-700"
                             th:text="${vencidos ?: 0}">
-
                         0
-
                     </strong>
 
                 </a>
-
 
 
                 <div class="kpi-card">
@@ -451,13 +501,10 @@
                     </small>
 
                     <strong th:text="${totalRadicados ?: 0}">
-
                         0
-
                     </strong>
 
                 </div>
-
 
 
                 <div class="kpi-card">
@@ -467,16 +514,13 @@
                     </small>
 
                     <strong th:text="${totalTramites ?: 0}">
-
                         0
-
                     </strong>
 
                 </div>
 
 
             </section>
-
 
 
             <!-- =================================================
@@ -509,7 +553,6 @@
             </div>
 
 
-
             <!-- =================================================
                  FILTROS
             ================================================== -->
@@ -535,7 +578,6 @@
                            th:value="${textoFiltro}">
 
 
-
                     <select name="estado"
                             class="odin-input">
 
@@ -550,7 +592,6 @@
                         </option>
 
                     </select>
-
 
 
                     <select name="dependencia"
@@ -569,7 +610,6 @@
                     </select>
 
 
-
                     <select name="tramite"
                             class="odin-input">
 
@@ -584,7 +624,6 @@
                         </option>
 
                     </select>
-
 
 
                     <select name="vencimiento"
@@ -611,12 +650,10 @@
                     </select>
 
 
-
                     <div class="flex gap-2">
 
                         <button type="submit"
-                                class="odin-button-primary
-                                       flex-1">
+                                class="odin-button-primary flex-1">
 
                             Filtrar
 
@@ -638,7 +675,6 @@
             </section>
 
 
-
             <!-- =================================================
                  TABLA
             ================================================== -->
@@ -654,31 +690,55 @@
                             border-slate-100">
 
 
-                    <h2 class="text-sm
-                               font-bold
-                               text-slate-800">
+                    <div class="flex
+                                flex-col
+                                sm:flex-row
+                                sm:items-center
+                                sm:justify-between
+                                gap-2">
 
-                        Radicados en gestión
 
-                    </h2>
+                        <div>
+
+                            <h2 class="text-sm
+                                       font-bold
+                                       text-slate-800">
+
+                                Radicados en gestión
+
+                            </h2>
 
 
-                    <p class="mt-1
-                              text-xs
-                              text-slate-500">
+                            <p class="mt-1
+                                      text-xs
+                                      text-slate-500">
 
-                        Consulta los documentos actualmente registrados.
+                                Consulta los documentos actualmente registrados.
 
-                    </p>
+                            </p>
+
+                        </div>
+
+
+                        <div class="text-[11px]
+                                    text-slate-400">
+
+                            10 registros por página
+
+                        </div>
+
+
+                    </div>
+
 
                 </div>
-
 
 
                 <div class="overflow-x-auto">
 
 
-                    <table class="w-full
+                    <table id="tablaTramites"
+                           class="w-full
                                   min-w-[1100px]
                                   text-xs">
 
@@ -729,17 +789,18 @@
                                 Acción
                             </th>
 
+
                         </tr>
 
                         </thead>
 
 
-
-                        <tbody>
+                        <tbody id="tramitesTableBody">
 
 
                         <tr th:each="r : ${radicados}"
-                            class="border-b
+                            class="tramite-row
+                                   border-b
                                    border-slate-100
                                    hover:bg-slate-50">
 
@@ -753,7 +814,6 @@
                                 -
 
                             </td>
-
 
 
                             <td class="px-4
@@ -770,7 +830,6 @@
                             </td>
 
 
-
                             <td class="px-4 py-3"
                                 th:text="${r.tramite != null
                                         ? r.tramite.nombre
@@ -781,7 +840,6 @@
                                 -
 
                             </td>
-
 
 
                             <td class="px-4 py-3">
@@ -800,7 +858,6 @@
                             </td>
 
 
-
                             <td class="px-4 py-3"
                                 th:text="${r.dependencias != null
                                         ? r.dependencias.nombre
@@ -811,7 +868,6 @@
                                 -
 
                             </td>
-
 
 
                             <td class="px-4 py-3"
@@ -826,7 +882,6 @@
                             </td>
 
 
-
                             <td class="px-4 py-3"
                                 th:text="${r.codigo_serie ?: '-'}">
 
@@ -835,14 +890,12 @@
                             </td>
 
 
-
                             <td class="px-4 py-3"
                                 th:text="${r.codigo_subserie ?: '-'}">
 
                                 -
 
                             </td>
-
 
 
                             <td class="px-4 py-3">
@@ -867,7 +920,6 @@
                             </td>
 
 
-
                             <td class="px-4
                                        py-3
                                        text-right">
@@ -886,8 +938,8 @@
                         </tr>
 
 
-
-                        <tr th:if="${#lists.isEmpty(radicados)}">
+                        <tr th:if="${#lists.isEmpty(radicados)}"
+                            id="emptyTramitesRow">
 
                             <td colspan="10"
                                 class="px-4
@@ -905,7 +957,114 @@
 
                         </tbody>
 
+
                     </table>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     PAGINACIÓN
+                ================================================== -->
+
+                <div id="tramitesPagination"
+                     class="px-5
+                            py-4
+                            border-t
+                            border-slate-100
+                            flex
+                            flex-col
+                            md:flex-row
+                            md:items-center
+                            md:justify-between
+                            gap-4">
+
+
+                    <div class="text-xs text-slate-500">
+
+                        Mostrando
+
+                        <strong id="paginationFrom"
+                                class="text-slate-700">
+                            0
+                        </strong>
+
+                        -
+
+                        <strong id="paginationTo"
+                                class="text-slate-700">
+                            0
+                        </strong>
+
+                        de
+
+                        <strong id="paginationTotal"
+                                class="text-slate-700">
+                            0
+                        </strong>
+
+                        registros
+
+                    </div>
+
+
+                    <div class="flex
+                                flex-wrap
+                                items-center
+                                gap-2">
+
+
+                        <button type="button"
+                                id="paginationPrev"
+                                class="odin-button-secondary">
+
+                            <svg width="14"
+                                 height="14"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="2">
+
+                                <path d="m15 18-6-6 6-6"/>
+
+                            </svg>
+
+                            Anterior
+
+                        </button>
+
+
+                        <div id="paginationPages"
+                             class="flex
+                                    flex-wrap
+                                    items-center
+                                    gap-1">
+                        </div>
+
+
+                        <button type="button"
+                                id="paginationNext"
+                                class="odin-button-secondary">
+
+                            Siguiente
+
+                            <svg width="14"
+                                 height="14"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="2">
+
+                                <path d="m9 18 6-6-6-6"/>
+
+                            </svg>
+
+                        </button>
+
+
+                    </div>
+
 
                 </div>
 
@@ -920,7 +1079,6 @@
 
 
 </div>
-
 
 
 <script th:src="@{/js/script.js}">
