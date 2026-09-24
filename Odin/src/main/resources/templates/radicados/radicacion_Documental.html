@@ -189,18 +189,11 @@
                                         Estado inicial
                                     </label>
 
-                                    <select th:field="*{id_estado}"
-                                            class="input w-full mt-1">
-
-                                        <option value="">
-                                            Seleccione un estado...
-                                        </option>
-
-                                        <option th:each="e : ${estados}"
-                                                th:value="${e.id_estado}"
-                                                th:text="${e.nombre}">
-                                        </option>
-
+                                    <input type="hidden" th:field="*{id_estado}">
+                                    <select id="estadoVisual"
+                                            class="input w-full mt-1 bg-slate-100"
+                                            disabled>
+                                        <option>El estado inicial se toma del trámite seleccionado</option>
                                     </select>
                                 </div>
 
@@ -459,8 +452,8 @@
                                         Serie documental
                                     </label>
 
-                                    <select th:field="*{codigo_serie}"
-                                            class="input w-full mt-1">
+                                    <select id="codigoSerie" th:field="*{codigo_serie}"
+                                            class="input w-full mt-1" required>
 
                                         <option value="">
                                             Seleccione una serie...
@@ -468,6 +461,7 @@
 
                                         <option th:each="s : ${series}"
                                                 th:value="${s.codigo_serie}"
+                                                th:attr="data-serie-id=${s.id_serie}"
                                                 th:text="${s.codigo_serie + ' - ' + s.nombre_serie}">
                                         </option>
 
@@ -480,7 +474,7 @@
                                         Subserie documental
                                     </label>
 
-                                    <select th:field="*{codigo_subserie}"
+                                    <select id="codigoSubserie" th:field="*{codigo_subserie}"
                                             class="input w-full mt-1">
 
                                         <option value="">
@@ -489,6 +483,7 @@
 
                                         <option th:each="ss : ${subseries}"
                                                 th:value="${ss.codigo_subserie}"
+                                                th:attr="data-serie-id=${ss.id_serie}"
                                                 th:text="${ss.codigo_subserie + ' - ' + ss.nombre_subserie}">
                                         </option>
 
@@ -909,6 +904,37 @@
     </div>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const serie = document.getElementById('codigoSerie');
+    const subserie = document.getElementById('codigoSubserie');
+    if (!serie || !subserie) return;
+
+    const filtrarSubseries = () => {
+        const selected = serie.options[serie.selectedIndex];
+        const serieId = selected && selected.value
+            ? selected.getAttribute('data-serie-id')
+            : null;
+
+        Array.from(subserie.options).forEach(option => {
+            if (!option.value) {
+                option.hidden = false;
+                return;
+            }
+            option.hidden = !!serieId && option.getAttribute('data-serie-id') !== serieId;
+        });
+
+        if (subserie.selectedOptions.length
+                && subserie.selectedOptions[0].hidden) {
+            subserie.value = '';
+        }
+    };
+
+    serie.addEventListener('change', filtrarSubseries);
+    filtrarSubseries();
+});
+</script>
 
 </body>
 </html>

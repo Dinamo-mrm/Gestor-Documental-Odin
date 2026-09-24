@@ -28,4 +28,15 @@ public class Permisos {
 
     @Column(name = "accion", nullable = false)
     private String accion;
+    // GENERATED_EXPLICIT_ACCESSORS
+    public Long getId_permiso() { return id_permiso; }
+    public void setId_permiso(Long value) { this.id_permiso = value; }
+    public String getNombre() { return nombre; }
+    public void setNombre(String value) { this.nombre = value; }
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String value) { this.descripcion = value; }
+    public String getModulo() { return modulo; }
+    public void setModulo(String value) { this.modulo = value; }
+    public String getAccion() { return accion; }
+    public void setAccion(String value) { this.accion = value; }
 }

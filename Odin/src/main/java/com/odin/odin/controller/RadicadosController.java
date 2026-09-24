@@ -12,6 +12,7 @@ import com.odin.odin.repository.ObservacionesRepository;
 import com.odin.odin.repository.RadicadosRepository;
 import com.odin.odin.repository.ReasignacionesRepository;
 import com.odin.odin.repository.UsuariosRepository;
+import com.odin.odin.service.RadicacionService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,9 @@ public class RadicadosController {
 
     @Autowired
     private UsuariosRepository usuariosRepository;
+
+    @Autowired
+    private RadicacionService radicacionService;
 
     @Autowired
     private DependenciasRepository dependenciasRepository;
@@ -230,14 +234,11 @@ public class RadicadosController {
                         .get()
                         .getId_usuario();
 
-        Observaciones observacion =
-                Observaciones
-                        .builder()
-                        .id_radicado(id)
-                        .id_usuario(idUsuario)
-                        .comentario(comentario)
-                        .fecha(LocalDateTime.now())
-                        .build();
+        Observaciones observacion = new Observaciones();
+        observacion.setId_radicado(id);
+        observacion.setId_usuario(idUsuario);
+        observacion.setComentario(comentario);
+        observacion.setFecha(LocalDateTime.now());
 
         Observaciones saved =
                 observacionesRepository
@@ -286,20 +287,24 @@ public class RadicadosController {
             );
         }
 
-        Radicados saved =
-                radicadosRepository
-                        .save(radicado);
+        try {
+            RadicacionService.ResultadoRadicacion resultado =
+                    radicacionService.guardar(radicado, null);
 
-        registrarHistorial(
-                saved.getId_radicado(),
-                usuarioActual
-                        .get()
-                        .getId_usuario(),
-                "radicacion",
-                "Radicado creado"
-        );
+            Radicados saved = resultado.radicado();
 
-        return ResponseEntity.ok(saved);
+            registrarHistorial(
+                    saved.getId_radicado(),
+                    usuarioActual.get().getId_usuario(),
+                    "radicacion",
+                    "Radicado creado"
+            );
+
+            return ResponseEntity.ok(saved);
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", ex.getMessage()));
+        }
     }
 
     @PreAuthorize("hasAuthority('editar_radicado')")
@@ -341,20 +346,24 @@ public class RadicadosController {
 
         radicado.setId_radicado(id);
 
-        Radicados saved =
-                radicadosRepository
-                        .save(radicado);
+        try {
+            RadicacionService.ResultadoRadicacion resultado =
+                    radicacionService.guardar(radicado, null);
 
-        registrarHistorial(
-                id,
-                usuarioActual
-                        .get()
-                        .getId_usuario(),
-                "modificacion",
-                "Radicado actualizado"
-        );
+            Radicados saved = resultado.radicado();
 
-        return ResponseEntity.ok(saved);
+            registrarHistorial(
+                    id,
+                    usuarioActual.get().getId_usuario(),
+                    "modificacion",
+                    "Radicado actualizado"
+            );
+
+            return ResponseEntity.ok(saved);
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", ex.getMessage()));
+        }
     }
 
     @PreAuthorize("hasAuthority('gestionar_tramites')")
@@ -835,14 +844,11 @@ public class RadicadosController {
 
         if (!observacion.isBlank()) {
 
-            Observaciones nuevaObservacion =
-                    Observaciones
-                            .builder()
-                            .id_radicado(id)
-                            .id_usuario(idUsuarioActual)
-                            .comentario(observacion)
-                            .fecha(LocalDateTime.now())
-                            .build();
+            Observaciones nuevaObservacion = new Observaciones();
+            nuevaObservacion.setId_radicado(id);
+            nuevaObservacion.setId_usuario(idUsuarioActual);
+            nuevaObservacion.setComentario(observacion);
+            nuevaObservacion.setFecha(LocalDateTime.now());
 
             observacionesRepository
                     .save(nuevaObservacion);
@@ -975,15 +981,12 @@ public class RadicadosController {
             return;
         }
 
-        HistorialRadicado historial =
-                HistorialRadicado
-                        .builder()
-                        .id_radicado(idRadicado)
-                        .id_usuario(idUsuario)
-                        .accion(accion)
-                        .descripcion(descripcion)
-                        .fecha(LocalDateTime.now())
-                        .build();
+        HistorialRadicado historial = new HistorialRadicado();
+        historial.setId_radicado(idRadicado);
+        historial.setId_usuario(idUsuario);
+        historial.setAccion(accion);
+        historial.setDescripcion(descripcion);
+        historial.setFecha(LocalDateTime.now());
 
         historialRepository
                 .save(historial);

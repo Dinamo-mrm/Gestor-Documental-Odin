@@ -11,4 +11,5 @@ public interface DocumentosRepository extends JpaRepository<Documentos, Long> {
 
     @Query("SELECT d FROM Documentos d WHERE d.id_radicado = :radicado ORDER BY d.id_documento DESC")
     List<Documentos> buscarPorRadicado(@Param("radicado") Long radicado);
+    void deleteByIdRadicado(Long idRadicado);
 }

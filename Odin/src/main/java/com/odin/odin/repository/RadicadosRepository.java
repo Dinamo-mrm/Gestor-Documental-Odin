@@ -145,4 +145,7 @@ public interface RadicadosRepository
             @Param("usuario") Long usuario,
             @Param("dependencia") Long dependencia
     );
+    @Query(value = "SELECT nextval('radicados_numero_seq')", nativeQuery = true)
+    Long nextNumeroRadicado();
+
 }
