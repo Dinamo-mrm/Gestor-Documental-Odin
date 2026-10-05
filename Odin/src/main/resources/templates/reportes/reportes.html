@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script>
+      try { if (localStorage.getItem('odin-theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes y Estadísticas | ODIN</title>
+    <link rel="stylesheet" th:href="@{/css/globals.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/odin.css}">
+    <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
+    <style>
+        .rep-card{background:#fff;border:1px solid #e2e8f0;border-radius:1rem;padding:1.25rem;transition:box-shadow .15s,border-color .15s}
+        .rep-card:hover{border-color:#86efac;box-shadow:0 8px 24px rgba(22,163,74,.08)}
+        .rep-card h3{font-size:1rem;font-weight:700;color:#0f172a;margin:0 0 .35rem}
+        .rep-card p{font-size:.85rem;color:#64748b;margin:0 0 1rem}
+        .rep-actions{display:flex;flex-wrap:wrap;gap:.5rem}
+        .rep-btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem .9rem;border-radius:.5rem;font-size:.8rem;font-weight:600;text-decoration:none}
+        .rep-btn-pdf{background:#dc2626;color:#fff}
+        .rep-btn-xlsx{background:#15803d;color:#fff}
+        .rep-btn-csv{background:#0f766e;color:#fff}
+        .rep-btn:hover{opacity:.9}
+        .kpi-mini{background:#fff;border:1px solid #e2e8f0;border-radius:1rem;padding:1rem 1.15rem}
+        .kpi-mini .lbl{font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b}
+        .kpi-mini .val{font-size:1.6rem;font-weight:800;color:#0f172a;margin-top:.15rem}
+    </style>
+</head>
+<body class="bg-[#f5f6f8] text-slate-800">
+<div class="min-h-screen flex">
+    <div th:replace="~{fragments/layout :: sidebar('reportes')}"></div>
+    <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay" aria-hidden="true"></div>
+
+    <div class="flex-1 min-w-0 flex flex-col">
+        <div th:replace="~{fragments/layout :: topbar('Reportes y Estadísticas')}"></div>
+
+        <main class="p-4 sm:p-6">
+            <div class="max-w-6xl mx-auto">
+                <div class="mb-6">
+                    <h1 class="odin-page-title text-2xl font-bold text-slate-900">Reportes y Estadísticas</h1>
+                    <p class="text-slate-600 mt-1">Exportación operativa de radicados desde la base oficial (Supabase).</p>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+                    <div class="kpi-mini">
+                        <div class="lbl">Total</div>
+                        <div class="val" th:text="${totalRadicados != null ? totalRadicados : 0}">0</div>
+                    </div>
+                    <div class="kpi-mini" style="border-left:3px solid #f59e0b">
+                        <div class="lbl">Pendientes</div>
+                        <div class="val" th:text="${pendientes != null ? pendientes : 0}">0</div>
+                    </div>
+                    <div class="kpi-mini" style="border-left:3px solid #3b82f6">
+                        <div class="lbl">En proceso</div>
+                        <div class="val" th:text="${enProceso != null ? enProceso : 0}">0</div>
+                    </div>
+                    <div class="kpi-mini" style="border-left:3px solid #16a34a">
+                        <div class="lbl">Finalizados</div>
+                        <div class="val" th:text="${finalizados != null ? finalizados : 0}">0</div>
+                    </div>
+                    <div class="kpi-mini" style="border-left:3px solid #dc2626">
+                        <div class="lbl">Vencidos</div>
+                        <div class="val" th:text="${vencidos != null ? vencidos : 0}">0</div>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4 mb-6">
+                    <div class="rep-card">
+                        <h3>Reporte general de radicados</h3>
+                        <p>Listado completo con número, tipo, remitente, asunto, fecha, prioridad y estado.</p>
+                        <div class="rep-actions">
+                            <a class="rep-btn rep-btn-pdf" th:href="@{/api/reportes/radicados.pdf}" target="_blank" rel="noopener">Descargar PDF</a>
+                            <a class="rep-btn rep-btn-xlsx" th:href="@{/api/reportes/radicados.xlsx}">Descargar Excel</a>
+                            <a class="rep-btn rep-btn-csv" th:href="@{/api/reportes/radicados.csv}">Descargar CSV</a>
+                        </div>
+                    </div>
+                    <div class="rep-card">
+                        <h3>Consulta y seguimiento</h3>
+                        <p>Para filtros por estado, dependencia, trámite o vencimiento use la vista de consulta operativa.</p>
+                        <div class="rep-actions">
+                            <a class="rep-btn" style="background:#0f172a;color:#fff" th:href="@{/view/consulta}">Abrir consulta</a>
+                            <a class="rep-btn" style="background:#fff;color:#15803d;border:1px solid #86efac" th:href="@{/view/tramites}">Gestión de trámites</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-xl border border-amber-200 bg-amber-50 text-amber-900 px-4 py-3 text-sm">
+                    <strong>Nota:</strong> la descarga de reportes requiere permiso <code>ver_reportes</code> (o rol admin).
+                    Si el enlace responde 403, solicite el permiso en Roles y Permisos.
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<script defer th:src="@{/js/script.js}"></script>
+<script defer th:src="@{/js/odin-ui.js}"></script>
+</body>
+</html>

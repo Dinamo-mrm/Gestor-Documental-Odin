@@ -1,5 +1,13 @@
 package com.odin.odin.view;
 
+import org.springframework.web.bind.annotation.RequestParam;
+
+import org.springframework.data.domain.Pageable;
+
+import org.springframework.data.domain.PageRequest;
+
+import org.springframework.data.domain.Page;
+
 import com.odin.odin.model.Series;
 import com.odin.odin.repository.CcdUnidadRepository;
 import com.odin.odin.repository.SeriesRepository;
@@ -15,6 +23,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class SeriesView
 {
+    private static final int PAGE_SIZE = 10;
+
     @Autowired
     private SeriesRepository repository;
 
@@ -22,9 +32,15 @@ public class SeriesView
     private CcdUnidadRepository unidadesRepository;
 
     @GetMapping("/view/series")
-    public String lista(Model model)
+    public String lista(@RequestParam(defaultValue = "0") int page, Model model)
     {
-        model.addAttribute("series", repository.findAll());
+        if (page < 0) page = 0;
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        Page<?> pagina = repository.findAll(pageable);
+        model.addAttribute("series", pagina.getContent());
+        model.addAttribute("page", pagina);
+        model.addAttribute("currentPage", pagina.getNumber());
+        model.addAttribute("totalPages", Math.max(pagina.getTotalPages(), 1));
         return "series/series";
     }
 

@@ -1,40 +1,48 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <script src="https://cdn.tailwindcss.com"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Subseries</title>
+    <title>Subseries Documentales | ODIN</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    
+    
 
     <style>
         body {
             font-family: 'Inter', sans-serif;
         }
     </style>
+    
+    <link rel="stylesheet" th:href="@{/css/globals.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/odin.css}">
+    <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
 </head>
-
 <body class="bg-[#f5f6f8] text-slate-800">
 
 <div class="min-h-screen flex">
 
-    <div th:replace="fragments/layout :: sidebar('subseries')"></div>
+    <!-- SIDEBAR con menú hamburguesa responsive -->
+    <div th:replace="~{fragments/layout :: sidebar('subseries')}"></div>
 
-    <div id="overlay" class="fixed inset-0 bg-black/40 z-20 hidden"></div>
+    <!-- Overlay móvil -->
+    <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay" aria-hidden="true"></div>
 
-    <div class="flex-1 min-w-0">
+    <!-- CONTENIDO -->
+    <div class="flex-1 min-w-0 flex flex-col">
 
-        <div th:replace="fragments/layout :: topbar('ODIN')"></div>
+        <!-- TOPBAR (incluye botón hamburguesa en móvil) -->
+        <div th:replace="~{fragments/layout :: topbar('Subseries Documentales')}"></div>
 
-        <main class="px-4 md:px-8 py-6">
-
-            <section class="mb-6">
+        <main class="px-4 md:px-8 py-6 flex-1">
+<section class="mb-6">
                 <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                     <div>
-                        <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight uppercase">
-                            Subseries del CCD
+                        <h1 class="odin-page-title">
+                            Subseries Documentales
                         </h1>
                         <p class="text-sm text-slate-500 mt-2">
                             Gestiona las subseries documentales y su relacion con la serie padre.
@@ -221,16 +229,7 @@
                                         Editar
                                     </a>
 
-                                    <form th:action="@{'/view/subseries/delete/' + ${subserie.id_subserie}}"
-                                          method="post"
-                                          class="inline">
-                                        <button type="submit"
-                                                title="Eliminar"
-                                                class="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:border-red-500 hover:text-red-600 transition"
-                                                onclick="return confirm('Desea eliminar esta subserie?')">
-                                            Eliminar
-                                        </button>
-                                    </form>
+                                    
                                 </div>
                             </td>
                         </tr>
@@ -250,12 +249,14 @@
                     </span>
                 </div>
             </section>
-
         </main>
+
+
+
     </div>
 </div>
 
-<script th:src="@{/js/script.js}" defer></script>
-
+    <script defer th:src="@{/js/script.js}"></script>
+    <script defer th:src="@{/js/odin-ui.js}"></script>
 </body>
 </html>

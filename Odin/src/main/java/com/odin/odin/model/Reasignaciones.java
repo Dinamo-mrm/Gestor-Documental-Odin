@@ -1,19 +1,28 @@
 package com.odin.odin.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
+/**
+ * Alineado 1:1 con public.reasignaciones en Supabase:
+ *
+ *   id_reasignacion      bigserial PRIMARY KEY
+ *   id_radicado          bigint NULL
+ *   id_usuario_anterior  bigint NULL
+ *   id_usuario_nuevo     bigint NULL
+ *   id_dependencia_nueva bigint NULL
+ *   fecha                timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
+ */
 @Entity
 @Table(name = "reasignaciones")
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Reasignaciones {
 
     @Id
@@ -21,28 +30,24 @@ public class Reasignaciones {
     @Column(name = "id_reasignacion")
     private Long id_reasignacion;
 
-    @NotNull(message = "El radicado es obligatorio")
     @Column(name = "id_radicado")
-    private Integer id_radicado;
+    private Long id_radicado;
 
     @Column(name = "id_usuario_anterior")
-    private Integer id_usuario_anterior;
+    private Long id_usuario_anterior;
 
-    @NotNull(message = "El usuario nuevo es obligatorio")
     @Column(name = "id_usuario_nuevo")
-    private Integer id_usuario_nuevo;
+    private Long id_usuario_nuevo;
 
-    @NotNull(message = "La dependencia nueva es obligatoria")
     @Column(name = "id_dependencia_nueva")
-    private Integer id_dependencia_nueva;
+    private Long id_dependencia_nueva;
 
-    @NotNull(message = "La fecha es obligatoria")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    @Column(name = "fecha", nullable = false)
+    @Column(name = "fecha", nullable = false, columnDefinition = "timestamp without time zone")
     private LocalDateTime fecha;
 
     @PrePersist
-    public void prePersist() {
+    protected void onCreate() {
         if (fecha == null) {
             fecha = LocalDateTime.now();
         }

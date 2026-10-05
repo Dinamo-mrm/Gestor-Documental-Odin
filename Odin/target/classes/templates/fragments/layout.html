@@ -1,236 +1,362 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <script src="https://cdn.tailwindcss.com"></script>
     <meta charset="UTF-8">
     <title>ODIN - Sistema</title>
+    
+    <link rel="stylesheet" th:href="@{/css/globals.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/odin.css}">
+    <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
 </head>
 <body>
 
 <!-- ===================== SIDEBAR ===================== -->
 <div th:fragment="sidebar(activeMenu)"
      id="main-sidebar"
-     class="w-64 bg-white border-r border-slate-200 min-h-screen flex flex-col font-sans">
+     role="navigation"
+     aria-label="Menú principal"
+     class="fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-slate-200
+            flex flex-col h-screen overflow-y-auto
+            transform -translate-x-full transition-transform duration-300 ease-in-out
+            md:static md:translate-x-0 md:shrink-0 md:h-auto md:min-h-screen">
 
     <!-- LOGO -->
-    <div class="h-16 flex items-center justify-center border-b border-slate-200 px-6">
-        <div class="flex items-center gap-2.5 w-full">
-            <div class="w-9 h-9 bg-green-700 rounded-xl flex items-center justify-center text-white shadow-md shadow-green-700/20">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
-                </svg>
-            </div>
+    <div class="h-16 flex items-center justify-between border-b border-slate-200 px-4 shrink-0">
+        <div class="flex items-center gap-2.5">
+            <img class="odin-sena-logo" th:src="@{/img/sena-logo.png}" alt="SENA">
             <span class="font-bold text-slate-800 text-xl tracking-tight">ODIN</span>
         </div>
+        <button type="button" id="btn-close-sidebar" onclick="closeSidebar()"
+                class="md:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition"
+                aria-label="Cerrar menú">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+        </button>
     </div>
 
-    <!-- MENU DE NAVEGACIÓN -->
     <nav class="flex-1 px-3 py-4 space-y-1 text-sm font-medium">
 
-        <!-- INICIO -->
+        <!-- 1. PANEL DE INICIO -->
         <a th:href="@{/view/dashboard}"
            th:classappend="${activeMenu == 'dashboard'} ? 'bg-green-50 text-green-700 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75 group-hover:opacity-100">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
             </svg>
-            <span>Panel de Inicio</span>
+            <span>Dashboard</span>
         </a>
 
-        <!-- DESPLEGABLE: CONTROL DE ACCESO (USUARIOS Y ROLES) -->
+        <!-- 2. CONTROL DE ACCESO -->
         <div class="dropdown-container">
-            <button onclick="toggleDropdown('dropdown-usuarios')"
-                    type="button"
-                    class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all duration-200 focus:outline-none group">
+            <button type="button" onclick="toggleDropdown('dropdown-acceso')"
+                    class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all duration-200 focus:outline-none group"
+                    aria-expanded="false" aria-controls="dropdown-acceso">
                 <div class="flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75 group-hover:opacity-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
                     </svg>
                     <span>Control de Acceso</span>
                 </div>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200 dynamic-arrow" id="arrow-dropdown-usuarios">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" id="arrow-dropdown-acceso" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                 </svg>
             </button>
-
-            <div id="dropdown-usuarios" class="hidden pl-11 pr-2 py-1 space-y-1 bg-slate-50/70 rounded-lg mt-0.5 border border-slate-100">
+            <div id="dropdown-acceso" class="hidden pl-11 pr-2 py-1 space-y-1 bg-slate-50/70 rounded-lg mt-0.5 border border-slate-100">
                 <a th:href="@{/view/usuarios}"
-                   th:classappend="${activeMenu == 'usuarios'} ? 'text-green-700 font-semibold' : 'text-slate-600 hover:text-slate-900'"
-                   class="block px-2 py-2 rounded-md transition text-[13px]">
-                    Gestión de Usuarios
-                </a>
+                   th:classappend="${activeMenu == 'usuarios'} ? 'text-green-700 font-semibold bg-green-50' : 'text-slate-600 hover:text-slate-900'"
+                   class="block px-2 py-2 rounded-md transition text-[13px]">Gestión de Usuarios</a>
                 <a th:href="@{/view/roles}"
-                   th:classappend="${activeMenu == 'roles'} ? 'text-green-700 font-semibold' : 'text-slate-600 hover:text-slate-900'"
-                   class="block px-2 py-2 rounded-md transition text-[13px]">
-                    Roles y Permisos
-                </a>
+                   th:classappend="${activeMenu == 'roles'} ? 'text-green-700 font-semibold bg-green-50' : 'text-slate-600 hover:text-slate-900'"
+                   class="block px-2 py-2 rounded-md transition text-[13px]">Roles y Permisos</a>
             </div>
         </div>
 
-        <!-- DEPENDENCIAS -->
+        <!-- 3. DEPENDENCIAS -->
         <a th:href="@{/view/dependencias}"
            th:classappend="${activeMenu == 'dependencias'} ? 'bg-green-50 text-green-700 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75 group-hover:opacity-100">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v14.25M21.621 15.75H18.75m-.75-12h2.25m-.75 3h1.5m-1.5 3h1.5m-1.5 3H18.75M13.5 3.75h.008v.008H13.5V3.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM13.5 7.5h.008v.008H13.5V7.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21V5.25A2.25 2.25 0 0 0 8.25 3H4.5A2.25 2.25 0 0 0 2.25 5.25V21h8.25ZM10.5 21h7.5V10.5a2.25 2.25 0 0 0-2.25-2.25h-5.25V21Z" />
             </svg>
             <span>Dependencias</span>
         </a>
 
-        <!-- RADICACIÓN -->
+        <!-- 4. RADICACIÓN -->
         <a th:href="@{/view/radicados}"
-           th:classappend="${activeMenu == 'radicacion_Documental'} ? 'bg-green-50 text-green-700 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
+           th:classappend="${activeMenu == 'radicados' or activeMenu == 'radicacion_Documental'} ? 'bg-green-50 text-green-700 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75 group-hover:opacity-100">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
             </svg>
             <span>Radicación de Documentos</span>
         </a>
 
-        <!-- DESPLEGABLE: GESTIÓN DOCUMENTAL (SERIES, SUBSERIES Y CONSULTA) -->
+        <!-- 5. GESTIÓN DOCUMENTAL (CCD + documentos) -->
         <div class="dropdown-container">
-            <button onclick="toggleDropdown('dropdown-consulta')"
-                    type="button"
-                    class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all duration-200 focus:outline-none group">
+            <button type="button" onclick="toggleDropdown('dropdown-documental')"
+                    class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all duration-200 focus:outline-none group"
+                    aria-expanded="false" aria-controls="dropdown-documental">
                 <div class="flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75 group-hover:opacity-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                     </svg>
                     <span>Gestión Documental</span>
                 </div>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200 dynamic-arrow" id="arrow-dropdown-consulta">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" id="arrow-dropdown-documental" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                 </svg>
             </button>
-
-            <div id="dropdown-consulta" class="hidden pl-11 pr-2 py-1 space-y-1 bg-slate-50/70 rounded-lg mt-0.5 border border-slate-100">
-                <a th:href="@{/view/estados}"
-                   th:classappend="${activeMenu == 'consulta'} ? 'text-green-700 font-semibold' : 'text-slate-600 hover:text-slate-900'"
-                   class="block px-2 py-2 rounded-md transition text-[13px]">
-                    Consulta y Seguimiento
-                </a>
+            <div id="dropdown-documental" class="hidden pl-11 pr-2 py-1 space-y-1 bg-slate-50/70 rounded-lg mt-0.5 border border-slate-100">
                 <a th:href="@{/view/series}"
-                   th:classappend="${activeMenu == 'series'} ? 'text-green-700 font-semibold' : 'text-slate-600 hover:text-slate-900'"
-                   class="block px-2 py-2 rounded-md transition text-[13px]">
-                    Series Documentales
-                </a>
+                   th:classappend="${activeMenu == 'series'} ? 'text-green-700 font-semibold bg-green-50' : 'text-slate-600 hover:text-slate-900'"
+                   class="block px-2 py-2 rounded-md transition text-[13px]">Series Documentales</a>
                 <a th:href="@{/view/subseries}"
-                   th:classappend="${activeMenu == 'subseries'} ? 'text-green-700 font-semibold' : 'text-slate-600 hover:text-slate-900'"
-                   class="block px-2 py-2 rounded-md transition text-[13px]">
-                    Subseries Documentales
-                </a>
+                   th:classappend="${activeMenu == 'subseries'} ? 'text-green-700 font-semibold bg-green-50' : 'text-slate-600 hover:text-slate-900'"
+                   class="block px-2 py-2 rounded-md transition text-[13px]">Subseries Documentales</a>
+                <a th:href="@{/view/documentos}"
+                   th:classappend="${activeMenu == 'documentos'} ? 'text-green-700 font-semibold bg-green-50' : 'text-slate-600 hover:text-slate-900'"
+                   class="block px-2 py-2 rounded-md transition text-[13px]">Documentos</a>
             </div>
         </div>
 
-        <!-- TRÁMITES -->
+        <!-- 6. GESTIÓN DE TRÁMITES -->
         <a th:href="@{/view/tramites}"
-           th:classappend="${activeMenu == 'tramites'} ? 'bg-green-50 text-green-700 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
+           th:classappend="${activeMenu == 'tramites' or activeMenu == 'reasignaciones'} ? 'bg-green-50 text-green-700 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75 group-hover:opacity-100">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12a7.5 7.5 0 0 0 15 0m-15 0a7.5 7.5 0 1 1 15 0m-15 0H3m16.5 0H21m-1.5 0H12m-8.457 3.077 1.41-.513m14.095-5.13 1.41-.513M5.106 17.785l1.15-.827m11.379-8.16 1.15-.827M8.14 21.27l.707-1.03m7.45-.808.707-1.03M12 3v1.5m0 15V21m-4.743-10 1.41-.513m11.379 8.16-1.15-.827m-9.33 1.03-.707-1.03" />
             </svg>
             <span>Gestión de Trámites</span>
         </a>
 
-        <!-- REPORTES -->
-        <a href="#"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all duration-200 group">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75 group-hover:opacity-100">
+        <!-- 7. CONSULTA Y SEGUIMIENTO -->
+        <a th:href="@{/view/consulta}"
+           th:classappend="${activeMenu == 'consulta'} ? 'bg-green-50 text-green-700 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z" />
+            </svg>
+            <span>Consulta y Seguimiento</span>
+        </a>
+
+        <!-- 8. BITÁCORA -->
+        <a th:href="@{/view/bitacora}"
+           th:classappend="${activeMenu == 'bitacora' or activeMenu == 'plantilla'} ? 'bg-green-50 text-green-700 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            <span>Bitácora</span>
+        </a>
+
+        <!-- 9. REPORTES -->
+        <a th:href="@{/view/reportes}"
+           th:classappend="${activeMenu == 'reportes'} ? 'bg-green-50 text-green-700 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v5.625c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 3 18.75v-5.625ZM13.5 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v10.125c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 13.5 18.75V8.625ZM8.25 4.125C8.25 3.504 8.754 3 9.375 3h2.25c.621 0 1.125.504 1.125 1.125v14.625c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 8.25 18.75V4.125Z" />
             </svg>
             <span>Reportes y Estadísticas</span>
         </a>
-
     </nav>
 
-    <!-- PROCESAMIENTO JAVASCRIPT DEL COMPONENTE -->
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('main-sidebar');
-            const overlay = document.getElementById('overlay');
-            if (sidebar) sidebar.classList.toggle('-translate-x-full');
-            if (overlay) overlay.classList.toggle('hidden');
-        }
+    <script th:inline="none">
+        (function () {
+            if (window.__odinNavInit) return;
+            window.__odinNavInit = true;
+            var MD = 768;
 
-        function toggleDropdown(dropdownId) {
-            const dropdown = document.getElementById(dropdownId);
-            const arrow = document.getElementById('arrow-' + dropdownId);
+            function isMobile() { return window.innerWidth < MD; }
+            function getSidebar() { return document.getElementById('main-sidebar'); }
+            function getOverlay() { return document.getElementById('overlay'); }
+            function getHamburger() { return document.getElementById('btn-hamburger'); }
 
-            if (dropdown) {
-                const isHidden = dropdown.classList.contains('hidden');
-                if (isHidden) {
+            function setOpen(open) {
+                var sidebar = getSidebar(), overlay = getOverlay(), btn = getHamburger();
+                if (!sidebar) return;
+                if (open) {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.setAttribute('data-open', 'true');
+                    if (overlay) { overlay.classList.remove('hidden'); overlay.setAttribute('aria-hidden', 'false'); }
+                    if (btn) { btn.setAttribute('aria-expanded', 'true'); btn.setAttribute('aria-label', 'Cerrar menú'); }
+                    if (isMobile()) document.body.style.overflow = 'hidden';
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.setAttribute('data-open', 'false');
+                    if (overlay) { overlay.classList.add('hidden'); overlay.setAttribute('aria-hidden', 'true'); }
+                    if (btn) { btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-label', 'Abrir menú'); }
+                    document.body.style.overflow = '';
+                }
+            }
+
+            function isOpen() {
+                var s = getSidebar();
+                return s && s.getAttribute('data-open') === 'true';
+            }
+
+            window.openSidebar = function () { setOpen(true); };
+            window.closeSidebar = function () { setOpen(false); };
+            window.toggleSidebar = function () { setOpen(!isOpen()); };
+
+            window.toggleDropdown = function (dropdownId) {
+                var dropdown = document.getElementById(dropdownId);
+                var arrow = document.getElementById('arrow-' + dropdownId);
+                if (!dropdown) return;
+                var hidden = dropdown.classList.contains('hidden');
+                if (hidden) {
                     dropdown.classList.remove('hidden');
-                    if (arrow) arrow.style.transform = "rotate(180deg)";
+                    if (arrow) arrow.style.transform = 'rotate(180deg)';
                 } else {
                     dropdown.classList.add('hidden');
-                    if (arrow) arrow.style.transform = "rotate(0deg)";
+                    if (arrow) arrow.style.transform = 'rotate(0deg)';
+                }
+            };
+
+            function initMenuState() {
+                var path = window.location.pathname || '';
+
+                // Abrir dropdowns según ruta
+                if (path.indexOf('/usuarios') !== -1 || path.indexOf('/roles') !== -1) {
+                    var dp = document.getElementById('dropdown-acceso');
+                    var ar = document.getElementById('arrow-dropdown-acceso');
+                    if (dp) dp.classList.remove('hidden');
+                    if (ar) ar.style.transform = 'rotate(180deg)';
+                }
+                if (path.indexOf('/series') !== -1 || path.indexOf('/subseries') !== -1 || path.indexOf('/documentos') !== -1) {
+                    var dp2 = document.getElementById('dropdown-documental');
+                    var ar2 = document.getElementById('arrow-dropdown-documental');
+                    if (dp2) dp2.classList.remove('hidden');
+                    if (ar2) ar2.style.transform = 'rotate(180deg)';
+                }
+
+                if (!isMobile()) {
+                    var sb = getSidebar();
+                    if (sb) { sb.classList.remove('-translate-x-full'); sb.setAttribute('data-open', 'false'); }
+                    document.body.style.overflow = '';
+                    var ov = getOverlay();
+                    if (ov) { ov.classList.add('hidden'); ov.setAttribute('aria-hidden', 'true'); }
+                } else {
+                    setOpen(false);
+                }
+
+                var overlay = getOverlay();
+                if (overlay && !overlay.dataset.bound) {
+                    overlay.dataset.bound = '1';
+                    overlay.addEventListener('click', closeSidebar);
+                }
+
+                var sidebar = getSidebar();
+                if (sidebar && !sidebar.dataset.linksBound) {
+                    sidebar.dataset.linksBound = '1';
+                    sidebar.addEventListener('click', function (e) {
+                        if (e.target.closest('a[href]') && isMobile()) setTimeout(closeSidebar, 150);
+                    });
+                }
+
+                if (!window.__odinEscBound) {
+                    window.__odinEscBound = true;
+                    document.addEventListener('keydown', function (e) {
+                        if (e.key === 'Escape' && isOpen()) closeSidebar();
+                    });
+                }
+
+                if (!window.__odinResizeBound) {
+                    window.__odinResizeBound = true;
+                    var t;
+                    window.addEventListener('resize', function () {
+                        clearTimeout(t);
+                        t = setTimeout(function () {
+                            if (!isMobile()) {
+                                var sb2 = getSidebar();
+                                if (sb2) { sb2.classList.remove('-translate-x-full'); sb2.setAttribute('data-open', 'false'); }
+                                document.body.style.overflow = '';
+                                var ov2 = getOverlay();
+                                if (ov2) { ov2.classList.add('hidden'); ov2.setAttribute('aria-hidden', 'true'); }
+                            } else if (!isOpen()) setOpen(false);
+                        }, 100);
+                    });
                 }
             }
-        }
 
-        function initMenuState() {
-            const currentPath = window.location.pathname;
-
-            if (currentPath.includes('/usuarios') || currentPath.includes('/roles')) {
-                const dp = document.getElementById('dropdown-usuarios');
-                const ar = document.getElementById('arrow-dropdown-usuarios');
-                if (dp) dp.classList.remove('hidden');
-                if (ar) ar.style.transform = "rotate(180deg)";
-            }
-            else if (currentPath.includes('/estados') || currentPath.includes('/series') || currentPath.includes('/subseries')) {
-                const dp = document.getElementById('dropdown-consulta');
-                const ar = document.getElementById('arrow-dropdown-consulta');
-                if (dp) dp.classList.remove('hidden');
-                if (ar) ar.style.transform = "rotate(180deg)";
-            }
-
-            const activeItem = document.querySelector('.bg-green-50, .bg-green-100, .font-semibold');
-            if (activeItem) {
-                const parentDropdown = activeItem.closest('[id^="dropdown-"]');
-                if (parentDropdown) {
-                    parentDropdown.classList.remove('hidden');
-                    const arrow = document.getElementById('arrow-' + parentDropdown.id);
-                    if (arrow) arrow.style.transform = "rotate(180deg)";
-                }
-            }
-        }
-
-        initMenuState();
-        document.addEventListener("DOMContentLoaded", initMenuState);
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initMenuState);
+            else initMenuState();
+        })();
     </script>
 </div>
 
 
+<meta id="odinCsrfToken" name="_csrf" th:content="${_csrf.token}"><meta id="odinCsrfHeader" name="_csrf_header" th:content="${_csrf.headerName}">
+
 <!-- ===================== TOPBAR ===================== -->
 <div th:fragment="topbar(title)"
-     class="h-16 bg-green-700 text-white flex items-center justify-between px-6 shadow-sm font-sans">
+     class="h-16 bg-green-700 text-white flex items-center justify-between px-4 sm:px-6 shadow-sm font-sans shrink-0 sticky top-0 z-30 overflow-visible">
 
-    <div class="flex items-center gap-3">
-        <button onclick="toggleSidebar()" class="md:hidden text-white focus:outline-none p-1 rounded hover:bg-green-800 transition">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-            </svg>
+    <div class="flex items-center gap-3 min-w-0">
+        <button type="button" id="btn-hamburger" onclick="toggleSidebar()"
+                class="md:hidden flex flex-col justify-center items-center w-10 h-10 rounded-lg
+                       text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-white/40 transition shrink-0"
+                aria-label="Abrir menú" aria-expanded="false" aria-controls="main-sidebar">
+            <span class="block w-5 h-0.5 bg-current rounded mb-1" aria-hidden="true"></span>
+            <span class="block w-5 h-0.5 bg-current rounded mb-1" aria-hidden="true"></span>
+            <span class="block w-5 h-0.5 bg-current rounded" aria-hidden="true"></span>
         </button>
-        <span class="font-bold text-lg tracking-tight" th:text="${title}">ODIN</span>
+        <span class="font-bold text-base sm:text-lg tracking-tight truncate" th:text="${title}">ODIN</span>
     </div>
 
-    <div class="flex items-center gap-5">
-        <button class="relative text-white/90 hover:text-white transition p-1 rounded-full hover:bg-green-800/50">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-            </svg>
-            <span class="absolute top-1 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-green-700"></span>
-        </button>
-
-        <div class="flex items-center gap-2.5 cursor-pointer group">
-            <div class="w-9 h-9 rounded-xl bg-white text-green-700 flex items-center justify-center font-bold shadow-sm group-hover:scale-105 transition-transform duration-200">
-                U
+    <div class="flex items-center gap-3 sm:gap-5 shrink-0">
+        <!-- Notificaciones -->
+        <div class="relative" id="odinNotifWrap">
+            <button type="button" id="btnNotif" onclick="window.odinToggleNotif && window.odinToggleNotif(event)"
+                    class="relative text-white/90 hover:text-white transition p-1.5 rounded-full hover:bg-green-800/50"
+                    aria-label="Notificaciones" aria-expanded="false" aria-controls="odinNotifPanel">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                </svg>
+                <span th:if="${notifCount != null and notifCount > 0}"
+                      class="absolute -top-0.5 -right-0.5 min-w-[1rem] h-4 px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center ring-2 ring-green-700"
+                      th:text="${notifCount > 9 ? '9+' : notifCount}">2</span>
+            </button>
+            <div id="odinNotifPanel" style="display:none" class="hidden absolute right-0 mt-2 w-80 max-w-[90vw] rounded-xl border border-slate-200 bg-white shadow-xl z-50 overflow-hidden text-slate-800">
+                <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                    <span class="text-sm font-bold">Notificaciones</span>
+                    <a th:href="@{/view/tramites(vencimiento='vencidos')}" class="text-xs font-semibold text-green-700 hover:underline">Ver vencidos</a>
+                </div>
+                <ul id="odinNotifList" class="max-h-64 overflow-y-auto divide-y divide-slate-100">
+                    <li class="px-4 py-3 text-sm text-slate-500">Cargando notificaciones…</li>
+                </ul>
             </div>
         </div>
+
+        <button type="button" id="btnTheme" onclick="window.odinToggleTheme && window.odinToggleTheme(event)"
+                class="text-white/90 hover:text-white transition p-1.5 rounded-full hover:bg-green-800/50"
+                title="Cambiar tema" aria-label="Modo oscuro">
+            <svg id="iconSun" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"/></svg>
+            <svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"/></svg>
+        </button>
+
+        <div class="flex items-center gap-2 min-w-0" title="Usuario autenticado">
+            <div class="w-9 h-9 rounded-xl bg-white text-green-700 flex items-center justify-center font-bold shadow-sm shrink-0"
+                 th:text="${inicialUsuario != null ? inicialUsuario : 'U'}">A</div>
+            <div class="hidden sm:flex flex-col leading-tight min-w-0 max-w-[12rem]">
+                <span class="text-sm font-semibold text-white truncate"
+                      th:text="${nombreUsuario != null ? nombreUsuario : 'Usuario'}">Administrador</span>
+                <span class="text-[11px] text-white/75 truncate"
+                      th:text="${correoUsuario != null ? correoUsuario : ''}">admin@senacali.edu.co</span>
+            </div>
+            <form th:action="@{/logout}" method="post" class="m-0">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button type="submit" class="text-xs sm:text-sm font-semibold text-white/90 hover:text-white px-2 py-1 rounded-md hover:bg-green-800/50 transition">Cerrar sesión</button>
+            </form>
+        </div>
+
     </div>
 
+<script defer th:src="@{/js/odin-ui.js}"></script>
 </div>
 
-</body>
-</html>

@@ -1,0 +1,4 @@
+package com.odin.odin.model;
+import jakarta.persistence.*; import lombok.*; import java.time.LocalDateTime;
+@Entity @Table(name="firmas") @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+public class Firmas { @Id @GeneratedValue(strategy=GenerationType.IDENTITY) @Column(name="id_firma") private Long idFirma; @Column(name="id_radicado",nullable=false) private Long idRadicado; @Column(name="id_usuario",nullable=false) private Long idUsuario; @Column(name="fecha_firma") private LocalDateTime fechaFirma; @Column(name="estado") private String estado; @Column(name="hash_documento") private String hashDocumento; @Column(name="certificado") private String certificado; @Column(name="ip_firma") private String ipFirma; @Column(name="observacion",columnDefinition="text") private String observacion; }

@@ -3,449 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta y Seguimiento</title>
-
+    <title>Estados | ODIN</title>
+    <script>
+      try { if (localStorage.getItem('odin-theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/css/globals.css}">
     <link rel="stylesheet" th:href="@{/css/styleguide.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/odin.css}">
+    <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
 </head>
-
-<body class="bg-[#f5f6f8]">
-
+<body class="bg-[#f5f6f8] text-slate-800">
 <div class="min-h-screen flex">
-
-    <!-- SIDEBAR -->
-    <div th:replace="fragments/layout :: sidebar('consulta')"></div>
-
-    <div id="overlay" class="fixed inset-0 bg-black/40 z-20 hidden"></div>
-
-    <!-- CONTENIDO -->
-    <div class="flex-1 min-w-0">
-
-        <!-- TOPBAR -->
-        <div th:replace="fragments/layout :: topbar('ODIN')"></div>
-
-        <main class="px-6 md:px-8 py-6">
-
-            <!-- TITULO -->
-            <!-- ENCABEZADO -->
-            <section class="mb-6">
-
-                <div class="flex items-start justify-between">
-
-                    <div>
-
-                        <h1
-                                class="uppercase leading-tight"
-                                style="
-                    font-family: var(--h1-TITLE-font-family);
-                    font-weight: var(--h1-TITLE-font-weight);
-                    font-size: var(--h1-TITLE-font-size);
-                    color:#1f2937;
-                ">
-                            CONSULTA Y <br>
-                            SEGUIMIENTO
-                        </h1>
-
-                        <p
-                                class="mt-3"
-                                style="
-                    font-family: var(--label-font-family);
-                    font-size:12px;
-                    color:#64748b;
-                ">
-                            Administre y rastree el estado de sus documentos en tiempo real.
-                        </p>
-
-                    </div>
-
-                    <!-- BOTON CORRECTO SEGUN FIGMA -->
-                    <a th:href="@{/view/radicados}"
-                       class="inline-flex items-center justify-center rounded-md shadow-sm"
-                       style="
-        background: #39A900 !important;
-        background-color: #39A900 !important;
-        color: #FFFFFF !important;
-        width: 180px;
-        height: 40px;
-        font-size: 13px;
-        font-weight: 700;
-        text-decoration: none;
-   ">
-                        Nuevo Documento
-                    </a>
-
+    <div th:replace="~{fragments/layout :: sidebar('estados')}"></div>
+    <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay" aria-hidden="true"></div>
+    <div class="flex-1 min-w-0 flex flex-col">
+        <div th:replace="~{fragments/layout :: topbar('Estados')}"></div>
+        <main class="px-4 md:px-8 py-6 flex-1">
+            <section class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h1 class="odin-page-title">Estados</h1>
+                    <p class="text-sm text-slate-500 mt-1">Catálogo de estados del flujo documental (máx. 10 por página).</p>
                 </div>
-
+                <a th:href="@{/view/estados/form}" class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold text-white"
+                   style="background:#39A900">Nuevo estado</a>
             </section>
 
+            <div th:if="${mensaje}" class="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800" th:text="${mensaje}"></div>
 
-
-            <!-- BUSCADOR -->
-            <section class="mb-5">
-
-                <div class="relative">
-
-                    <span class="absolute inset-y-0 left-4 flex items-center text-slate-400">
-                        🔍
-                    </span>
-
-                    <input
-                            type="text"
-                            placeholder="Buscar radicado, asunto o responsable..."
-                            class="w-full rounded-lg border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-600 shadow-sm outline-none focus:border-green-500">
-
-                </div>
-
-            </section>
-
-            <!-- CARD PRINCIPAL -->
-            <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-
-                <!-- FILTROS -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-5 border-b border-slate-100 bg-[#fafafa]">
-
-                    <div>
-
-                        <label
-                                class="block mb-2 uppercase"
-                                style="
-                                    font-family: var(--label-font-family);
-                                    font-size:10px;
-                                    color:#64748b;
-                                    font-weight:700;
-                                ">
-                            Tipo de Documento
-                        </label>
-
-                        <select
-                                class="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-600">
-                            <option>Todos los tipos</option>
-                            <option>Oficio</option>
-                            <option>Factura</option>
-                            <option>Circular</option>
-                            <option>Contrato</option>
-                        </select>
-
-                    </div>
-
-                    <div>
-
-                        <label
-                                class="block mb-2 uppercase"
-                                style="
-                                    font-family: var(--label-font-family);
-                                    font-size:10px;
-                                    color:#64748b;
-                                    font-weight:700;
-                                ">
-                            Estado de Gestión
-                        </label>
-
-                        <select
-                                class="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-600">
-                            <option>Estado</option>
-                            <option>En trámite</option>
-                            <option>Pendiente</option>
-                            <option>Finalizado</option>
-                        </select>
-
-                    </div>
-
-                    <div>
-
-                        <label
-                                class="block mb-2 uppercase"
-                                style="
-                                    font-family: var(--label-font-family);
-                                    font-size:10px;
-                                    color:#64748b;
-                                    font-weight:700;
-                                ">
-                            Fecha
-                        </label>
-
-                        <input
-                                type="date"
-                                class="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-600">
-
-                    </div>
-
-                </div>
-
-                <!-- TABLA -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
-
                     <table class="min-w-full text-sm">
-
-                        <thead>
-
-                        <tr class="bg-[#f3f4f6] border-b border-slate-200 text-[11px] uppercase tracking-wide text-slate-500">
-
-                            <th class="px-5 py-4 text-center font-bold">
-                                Acciones
-                            </th>
-
-                            <th class="px-5 py-4 text-left font-bold">
-                                Radicado
-                            </th>
-
-                            <th class="px-5 py-4 text-left font-bold">
-                                Tipo Documento
-                            </th>
-
-                            <th class="px-5 py-4 text-left font-bold">
-                                Fecha Registro
-                            </th>
-
-                            <th class="px-5 py-4 text-left font-bold">
-                                Estado
-                            </th>
-
-                            <th class="px-5 py-4 text-left font-bold">
-                                Responsable
-                            </th>
-
+                        <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+                        <tr>
+                            <th class="px-4 py-3 text-left">ID</th>
+                            <th class="px-4 py-3 text-left">Nombre</th>
+                            
+                            <th class="px-4 py-3 text-right">Acciones</th>
                         </tr>
-
                         </thead>
-
-                        <tbody class="divide-y divide-slate-100">
-
-                        <tr class="hover:bg-slate-50">
-
-                            <td class="px-5 py-4">
-
-                                <div class="flex justify-center gap-3">
-
-                                    <button class="text-slate-500 hover:text-green-700">
-                                        👁️
-                                    </button>
-
-                                    <button class="text-slate-500 hover:text-green-700">
-                                        ⬇️
-                                    </button>
-
-                                </div>
-
+                        <tbody>
+                        <tr th:each="e : ${estados}" class="border-t border-slate-100 hover:bg-slate-50">
+                            <td class="px-4 py-3" th:text="${e.id_estado}">1</td>
+                            <td class="px-4 py-3 font-semibold" th:text="${e.nombre}">radicado</td>
+                            
+                            <td class="px-4 py-3 text-right whitespace-nowrap">
+                                <a class="text-green-700 font-semibold mr-3" th:href="@{/view/estados/edit/{id}(id=${e.id_estado})}">Editar</a>
+                                <form th:action="@{/view/estados/delete/{id}(id=${e.id_estado})}" method="post" class="inline"
+                                      onsubmit="return confirm('¿Eliminar este estado?');">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <button type="submit" class="text-red-600 font-semibold">Eliminar</button>
+                                </form>
                             </td>
-
-                            <td class="px-5 py-4 font-semibold text-[#39a900]">
-                                2023-ABC-001
-                            </td>
-
-                            <td class="px-5 py-4">
-                                Oficio de Comisión
-                            </td>
-
-                            <td class="px-5 py-4">
-                                12/03/2024
-                            </td>
-
-                            <td class="px-5 py-4">
-
-                                <span class="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
-                                    En Trámite
-                                </span>
-
-                            </td>
-
-                            <td class="px-5 py-4 font-semibold">
-                                Lucía Gómez
-                            </td>
-
                         </tr>
-
-                        <tr class="hover:bg-slate-50">
-
-                            <td class="px-5 py-4">
-                                <div class="flex justify-center gap-3">
-                                    <button>👁️</button>
-                                    <button>⬇️</button>
-                                </div>
-                            </td>
-
-                            <td class="px-5 py-4 font-semibold text-[#39a900]">
-                                2023-FAC-452
-                            </td>
-
-                            <td class="px-5 py-4">
-                                Factura Electrónica
-                            </td>
-
-                            <td class="px-5 py-4">
-                                10/03/2024
-                            </td>
-
-                            <td class="px-5 py-4">
-                                <span class="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">
-                                    Finalizado
-                                </span>
-                            </td>
-
-                            <td class="px-5 py-4 font-semibold">
-                                Andrés Rivera
-                            </td>
-
+                        <tr th:if="${estados == null or #lists.isEmpty(estados)}">
+                            <td colspan="3" class="px-4 py-8 text-center text-slate-400">No hay estados registrados.</td>
                         </tr>
-
-                        <tr class="hover:bg-slate-50">
-
-                            <td class="px-5 py-4">
-                                <div class="flex justify-center gap-3">
-                                    <button>👁️</button>
-                                    <button>⬇️</button>
-                                </div>
-                            </td>
-
-                            <td class="px-5 py-4 font-semibold text-[#39a900]">
-                                2023-CON-089
-                            </td>
-
-                            <td class="px-5 py-4">
-                                Contrato de Prestación
-                            </td>
-
-                            <td class="px-5 py-4">
-                                08/03/2024
-                            </td>
-
-                            <td class="px-5 py-4">
-                                <span class="inline-flex rounded-full bg-yellow-100 px-3 py-1 text-xs font-bold text-yellow-700">
-                                    Pendiente
-                                </span>
-                            </td>
-
-                            <td class="px-5 py-4 font-semibold">
-                                Sofía Marín
-                            </td>
-
-                        </tr>
-
-                        <tr class="hover:bg-slate-50">
-
-                            <td class="px-5 py-4">
-                                <div class="flex justify-center gap-3">
-                                    <button>👁️</button>
-                                    <button>⬇️</button>
-                                </div>
-                            </td>
-
-                            <td class="px-5 py-4 font-semibold text-[#39a900]">
-                                2023-CIR-112
-                            </td>
-
-                            <td class="px-5 py-4">
-                                Circular Administrativa
-                            </td>
-
-                            <td class="px-5 py-4">
-                                05/03/2024
-                            </td>
-
-                            <td class="px-5 py-4">
-                                <span class="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
-                                    En Trámite
-                                </span>
-                            </td>
-
-                            <td class="px-5 py-4 font-semibold">
-                                Carlos Mendoza
-                            </td>
-
-                        </tr>
-
-                        <tr class="hover:bg-slate-50">
-
-                            <td class="px-5 py-4">
-                                <div class="flex justify-center gap-3">
-                                    <button>👁️</button>
-                                    <button>⬇️</button>
-                                </div>
-                            </td>
-
-                            <td class="px-5 py-4 font-semibold text-[#39a900]">
-                                2023-OF-220
-                            </td>
-
-                            <td class="px-5 py-4">
-                                Oficio Externo
-                            </td>
-
-                            <td class="px-5 py-4">
-                                01/03/2024
-                            </td>
-
-                            <td class="px-5 py-4">
-                                <span class="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">
-                                    Finalizado
-                                </span>
-                            </td>
-
-                            <td class="px-5 py-4 font-semibold">
-                                Lucía Gómez
-                            </td>
-
-                        </tr>
-
                         </tbody>
-
                     </table>
-
                 </div>
-
-                <!-- FOOTER -->
-                <div class="flex items-center justify-between px-5 py-4 border-t border-slate-100 text-xs text-slate-500 bg-[#fafafa]">
-
-                    <span>
-                        Mostrando 1 a 5 de 1,240 resultados
-                    </span>
-
-                    <div class="flex items-center gap-2">
-
-                        <button class="w-8 h-8 rounded-md hover:bg-slate-100">
-                            ‹
-                        </button>
-
-                        <button
-                                class="w-8 h-8 rounded-md text-white font-bold"
-                                style="background-color: var(--verde-sena)">
-                            1
-                        </button>
-
-                        <button class="w-8 h-8 rounded-md hover:bg-slate-100">
-                            2
-                        </button>
-
-                        <button class="w-8 h-8 rounded-md hover:bg-slate-100">
-                            3
-                        </button>
-
-                        <span>...</span>
-
-                        <button class="w-8 h-8 rounded-md hover:bg-slate-100">
-                            248
-                        </button>
-
-                        <button class="w-8 h-8 rounded-md hover:bg-slate-100">
-                            ›
-                        </button>
-
-                    </div>
-
+                <div class="flex items-center justify-between px-4 py-3 border-t border-slate-100 text-sm"
+                     th:if="${totalPages != null and totalPages > 1}">
+                    <a th:if="${currentPage > 0}" th:href="@{/view/estados(page=${currentPage - 1})}" class="text-green-700 font-semibold">← Anterior</a>
+                    <span th:unless="${currentPage > 0}"></span>
+                    <span class="text-slate-500">Página <span th:text="${currentPage + 1}">1</span> de <span th:text="${totalPages}">1</span></span>
+                    <a th:if="${currentPage + 1 < totalPages}" th:href="@{/view/estados(page=${currentPage + 1})}" class="text-green-700 font-semibold">Siguiente →</a>
+                    <span th:unless="${currentPage + 1 < totalPages}"></span>
                 </div>
-
-            </section>
-
+            </div>
         </main>
-
     </div>
-
 </div>
-
-<script th:src="@{/js/script.js}" defer></script>
-
+<script defer th:src="@{/js/script.js}"></script>
+<script defer th:src="@{/js/odin-ui.js}"></script>
 </body>
 </html>

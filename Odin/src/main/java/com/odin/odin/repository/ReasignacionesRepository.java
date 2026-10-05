@@ -16,7 +16,5 @@ public interface ReasignacionesRepository
         WHERE r.id_radicado = :idRadicado
         ORDER BY r.fecha DESC
     """)
-    List<Reasignaciones> findByRadicadoOrderByFechaDesc(
-            @Param("idRadicado") Integer idRadicado
-    );
+    List<Reasignaciones> findByRadicadoOrderByFechaDesc(Long idRadicado);;
 }

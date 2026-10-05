@@ -1,0 +1,119 @@
+html.dark { color-scheme: dark; }
+html:not(.dark) { color-scheme: light; }
+
+html.dark body,
+html.dark body.bg-\[\#f5f6f8\],
+html.dark body.text-slate-800 {
+  background: #0b1220 !important;
+  color: #e2e8f0 !important;
+}
+
+html.dark .bg-white,
+html.dark .card,
+html.dark .table-card,
+html.dark .filter-card,
+html.dark .table-wrap,
+html.dark .rounded-xl.border,
+html.dark .odin-page-header,
+html.dark header.odin-page-header > div {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+html.dark .odin-page-title,
+html.dark h1, html.dark h2, html.dark h3,
+html.dark .text-slate-800, html.dark .text-slate-900 {
+  color: #f8fafc !important;
+}
+html.dark .odin-page-subtitle,
+html.dark .text-slate-500, html.dark .text-slate-600,
+html.dark .kpi small, html.dark label, html.dark th {
+  color: #94a3b8 !important;
+}
+
+html.dark .kpi, html.dark a.kpi {
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+}
+html.dark .kpi h2 { color: #38bdf8 !important; }
+html.dark .kpi.yellow { border-left: 4px solid #f59e0b !important; }
+html.dark .kpi.blue { border-left: 4px solid #3b82f6 !important; }
+html.dark .kpi.green { border-left: 4px solid #22c55e !important; }
+html.dark .kpi.red { border-left: 4px solid #ef4444 !important; }
+
+html.dark table thead, html.dark table thead th {
+  background: #0f172a !important;
+  color: #94a3b8 !important;
+}
+html.dark table tbody td { color: #e2e8f0 !important; border-color: #334155 !important; }
+html.dark table tbody tr:hover { background: #334155 !important; }
+
+html.dark input, html.dark select, html.dark textarea {
+  background: #0f172a !important;
+  border-color: #475569 !important;
+  color: #e2e8f0 !important;
+}
+
+/* ===== SIDEBAR + SUBMENÚS: texto siempre legible ===== */
+html.dark #main-sidebar,
+html.dark aside {
+  background: #0f172a !important;
+  color: #e2e8f0 !important;
+}
+html.dark #main-sidebar a,
+html.dark #main-sidebar button,
+html.dark #main-sidebar span,
+html.dark #main-sidebar nav {
+  color: #e2e8f0 !important;
+}
+html.dark #main-sidebar a:hover,
+html.dark #main-sidebar button:hover {
+  background: #1e293b !important;
+  color: #ffffff !important;
+}
+html.dark #dropdown-acceso,
+html.dark #dropdown-documental,
+html.dark #main-sidebar .bg-slate-50\/70,
+html.dark #main-sidebar [id^="dropdown-"] {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+html.dark #dropdown-acceso a,
+html.dark #dropdown-documental a,
+html.dark #main-sidebar [id^="dropdown-"] a {
+  color: #f1f5f9 !important;
+  opacity: 1 !important;
+}
+html.dark #main-sidebar .text-slate-400,
+html.dark #main-sidebar .text-slate-500,
+html.dark #main-sidebar .text-slate-600 {
+  color: #cbd5e1 !important;
+}
+html.dark #main-sidebar .bg-green-50 {
+  background: #14532d !important;
+}
+html.dark #main-sidebar .text-green-700 {
+  color: #86efac !important;
+}
+
+html.dark .alert-summary {
+  background: #3f1d1d !important;
+  border-color: #7f1d1d !important;
+  color: #fecaca !important;
+}
+html.dark .btn-secondary, html.dark .mass-actions button {
+  background: #1e293b !important;
+  border-color: #475569 !important;
+  color: #e2e8f0 !important;
+}
+html.dark .border-slate-200, html.dark .border-slate-100 {
+  border-color: #334155 !important;
+}
+
+#odinNotifPanel { min-width: 18rem; max-width: 22rem; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+html.dark #odinNotifPanel {
+  background: #1e293b !important;
+  border-color: #475569 !important;
+  color: #e2e8f0 !important;
+}

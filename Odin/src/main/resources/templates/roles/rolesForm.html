@@ -3,132 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- El operador ?. evita el error si el objeto es null al cargar -->
-    <title th:text="${roles?.id_rol != null} ? 'Editar Rol' : 'Nuevo Rol'">Formulario de Rol</title>
-
+    <title>Rol y Permisos | ODIN</title>
+    <script>
+      try { if (localStorage.getItem('odin-theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/globals.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
-
+    <link rel="stylesheet" th:href="@{/css/odin.css}">
+    <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        .form-card{background:#fff;border:1px solid #e2e8f0;border-radius:1rem;padding:1.5rem;margin-bottom:1rem}
+        label{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.3rem}
+        input[type=text],select{width:100%;border:1px solid #cbd5e1;border-radius:.5rem;padding:.55rem .75rem;font-size:.875rem;margin-bottom:1rem}
+        .btn-primary{background:#15803d;color:#fff;border:none;border-radius:.5rem;padding:.65rem 1.25rem;font-weight:700;cursor:pointer}
+        .btn-secondary{background:#fff;color:#334155;border:1px solid #cbd5e1;border-radius:.5rem;padding:.65rem 1.25rem;font-weight:600;text-decoration:none}
+        .perm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.5rem}
+        .perm-item{display:flex;align-items:center;gap:.5rem;padding:.5rem .75rem;border:1px solid #e2e8f0;border-radius:.5rem;background:#f8fafc;font-size:.85rem}
+        .perm-item input{margin:0}
+        .section-title{font-size:1rem;font-weight:700;margin:0 0 1rem;color:#0f172a}
     </style>
 </head>
-
 <body class="bg-[#f5f6f8] text-slate-800">
-
 <div class="min-h-screen flex">
+    <div th:replace="~{fragments/layout :: sidebar('roles')}"></div>
+    <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay"></div>
 
-    <!-- SIDEBAR -->
-    <div th:replace="fragments/layout :: sidebar('roles')"></div>
+    <div class="flex-1 min-w-0 flex flex-col">
+        <div th:replace="~{fragments/layout :: topbar('Roles y Permisos')}"></div>
 
-    <!-- CONTENIDO -->
-    <div class="flex-1 min-w-0">
+        <main class="p-4 sm:p-6">
+            <div class="max-w-3xl mx-auto">
+                <h1 class="odin-page-title text-2xl font-bold mb-1"
+                    th:text="${rol != null and rol.id_rol != null ? 'Editar rol' : 'Nuevo rol'}">Rol</h1>
+                <p class="text-slate-600 mb-4">RF-N16 · RF-43 · RF-44 — Asignación visual de permisos</p>
 
-        <!-- TOPBAR -->
-        <div th:replace="fragments/layout :: topbar('ODIN')"></div>
+                <form th:action="@{/view/roles/guardar}" th:object="${rol}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <input type="hidden" th:field="*{id_rol}">
 
-        <main class="px-4 md:px-8 py-10">
+                    <div class="form-card">
+                        <h2 class="section-title">Datos del rol</h2>
+                        <label>Nombre del rol *</label>
+                        <input type="text" th:field="*{nombre}" required maxlength="80" placeholder="ej: Analista de radicación">
 
-            <div class="max-w-2xl mx-auto">
+                        <label>Código / clave del rol *</label>
+                        <input type="text" th:field="*{rol}" required maxlength="80" placeholder="ej: ANALISTA">
 
-                <!-- BOTÓN REGRESAR -->
-                <a th:href="@{/view/roles}" class="inline-flex items-center text-sm text-slate-500 hover:text-[#2fa300] mb-6 transition">
-                    <span class="mr-2">←</span> Volver al listado
-                </a>
-
-                <!-- CARD FORMULARIO -->
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-
-                    <div class="px-8 py-6 border-b border-slate-100 bg-[#fafafa]">
-                        <h1 class="text-xl font-extrabold text-slate-900 uppercase tracking-tight"
-                            th:text="${roles?.id_rol != null} ? 'Actualizar Rol' : 'Crear Nuevo Rol'">
-                            Formulario de Rol
-                        </h1>
-                        <p class="text-sm text-slate-500 mt-1">Complete la información del perfil de usuario en el sistema.</p>
+                        <label>Estado</label>
+                        <select th:field="*{estado}">
+                            <option value="Activo">Activo</option>
+                            <option value="Inactivo">Inactivo</option>
+                        </select>
                     </div>
 
-                    <!-- th:object="${roles}" coincide con tu Controller -->
-                    <form th:action="@{/view/roles/save}" th:object="${roles}" method="post" class="p-8 space-y-6">
-
-                        <!-- ID OCULTO PARA EDICIÓN -->
-                        <input type="hidden" th:field="*{id_rol}">
-
-                        <div class="grid grid-cols-1 gap-6">
-
-                            <!-- NOMBRE DEL ROL -->
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-2 tracking-wider">
-                                    Nombre del Rol <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text"
-                                       th:field="*{nombre}"
-                                       placeholder="Ej: Administrador de Sistema"
-                                       class="w-full rounded-lg border border-slate-200 bg-white py-3 px-4 text-sm outline-none focus:border-green-500 focus:ring-4 focus:ring-green-50"
-                                       required>
-                            </div>
-
-                            <!-- TIPO DE ROL (campo 'rol' en tu BD) -->
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-2 tracking-wider">
-                                    Identificador / Tipo de Rol <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text"
-                                       th:field="*{rol}"
-                                       placeholder="Ej: ROLE_ADMIN"
-                                       class="w-full rounded-lg border border-slate-200 bg-white py-3 px-4 text-sm outline-none focus:border-green-500 focus:ring-4 focus:ring-green-50"
-                                       required>
-                            </div>
-
-                            <!-- ESTADO -->
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-2 tracking-wider">
-                                    Estado del Rol
-                                </label>
-                                <div class="relative">
-                                    <select th:field="*{estado}"
-                                            class="w-full rounded-lg border border-slate-200 bg-white py-3 px-4 text-sm outline-none focus:border-green-500 focus:ring-4 focus:ring-green-50 appearance-none">
-                                        <option value="Activo">Activo</option>
-                                        <option value="Inactivo">Inactivo</option>
-                                    </select>
-                                    <span class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-400 text-xs">
-                                        ▼
-                                    </span>
-                                </div>
-                            </div>
-
+                    <!-- Matriz de permisos RF-N16 -->
+                    <div class="form-card">
+                        <h2 class="section-title">Permisos asignados</h2>
+                        <p style="font-size:.8rem;color:#64748b;margin-bottom:1rem">
+                            Seleccione los permisos que tendrá este rol. Solo usuarios con <code>admin_roles</code> pueden modificar.
+                        </p>
+                        <div class="perm-grid">
+                            <label class="perm-item" th:each="p : ${permisosDisponibles}">
+                                <input type="checkbox" name="permisos" th:value="${p.id_permiso}"
+                                       th:checked="${permisosAsignados != null and permisosAsignados.contains(p.id_permiso)}">
+                                <span th:text="${(p.nombre != null ? p.nombre : p.accion) + ' — ' + (p.descripcion != null ? p.descripcion : (p.modulo != null ? p.modulo : ''))}">permiso</span>
+                            </label>
                         </div>
+                        <p th:if="${#lists.isEmpty(permisosDisponibles)}" style="color:#94a3b8;font-size:.85rem">
+                            No hay permisos cargados. Ejecute el script de seed de permisos base.
+                        </p>
+                    </div>
 
-                        <!-- BOTONES -->
-                        <div class="pt-6 flex items-center justify-end gap-3 border-t border-slate-100">
-
-                            <a th:href="@{/view/roles}"
-                               class="px-6 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">
-                                Cancelar
-                            </a>
-
-                            <button type="submit"
-                                    class="px-8 py-2.5 bg-[#2fa300] text-white text-sm font-bold rounded-lg shadow-sm hover:bg-[#248400] focus:ring-4 focus:ring-green-100 transition">
-                                Guardar Cambios
-                            </button>
-
-                        </div>
-
-                    </form>
-
-                </div>
-
-                <p class="text-center text-[11px] text-slate-400 mt-6 uppercase tracking-widest">
-                    Sistema ODIN &copy; 2026 - Gestión de Accesos
-                </p>
-
+                    <div style="display:flex;gap:.75rem">
+                        <button type="submit" class="btn-primary">Guardar rol</button>
+                        <a th:href="@{/view/roles}" class="btn-secondary">Cancelar</a>
+                    </div>
+                </form>
             </div>
-
         </main>
-
     </div>
-
 </div>
-
+<script defer th:src="@{/js/script.js}"></script>
+<script defer th:src="@{/js/odin-ui.js}"></script>
 </body>
 </html>

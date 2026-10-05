@@ -12,10 +12,12 @@ import com.odin.odin.repository.SeriesRepository;
 import com.odin.odin.repository.SubseriesRepository;
 import com.odin.odin.repository.TramitesRepository;
 import com.odin.odin.repository.UsuariosRepository;
+import com.odin.odin.service.DocumentosService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -61,6 +63,12 @@ public class RadicadosView {
 
     @Autowired
     private DocumentosRepository documentosRepository;
+
+    @Autowired
+    private DocumentosService documentosService;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Value("${app.upload-dir:uploads}")
     private String uploadDir;
@@ -257,21 +265,24 @@ public class RadicadosView {
          * Generamos número automáticamente
          * cuando el formulario no lo trae.
          */
-        if (!tieneTexto(
-                radicado.getNumero_radicado()
-        )) {
-
-            String consecutivo =
-                    LocalDateTime.now()
-                            .format(
-                                    DateTimeFormatter.ofPattern(
-                                            "yyyyMMddHHmmss"
-                                    )
-                            );
-
-            radicado.setNumero_radicado(
-                    "RAD-" + consecutivo
+        if (!tieneTexto(radicado.getNumero_radicado())) {
+            String tipo = tieneTexto(radicado.getTipoRadicacion())
+                    ? radicado.getTipoRadicacion()
+                    : radicado.getTipo_radicado();
+            String numero = jdbcTemplate.queryForObject(
+                    "select public.siguiente_numero_radicado(?)",
+                    String.class,
+                    tipo
             );
+            radicado.setNumero_radicado(numero);
+        }
+
+        // Persistimos los campos que antes solo llegaban como @Transient.
+        if (tieneTexto(radicado.getTipoRadicacion())) {
+            radicado.setTipo_radicado(radicado.getTipoRadicacion());
+        }
+        if (tieneTexto(radicado.getCanalRecepcion())) {
+            radicado.setMedio_recepcion(radicado.getCanalRecepcion());
         }
 
         /*
@@ -393,7 +404,7 @@ public class RadicadosView {
          * Esta es una de las correcciones
          * más importantes.
          */
-        Integer idDepElegido =
+        Long idDepElegido =
                 primerId(
                         dependenciaId,
                         depeDestinoId,
@@ -407,7 +418,6 @@ public class RadicadosView {
                         : dependenciasRepository
                         .findById(
                                 idDepElegido
-                                        .longValue()
                         )
                         .orElse(null);
 
@@ -558,9 +568,9 @@ public class RadicadosView {
                         fechaSubida
                 );
 
-                documentosRepository.save(
-                        documento
-                );
+                documento.setMime_type(archivo.getContentType());
+                documento.setVersion_actual(1);
+                documentosService.guardar(documento, radicado.getId_usuario(), "Versión inicial");
 
                 guardados++;
             }
@@ -614,62 +624,36 @@ public class RadicadosView {
                 && !valor.trim().isEmpty();
     }
 
-    private boolean tieneNumero(
-            Integer valor) {
-
-        return valor != null
-                && valor > 0;
+    private boolean tieneNumero(Number valor) {
+        return valor != null && valor.longValue() > 0;
     }
 
-    private Integer convertirAEnteroSeguro(
-            String texto) {
-
-        if (texto == null
-                || texto.trim().isEmpty()) {
-
+    private Long convertirALongSeguro(String texto) {
+        if (texto == null || texto.trim().isEmpty()) {
             return null;
         }
-
         try {
-
-            return Integer.parseInt(
-                    texto.trim()
-            );
-
+            return Long.parseLong(texto.trim());
         } catch (NumberFormatException e) {
-
             return null;
         }
     }
 
-    private Integer primerId(
-            Integer id1,
-            Integer id2,
-            Integer id3,
-            Integer idPorDefecto) {
-
-        if (id1 != null && id1 > 0) {
-            return id1;
-        }
-
-        if (id2 != null && id2 > 0) {
-            return id2;
-        }
-
-        if (id3 != null && id3 > 0) {
-            return id3;
-        }
-
-        return idPorDefecto;
+    /** Compatibilidad con código existente que parsea enteros */
+    private Integer convertirAEnteroSeguro(String texto) {
+        Long v = convertirALongSeguro(texto);
+        return v == null ? null : v.intValue();
     }
 
-    private Integer idValorODefecto(
-            Integer valor,
-            Integer idPorDefecto) {
+    private Long primerId(Number id1, Number id2, Number id3, Number idPorDefecto) {
+        if (id1 != null && id1.longValue() > 0) return id1.longValue();
+        if (id2 != null && id2.longValue() > 0) return id2.longValue();
+        if (id3 != null && id3.longValue() > 0) return id3.longValue();
+        return idPorDefecto == null ? null : idPorDefecto.longValue();
+    }
 
-        return valor != null
-                && valor > 0
-                ? valor
-                : idPorDefecto;
+    private Long idValorODefecto(Number valor, Number idPorDefecto) {
+        if (valor != null && valor.longValue() > 0) return valor.longValue();
+        return idPorDefecto == null ? null : idPorDefecto.longValue();
     }
 }

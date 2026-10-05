@@ -1,42 +1,47 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <script src="https://cdn.tailwindcss.com"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario de Trámite</title>
+    <title>Formulario de Trámite | ODIN</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet">
-
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    
 
     <style>
         body {
             font-family: 'Inter', sans-serif;
         }
     </style>
+    
+    <link rel="stylesheet" th:href="@{/css/globals.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/odin.css}">
+    <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
 </head>
-
 <body class="bg-[#f5f6f8] text-slate-800">
 
 <div class="min-h-screen flex">
 
-    <div th:replace="fragments/layout :: sidebar('tramites')"></div>
+    <!-- SIDEBAR con menú hamburguesa responsive -->
+    <div th:replace="~{fragments/layout :: sidebar('tramites')}"></div>
 
-    <div id="overlay"
-         class="fixed inset-0 bg-black/40 z-20 hidden"></div>
+    <!-- Overlay móvil -->
+    <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay" aria-hidden="true"></div>
 
-    <div class="flex-1 min-w-0">
+    <!-- CONTENIDO -->
+    <div class="flex-1 min-w-0 flex flex-col">
 
-        <div th:replace="fragments/layout :: topbar('ODIN')"></div>
+        <!-- TOPBAR (incluye botón hamburguesa en móvil) -->
+        <div th:replace="~{fragments/layout :: topbar('Trámites')}"></div>
 
-        <main class="max-w-5xl mx-auto px-4 md:px-8 py-8">
-
-            <section class="mb-8">
-                <h1 class="text-3xl font-extrabold uppercase">
-                    Gestión de Trámites
+        <main class="px-4 md:px-8 py-6 flex-1">
+<section class="mb-8">
+                <h1 class="odin-page-title">
+                    Nuevo / Editar Trámite
                 </h1>
 
                 <p class="text-sm text-slate-500 mt-2">
@@ -189,14 +194,14 @@
                 </div>
 
             </form>
-
         </main>
 
-    </div>
 
+
+    </div>
 </div>
 
-<script th:src="@{/js/script.js}" defer></script>
-
+    <script defer th:src="@{/js/script.js}"></script>
+    <script defer th:src="@{/js/odin-ui.js}"></script>
 </body>
 </html>

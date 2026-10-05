@@ -1,58 +1,174 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>try{if(localStorage.getItem('odin-theme')==='dark')document.documentElement.classList.add('dark')}catch(e){}</script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | ODIN</title>
-    <script src="https://cdn.tailwindcss.com"></script><script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        .card { @apply bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col gap-1; }
+        .card span { @apply text-xs font-semibold uppercase tracking-wide text-slate-500; }
+        .card strong { @apply text-2xl font-extrabold; }
+        .chart-box { height: 220px; }
+        .badge { @apply inline-flex rounded-full px-2 py-0.5 text-xs font-bold; }
+    </style>
+    
+    <link rel="stylesheet" th:href="@{/css/globals.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <style>body{font-family:Inter,Arial,sans-serif}.chart-box{position:relative;min-height:300px}</style>
+    <link rel="stylesheet" th:href="@{/css/odin.css}">
+    <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
 </head>
 <body class="bg-[#f5f6f8] text-slate-800">
+
 <div class="min-h-screen flex">
-    <div th:replace="fragments/layout :: sidebar('dashboard')"></div>
-    <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay"></div>
-    <div class="flex-1 min-w-0">
-        <div th:replace="fragments/layout :: topbar('ODIN')"></div>
-        <main class="px-4 md:px-8 py-6">
-            <section class="mb-8"><h1 class="text-3xl font-extrabold text-slate-900 uppercase">Dashboard</h1><p class="text-sm text-slate-500 mt-2">Resumen operativo de la gestión documental de ODIN.</p></section>
 
-            <section class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4 mt-6">
-                <a th:href="@{/view/tramites}" class="card"><span>Total radicados</span><strong class="text-blue-600" th:text="${totalRadicados ?: 0}">0</strong></a>
-                <a th:href="@{/view/tramites(estado=1)}" class="card"><span>Pendientes</span><strong class="text-yellow-600" th:text="${pendientes ?: 0}">0</strong></a>
-                <a th:href="@{/view/tramites(estado=2)}" class="card"><span>En trámite</span><strong class="text-blue-500" th:text="${enTramite ?: 0}">0</strong></a>
-                <a th:href="@{/view/tramites(estado=3)}" class="card"><span>Finalizados</span><strong class="text-green-600" th:text="${finalizados ?: 0}">0</strong></a>
-                <div class="card"><span>Rechazados</span><strong class="text-rose-600" th:text="${rechazados ?: 0}">0</strong></div>
-                <a th:href="@{/view/tramites(vencimiento=vencidos)}" class="card border-red-200"><span class="text-red-600">Vencidos</span><strong class="text-red-700" th:text="${vencidos ?: 0}">0</strong></a>
-                <a th:href="@{/view/tramites(vencimiento=proximos)}" class="card"><span>Próximos a vencer</span><strong class="text-orange-600" th:text="${proximosAVencer ?: 0}">0</strong></a>
-                <a th:href="@{/view/tramites}" class="card"><span>Sin asignar</span><strong class="text-purple-600" th:text="${sinAsignar ?: 0}">0</strong></a>
+    <div th:replace="~{fragments/layout :: sidebar('dashboard')}"></div>
+    <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay" aria-hidden="true"></div>
+
+    <div class="flex-1 min-w-0 flex flex-col">
+        <div th:replace="~{fragments/layout :: topbar('Dashboard')}"></div>
+
+        <main class="px-4 md:px-8 py-6 flex-1">
+            <section class="mb-8">
+                <header class="odin-page-header"><div><h1 class="odin-page-title">Dashboard</h1></div></header>
+                <p class="text-sm text-slate-500 mt-2">Resumen operativo de la gestión documental de ODIN.</p>
             </section>
 
-            <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                <div class="card"><span>Finalizados hoy</span><strong class="text-emerald-600" th:text="${finalizadosHoy ?: 0}">0</strong></div>
-                <div class="card"><span>Usuarios registrados</span><strong class="text-indigo-600" th:text="${usuariosActivos ?: 0}">0</strong></div>
-                <div class="card"><span>Documentos cargados</span><strong class="text-cyan-600" th:text="${documentosCargados ?: 0}">0</strong></div>
-                <div class="card"><span>Anexos pendientes</span><strong class="text-slate-600" th:text="${anexosPendientes ?: 0}">0</strong></div>
+            
+            <section class="kpis" aria-label="Indicadores">
+                <a th:href="@{/view/tramites(estado=1)}" class="kpi yellow">
+                    <small>Pendientes</small>
+                    <h2 th:text="${pendientes != null ? pendientes : 0}">0</h2>
+                </a>
+                <a th:href="@{/view/tramites(estado=2)}" class="kpi blue">
+                    <small>En trámite</small>
+                    <h2 th:text="${enTramite != null ? enTramite : 0}">0</h2>
+                </a>
+                <a th:href="@{/view/tramites(estado=3)}" class="kpi green">
+                    <small>Finalizados</small>
+                    <h2 th:text="${finalizados != null ? finalizados : 0}">0</h2>
+                </a>
+                <a th:href="@{/view/tramites(vencimiento=vencidos)}" class="kpi red">
+                    <small>Vencidos</small>
+                    <h2 th:text="${vencidos != null ? vencidos : 0}">0</h2>
+                </a>
+                <a th:href="@{/view/tramites}" class="kpi green">
+                    <small>Total</small>
+                    <h2 th:text="${totalRadicados != null ? totalRadicados : 0}">0</h2>
+                </a>
             </section>
+
 
             <section class="mt-8 grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6"><h3 class="font-bold mb-4">Estado de los radicados</h3><div class="chart-box"><canvas id="estadoChart"></canvas></div></div>
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6"><h3 class="font-bold mb-4">Distribución general</h3><div class="chart-box"><canvas id="dashboardChart"></canvas></div></div>
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                    <h3 class="font-bold mb-4">Estado de los radicados</h3>
+                    <div class="chart-box"><canvas id="estadoChart"></canvas></div>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                    <h3 class="font-bold mb-4">Distribución general</h3>
+                    <div class="chart-box"><canvas id="dashboardChart"></canvas></div>
+                </div>
             </section>
 
-            <section class="mt-8"><div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                <div class="flex flex-col md:flex-row md:justify-between gap-3 mb-4"><div><h3 class="font-bold">Últimos radicados</h3><p class="text-xs text-slate-500">Registros más recientes ingresados al sistema.</p></div><a th:href="@{/view/tramites}" class="text-sm font-semibold text-emerald-700 hover:underline">Ver gestión integral</a></div>
-                <div class="overflow-auto max-h-80"><table class="w-full text-sm"><thead><tr class="border-b"><th class="text-left py-2">Número</th><th class="text-left py-2">Asunto</th><th class="text-left py-2">Estado</th><th class="text-left py-2">Fecha</th></tr></thead><tbody>
-                <tr class="border-b hover:bg-slate-50" th:each="r : ${ultimosRadicados}"><td class="py-2 font-medium" th:text="${r.numero_radicado}">-</td><td class="py-2" th:text="${r.asunto}">-</td><td class="py-2 whitespace-nowrap"><span class="badge bg-yellow-100 text-yellow-800" th:if="${r.id_estado == 1}">Pendiente</span><span class="badge bg-blue-100 text-blue-800" th:if="${r.id_estado == 2}">En proceso</span><span class="badge bg-green-100 text-green-800" th:if="${r.id_estado == 3}">Finalizado</span><span class="badge bg-rose-100 text-rose-800" th:if="${r.id_estado == 4}">Rechazado</span></td><td class="py-2" th:text="${r.fecha_radicado}">-</td></tr>
-                <tr th:if="${#lists.isEmpty(ultimosRadicados)}"><td colspan="4" class="py-4 text-center text-slate-500">No hay radicados registrados.</td></tr>
-                </tbody></table></div>
-            </div></section>
+            <section class="mt-8">
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                    <div class="flex flex-col md:flex-row md:justify-between gap-3 mb-4">
+                        <div>
+                            <h3 class="font-bold">Últimos radicados</h3>
+                            <p class="text-xs text-slate-500">Registros más recientes ingresados al sistema.</p>
+                        </div>
+                        <a th:href="@{/view/tramites}" class="text-sm font-semibold text-emerald-700 hover:underline">Ver gestión integral</a>
+                    </div>
+                    <div class="overflow-auto max-h-80">
+                        <table class="w-full text-sm">
+                            <thead>
+                            <tr class="border-b">
+                                <th class="text-left py-2">Número</th>
+                                <th class="text-left py-2">Asunto</th>
+                                <th class="text-left py-2">Estado</th>
+                                <th class="text-left py-2">Fecha</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="border-b hover:bg-slate-50" th:each="r : ${ultimosRadicados}">
+                                <td class="py-2 font-medium" th:text="${r.numero_radicado}">-</td>
+                                <td class="py-2" th:text="${r.asunto}">-</td>
+                                <td class="py-2 whitespace-nowrap">
+                                    <span class="badge bg-yellow-100 text-yellow-800" th:if="${r.id_estado == 1}">Pendiente</span>
+                                    <span class="badge bg-blue-100 text-blue-800" th:if="${r.id_estado == 2}">En proceso</span>
+                                    <span class="badge bg-green-100 text-green-800" th:if="${r.id_estado == 3}">Finalizado</span>
+                                    <span class="badge bg-rose-100 text-rose-800" th:if="${r.id_estado == 4}">Rechazado</span>
+                                </td>
+                                <td class="py-2" th:text="${r.fecha_radicado}">-</td>
+                            </tr>
+                            <tr th:if="${ultimosRadicados == null or #lists.isEmpty(ultimosRadicados)}">
+                                <td colspan="4" class="py-4">
+                                    <div class="odin-empty-state">
+                                        <strong>No hay radicados registrados</strong>
+                                        <p>Cuando se registre un radicado, aparecerá aquí el resumen más reciente.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 </div>
-<style>.card{background:#fff;border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;box-shadow:0 1px 2px #0000000d;transition:.2s;display:block}.card:hover{box-shadow:0 4px 12px #00000014}.card span{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b}.card strong{display:block;font-size:1.55rem;font-weight:800;margin-top:.25rem}.badge{padding:.25rem .5rem;border-radius:9999px;font-size:.7rem}</style>
-<script defer th:src="@{/js/script.js}"></script>
+
+
 <script th:inline="javascript">
-const labels=['Pendientes','En trámite','Finalizados','Rechazados','Vencidos'];const values=[[[${pendientes?:0}]],[[${enTramite?:0}]],[[${finalizados?:0}]],[[${rechazados?:0}]],[[${vencidos?:0}]]];const colors=['#FBBF24','#60A5FA','#34D399','#F87171','#991B1B'];
-const d=document.getElementById('estadoChart');if(d)new Chart(d,{type:'doughnut',data:{labels,datasets:[{data:values,backgroundColor:colors,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
-const b=document.getElementById('dashboardChart');if(b)new Chart(b,{type:'bar',data:{labels,datasets:[{label:'Radicados',data:values,backgroundColor:colors,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,ticks:{precision:0}}},plugins:{legend:{display:false}}}});
-</script></body></html>
+/*<![CDATA[*/
+(function () {
+    var pendientes = /*[[${pendientes}]]*/ 0;
+    var enTramite = /*[[${enTramite}]]*/ 0;
+    var finalizados = /*[[${finalizados}]]*/ 0;
+    var rechazados = /*[[${rechazados}]]*/ 0;
+    var vencidos = /*[[${vencidos}]]*/ 0;
+    var total = /*[[${totalRadicados}]]*/ 0;
+
+    function n(v) { return (v === null || v === undefined) ? 0 : Number(v); }
+
+    var labels = ['Pendientes', 'En trámite', 'Finalizados', 'Rechazados', 'Vencidos'];
+    var values = [n(pendientes), n(enTramite), n(finalizados), n(rechazados), n(vencidos)];
+    var colors = ['#FBBF24', '#60A5FA', '#34D399', '#F87171', '#991B1B'];
+
+    var d1 = document.getElementById('estadoChart');
+    if (d1 && typeof Chart !== 'undefined') {
+        new Chart(d1, {
+            type: 'doughnut',
+            data: { labels: labels, datasets: [{ data: values, backgroundColor: colors }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+        });
+    }
+
+    var d2 = document.getElementById('dashboardChart');
+    if (d2 && typeof Chart !== 'undefined') {
+        new Chart(d2, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{ label: 'Cantidad', data: values, backgroundColor: colors }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+})();
+/*]]>*/
+</script>
+    <script defer th:src="@{/js/script.js}"></script>
+    <script defer th:src="@{/js/odin-ui.js}"></script>
+</body>
+</html>

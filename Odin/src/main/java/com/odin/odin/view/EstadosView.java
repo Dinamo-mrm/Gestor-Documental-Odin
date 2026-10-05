@@ -3,61 +3,58 @@ package com.odin.odin.view;
 import com.odin.odin.model.Estados;
 import com.odin.odin.repository.EstadosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-//devuelve un archivo tipo HTML
 @Controller
-public class EstadosView
-{
-    //comuniaccion con la base de datos a tra vez del jpa
+public class EstadosView {
+
+    private static final int PAGE_SIZE = 10;
+
     @Autowired
     private EstadosRepository estadosRepository;
 
-    //llena la tabla que muetra la info de los usuarios
     @GetMapping("/view/estados")
-    public String lista(Model model)
-    {
-        model.addAttribute("estados", estadosRepository.findAll());
+    public String lista(@RequestParam(defaultValue = "0") int page, Model model) {
+        if (page < 0) page = 0;
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        Page<Estados> pagina = estadosRepository.findAll(pageable);
+        model.addAttribute("estados", pagina.getContent());
+        model.addAttribute("page", pagina);
+        model.addAttribute("currentPage", pagina.getNumber());
+        model.addAttribute("totalPages", Math.max(pagina.getTotalPages(), 1));
         return "estados/estados";
     }
 
     @GetMapping("/view/estados/form")
-    public String form(Model model)
-    {
+    public String form(Model model) {
         model.addAttribute("estados", new Estados());
         return "estados/estadosForm";
     }
 
-    //sirve para guardar la lista
     @PostMapping("/view/estados/save")
-    public String save(@ModelAttribute Estados estados, RedirectAttributes ra)
-    {
+    public String save(@ModelAttribute Estados estados, RedirectAttributes ra) {
         estadosRepository.save(estados);
-        ra.addFlashAttribute("mensaje", "Estado registrado con exito");
+        ra.addFlashAttribute("mensaje", "Estado registrado con éxito");
         return "redirect:/view/estados";
     }
 
-    //editar estados
     @GetMapping("/view/estados/edit/{id}")
-    public String edit(@PathVariable Long id, Model model)
-    {
+    public String edit(@PathVariable Long id, Model model) {
         Estados estados = estadosRepository.findById(id).orElse(null);
-        model.addAttribute("estados", estados);
-        return "estadosForm";
+        model.addAttribute("estados", estados != null ? estados : new Estados());
+        return "estados/estadosForm";
     }
 
-    //borrar estados
     @PostMapping("/view/estados/delete/{id}")
-    public String delete(@PathVariable Long id, RedirectAttributes ra)
-    {
+    public String delete(@PathVariable Long id, RedirectAttributes ra) {
         estadosRepository.deleteById(id);
-        ra.addFlashAttribute("mensaje", "Estado eliminado con exito");
+        ra.addFlashAttribute("mensaje", "Estado eliminado con éxito");
         return "redirect:/view/estados";
     }
 }

@@ -5,11 +5,14 @@ import com.odin.odin.repository.TramitesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/tramites")  // ← API REST, no Thymeleaf
+@RequestMapping("/api/tramites")
+@Tag(name="Trámites", description="Catálogo y administración de trámites")  // ← API REST, no Thymeleaf
 public class TramitesController {
 
     @Autowired
@@ -17,6 +20,7 @@ public class TramitesController {
 
     // GET todos
     @GetMapping
+    @Operation(summary="Listar trámites")
     public List<Tramites> getAll() {
         return tramitesRepository.findAll();
     }
@@ -31,6 +35,7 @@ public class TramitesController {
 
     // POST crear
     @PostMapping
+    @Operation(summary="Crear trámite")
     public Tramites create(@RequestBody Tramites tramite) {
         return tramitesRepository.save(tramite);
     }

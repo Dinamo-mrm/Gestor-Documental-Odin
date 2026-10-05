@@ -1,45 +1,50 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <script src="https://cdn.tailwindcss.com"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Usuarios</title>
+    <title>Gestión de Usuarios | ODIN</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    
+    
 
     <style>
         body {
             font-family: 'Inter', sans-serif;
         }
     </style>
+    
+    <link rel="stylesheet" th:href="@{/css/globals.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/odin.css}">
+    <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
 </head>
-
 <body class="bg-[#f5f6f8] text-slate-800">
 
 <div class="min-h-screen flex">
 
-    <!-- SIDEBAR -->
-    <div th:replace="fragments/layout :: sidebar('usuarios')"></div>
+    <!-- SIDEBAR con menú hamburguesa responsive -->
+    <div th:replace="~{fragments/layout :: sidebar('usuarios')}"></div>
 
-    <div id="overlay" class="fixed inset-0 bg-black/40 z-20 hidden"></div>
+    <!-- Overlay móvil -->
+    <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay" aria-hidden="true"></div>
 
     <!-- CONTENIDO -->
-    <div class="flex-1 min-w-0">
+    <div class="flex-1 min-w-0 flex flex-col">
 
-        <!-- TOPBAR -->
-        <div th:replace="fragments/layout :: topbar('ODIN')"></div>
+        <!-- TOPBAR (incluye botón hamburguesa en móvil) -->
+        <div th:replace="~{fragments/layout :: topbar('Gestión de Usuarios')}"></div>
 
-        <main class="px-4 md:px-8 py-6">
-
-            <!-- ENCABEZADO -->
+        <main class="px-4 md:px-8 py-6 flex-1">
+<!-- ENCABEZADO -->
             <section class="mb-6">
                 <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
 
                     <div>
-                        <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight uppercase">
-                            Consulta y<br class="hidden md:block"> Seguimiento
+                        <h1 class="odin-page-title">
+                            Gestión de Usuarios
                         </h1>
                         <p class="text-sm text-slate-500 mt-2">
                             Administre y rastree el estado de los usuarios registrados en el sistema.
@@ -49,7 +54,7 @@
                     <div class="flex gap-3">
                         <a th:href="@{/view/usuarios/form}"
                            class="inline-flex items-center justify-center rounded-lg bg-[#2fa300] px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#248400] transition">
-                            nuevo usuario
+                            Nuevo usuario
                         </a>
                     </div>
                 </div>
@@ -204,7 +209,7 @@
                             </td>
                         </tr>
 
-                        <tr th:if="${#lists.isEmpty(usuarios)}">
+                        <tr th:if="${usuarios == null or #lists.isEmpty(usuarios)}">
                             <td colspan="8" class="px-6 py-10 text-center text-slate-500">
                                 No hay usuarios registrados en este momento.
                             </td>
@@ -216,7 +221,7 @@
 
                 <!-- FOOTER TABLA -->
                 <div class="flex items-center justify-between px-5 py-4 border-t border-slate-100 text-xs text-slate-500">
-                    <span th:text="'Mostrando ' + ${#lists.size(usuarios)} + ' usuarios registrados'">
+                    <span th:text="'Mostrando ' + (${usuarios != null ? #lists.size(usuarios) : 0}) + ' usuarios registrados'">
                         Mostrando usuarios registrados
                     </span>
 
@@ -240,12 +245,14 @@
                 </div>
 
             </section>
-
         </main>
+
+
+
     </div>
 </div>
 
-<script th:src="@{/js/script.js}" defer></script>
-
+    <script defer th:src="@{/js/script.js}"></script>
+    <script defer th:src="@{/js/odin-ui.js}"></script>
 </body>
 </html>

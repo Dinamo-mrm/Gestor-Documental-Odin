@@ -2,9 +2,17 @@ package com.odin.odin.controller;
 
 import com.odin.odin.model.*;
 import com.odin.odin.repository.*;
+import com.odin.odin.service.ComprobanteRadicacionService;
+import com.odin.odin.service.AuditoriaRadicadosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import com.odin.odin.service.OdinUserDetails;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,6 +20,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/radicados")
+@Tag(name="Radicados", description="Radicación, consulta, seguimiento y trazabilidad de radicados")
 public class RadicadosController {
 
     @Autowired private RadicadosRepository radicadosRepository;
@@ -21,25 +30,28 @@ public class RadicadosController {
     @Autowired private RolesRepository rolesRepository;
     @Autowired private UsuariosRepository usuariosRepository;
     @Autowired private DependenciasRepository dependenciasRepository;
+    @Autowired private ComprobanteRadicacionService comprobanteService;
+    @Autowired private AuditoriaRadicadosService auditoriaService;
+    @Autowired private com.odin.odin.service.RadicadoPlazoService plazoService;
 
     @GetMapping
+    @Operation(summary="Listar radicados")
     public List<Radicados> getAll() {
         return radicadosRepository.findAll();
     }
 
     @GetMapping("/buscar")
+    @Operation(summary="Buscar y filtrar radicados")
     public List<Radicados> buscar(
             @RequestParam(required = false) String texto,
-            @RequestParam(required = false) Integer estado,
+            @RequestParam(required = false) Long estado,
             @RequestParam(required = false) Long dependencia,
-            @RequestParam(required = false) Integer tramite) {
+            @RequestParam(required = false) Long tramite) {
 
-        return radicadosRepository.buscar(
-                texto,
-                estado,
-                dependencia,
-                tramite
-        );
+        if (texto != null && !texto.isBlank()) {
+            return radicadosRepository.buscarTextoCompleto(texto.trim(), estado, dependencia, tramite);
+        }
+        return radicadosRepository.buscar(texto, estado, dependencia, tramite);
     }
 
     @GetMapping("/vencidos")
@@ -68,6 +80,44 @@ public class RadicadosController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{id}/comprobante")
+    public ResponseEntity<byte[]> comprobante(@PathVariable Long id, jakarta.servlet.http.HttpServletRequest request) {
+        var opt = radicadosRepository.findById(id);
+        if (opt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        try {
+            Radicados r = opt.get();
+            String baseUrl = request.getScheme() + "://" + request.getServerName() +
+                    (request.getServerPort() == 80 || request.getServerPort() == 443 ? "" : ":" + request.getServerPort());
+            byte[] pdf = comprobanteService.generar(r, baseUrl);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=Comprobante-" + r.getNumero_radicado() + ".pdf")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(pdf);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PatchMapping("/{id}/expediente")
+    public ResponseEntity<?> asociarExpediente(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> payload,
+            Authentication authentication) {
+        Long actor = usuarioAutenticado(authentication);
+        if (!puedeModificar(actor)) return prohibido("asociar expediente");
+        Long expediente = numeroLong(payload.get("id_expediente"));
+        if (expediente == null || !radicadosRepository.existsById(id)) return ResponseEntity.badRequest().body(Map.of("error", "Radicado y expediente son obligatorios"));
+        return radicadosRepository.findById(id).map(r -> {
+            Long anterior = r.getId_expediente();
+            r.setId_expediente(expediente);
+            Radicados saved = radicadosRepository.save(r);
+            registrar(id, actor, "asociacion_expediente", "id_expediente", anterior == null ? null : anterior.toString(), expediente.toString(), "Expediente asociado al radicado");
+            return ResponseEntity.ok(resumenRadicado(saved));
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/{id}/historial")
     public ResponseEntity<List<HistorialRadicado>> historial(
             @PathVariable Long id) {
@@ -82,16 +132,12 @@ public class RadicadosController {
     }
 
     @GetMapping("/{id}/reasignaciones")
-    public ResponseEntity<List<Reasignaciones>> reasignaciones(
-            @PathVariable Long id) {
-
+    public ResponseEntity<List<Reasignaciones>> reasignaciones(@PathVariable Long id) {
         if (!radicadosRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-
         return ResponseEntity.ok(
-                reasignacionesRepository
-                        .findByRadicadoOrderByFechaDesc(id.intValue())
+                reasignacionesRepository.findByRadicadoOrderByFechaDesc(id)
         );
     }
 
@@ -165,13 +211,20 @@ public class RadicadosController {
                 comentario
         );
 
-        return ResponseEntity.ok(saved);
+        java.util.Map<String, Object> resp = new java.util.LinkedHashMap<>();
+        resp.put("ok", true);
+        resp.put("id_observacion", saved.getId_observacion());
+        resp.put("id_radicado", id);
+        resp.put("comentario", comentario);
+        return ResponseEntity.ok(resp);
     }
 
     @PostMapping
+    @Operation(summary="Crear radicado")
     public Radicados create(
             @RequestBody Radicados radicado) {
 
+        plazoService.aplicarReglas(radicado);
         Radicados saved =
                 radicadosRepository.save(radicado);
 
@@ -186,6 +239,7 @@ public class RadicadosController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary="Actualizar radicado")
     public ResponseEntity<?> update(
             @PathVariable Long id,
             @RequestBody Radicados radicado) {
@@ -206,7 +260,7 @@ public class RadicadosController {
                             "Radicado actualizado"
                     );
 
-                    return ResponseEntity.ok(saved);
+                    return ResponseEntity.ok(resumenRadicado(saved));
 
                 })
                 .orElse(
@@ -227,8 +281,8 @@ public class RadicadosController {
             return prohibido("cambiar estados");
         }
 
-        Integer nuevo =
-                numero(payload.get("estado"));
+        Long nuevo =
+                numeroLong(payload.get("estado"));
 
         if (nuevo == null || nuevo <= 0) {
 
@@ -246,7 +300,7 @@ public class RadicadosController {
                 .findById(id)
                 .map(r -> {
 
-                    Integer anterior =
+                    Long anterior =
                             r.getId_estado();
 
                     if (!transicionPermitida(
@@ -284,7 +338,7 @@ public class RadicadosController {
                                     + nuevo
                     );
 
-                    return ResponseEntity.ok(saved);
+                    return ResponseEntity.ok(resumenRadicado(saved));
 
                 })
                 .orElse(
@@ -305,8 +359,8 @@ public class RadicadosController {
             return prohibido("asignar radicados");
         }
 
-        Integer nuevo =
-                numero(payload.get("usuario"));
+        Long nuevo =
+                numeroLong(payload.get("usuario"));
 
         if (nuevo == null
                 || nuevo <= 0
@@ -327,7 +381,7 @@ public class RadicadosController {
                 .findById(id)
                 .map(r -> {
 
-                    Integer anterior =
+                    Long anterior =
                             r.getId_usuario();
 
                     r.setId_usuario(nuevo);
@@ -347,7 +401,7 @@ public class RadicadosController {
                                     + nuevo
                     );
 
-                    return ResponseEntity.ok(saved);
+                    return ResponseEntity.ok(resumenRadicado(saved));
 
                 })
                 .orElse(
@@ -356,117 +410,92 @@ public class RadicadosController {
     }
 
     @PostMapping("/{id}/reasignar")
+    @org.springframework.transaction.annotation.Transactional
     public ResponseEntity<?> reasignar(
             @PathVariable Long id,
             @RequestBody Map<String, Object> payload,
-            @RequestHeader(
-                    value = "X-User-Id",
-                    required = false
-            ) Long actor) {
+            @RequestHeader(value = "X-User-Id", required = false) Long actor,
+            Authentication authentication) {
 
-        if (!puedeModificar(actor)) {
+        Long actorId = actor;
+        if (actorId == null && authentication != null
+                && authentication.getPrincipal() instanceof OdinUserDetails u) {
+            actorId = u.getIdUsuario();
+        }
+
+        if (!puedeModificar(actorId)) {
             return prohibido("reasignar radicados");
         }
 
-        Integer nuevo =
-                numero(payload.get("usuarioNuevo"));
-
-        Integer dependencia =
-                numero(payload.get("dependenciaNueva"));
+        Long nuevo = numeroLong(payload.get("usuarioNuevo"));
+        if (nuevo == null) nuevo = numeroLong(payload.get("usuario"));
+        Long dependencia = numeroLong(payload.get("dependenciaNueva"));
+        if (dependencia == null) dependencia = numeroLong(payload.get("dependencia"));
 
         if (nuevo == null
                 || dependencia == null
                 || nuevo <= 0
                 || dependencia <= 0
-                || !usuariosRepository
-                .existsById(nuevo.longValue())
-                || !dependenciasRepository
-                .existsById(dependencia.longValue())) {
+                || !usuariosRepository.existsById(nuevo)
+                || !dependenciasRepository.existsById(dependencia)) {
 
-            return ResponseEntity
-                    .badRequest()
-                    .body(
-                            Map.of(
-                                    "error",
-                                    "Usuario o dependencia inválidos"
-                            )
-                    );
+            return ResponseEntity.badRequest().body(
+                    Map.of("error", "Usuario o dependencia inválidos")
+            );
         }
 
-        return radicadosRepository
-                .findById(id)
-                .map(r -> {
+        var opt = radicadosRepository.findById(id);
+        if (opt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
 
-                    Integer anterior =
-                            r.getId_usuario();
+        Radicados r = opt.get();
+        Long anterior = r.getId_usuario();
 
-                    int actualizados =
-                            radicadosRepository
-                                    .actualizarAsignacion(
-                                            id,
-                                            nuevo,
-                                            dependencia
-                                    );
+        try {
+            int actualizados = radicadosRepository.actualizarAsignacion(id, nuevo, dependencia);
+            if (actualizados == 0) {
+                // Fallback JPA por si el nativo no afectó filas
+                r.setId_usuario(nuevo);
+                r.setId_dependencia(dependencia);
+                radicadosRepository.save(r);
+            }
 
-                    if (actualizados == 0) {
+            try {
+                Reasignaciones re = new Reasignaciones();
+                re.setId_radicado(id);
+                // Si no había responsable previo, registrar el mismo nuevo para no violar NOT NULL
+                re.setId_usuario_anterior(anterior != null ? anterior : nuevo);
+                re.setId_usuario_nuevo(nuevo);
+                re.setId_dependencia_nueva(dependencia);
+                re.setFecha(LocalDateTime.now());
+                reasignacionesRepository.save(re);
+            } catch (Exception ex) {
+                // La reasignación principal ya se aplicó; el historial de reasignaciones no debe tumbar la operación
+                System.err.println("Aviso: no se pudo guardar fila reasignaciones: " + ex.getMessage());
+            }
 
-                        return ResponseEntity
-                                .internalServerError()
-                                .body(
-                                        Map.of(
-                                                "error",
-                                                "No se actualizó la asignación"
-                                        )
-                                );
-                    }
+            Long quien = actorId != null ? actorId : nuevo;
+            registrar(
+                    id,
+                    quien,
+                    "reasignacion",
+                    "Responsable " + anterior + " -> " + nuevo
+                    + " / dependencia " + dependencia
+            );
 
-                    Reasignaciones re =
-                            new Reasignaciones();
-
-                    re.setId_radicado(
-                            id.intValue()
-                    );
-
-                    re.setId_usuario_anterior(
-                            anterior
-                    );
-
-                    re.setId_usuario_nuevo(
-                            nuevo
-                    );
-
-                    re.setId_dependencia_nueva(
-                            dependencia
-                    );
-
-                    re.setFecha(
-                            LocalDateTime.now()
-                    );
-
-                    reasignacionesRepository.save(re);
-
-                    registrar(
-                            id,
-                            actor != null
-                                    ? actor
-                                    : nuevo.longValue(),
-                            "reasignacion",
-                            "Responsable "
-                                    + anterior
-                                    + " -> "
-                                    + nuevo
-                    );
-
-                    return ResponseEntity.ok(
-                            radicadosRepository
-                                    .findById(id)
-                                    .orElse(r)
-                    );
-
-                })
-                .orElse(
-                        ResponseEntity.notFound().build()
-                );
+            java.util.Map<String, Object> resp = new java.util.LinkedHashMap<>();
+            resp.put("ok", true);
+            resp.put("id_radicado", id);
+            resp.put("id_usuario", nuevo);
+            resp.put("id_dependencia", dependencia);
+            resp.put("mensaje", "Reasignación realizada");
+            return ResponseEntity.ok(resp);
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body(
+                    Map.of("error", "Error al reasignar: " + ex.getMessage())
+            );
+        }
     }
 
     @PatchMapping("/{id}/cerrar")
@@ -487,18 +516,18 @@ public class RadicadosController {
                 .findById(id)
                 .map(r -> {
 
-                    Integer anterior =
+                    Long anterior =
                             r.getId_estado();
 
-                    Integer estado =
+                    Long estado =
                             payload == null
                                     ? null
-                                    : numero(
+                                    : numeroLong(
                                     payload.get("estado")
                             );
 
                     if (estado == null) {
-                        estado = 3;
+                        estado = 3L;
                     }
 
                     if (!transicionPermitida(
@@ -580,7 +609,7 @@ public class RadicadosController {
                         );
                     }
 
-                    return ResponseEntity.ok(saved);
+                    return ResponseEntity.ok(resumenRadicado(saved));
 
                 })
                 .orElse(
@@ -638,28 +667,40 @@ public class RadicadosController {
     }
 
     private boolean transicionPermitida(
-            Integer actual,
-            Integer nuevo) {
+            Long actual,
+            Long nuevo) {
 
-        if (actual == null) {
+        if (nuevo == null) {
+            return false;
+        }
+        // mismo estado: no-op (permitimos para evitar error en UI)
+        if (actual != null && actual.equals(nuevo)) {
             return true;
         }
-
-        if (actual.equals(nuevo)) {
-            return false;
+        // sin estado previo: cualquier transición válida
+        if (actual == null) {
+            return nuevo >= 1 && nuevo <= 20;
         }
-
-        if (actual == 3 || actual == 4) {
-            return false;
-        }
-
-        return nuevo >= 1 && nuevo <= 4;
+        // permitir reapertura desde finalizado/rechazado hacia estados operativos
+        // y cierre desde cualquier estado operativo (admin / gestor)
+        return nuevo >= 1 && nuevo <= 20;
     }
 
     private void registrar(
             Long id,
             Long usuario,
             String accion,
+            String descripcion) {
+        registrar(id, usuario, accion, null, null, null, descripcion);
+    }
+
+    private void registrar(
+            Long id,
+            Long usuario,
+            String accion,
+            String campo,
+            String anterior,
+            String nuevo,
             String descripcion) {
 
         if (id == null
@@ -679,6 +720,26 @@ public class RadicadosController {
                         .fecha(LocalDateTime.now())
                         .build()
         );
+
+        auditoriaService.registrar(
+                id, usuario, accion, campo, anterior, nuevo, descripcion
+        );
+    }
+
+
+    private Map<String, Object> resumenRadicado(Radicados r) {
+        Map<String, Object> m = new java.util.LinkedHashMap<>();
+        if (r == null) return m;
+        m.put("id_radicado", r.getId_radicado());
+        m.put("numero_radicado", r.getNumero_radicado());
+        m.put("id_estado", r.getId_estado());
+        m.put("id_usuario", r.getId_usuario());
+        m.put("id_dependencia", r.getId_dependencia());
+        m.put("id_tramite", r.getId_tramite());
+        m.put("asunto", r.getAsunto());
+        m.put("fecha_cierre", r.getFecha_cierre() != null ? r.getFecha_cierre().toString() : null);
+        m.put("ok", true);
+        return m;
     }
 
     private boolean puedeModificar(Long id) {
@@ -717,12 +778,17 @@ public class RadicadosController {
                 || v.contains("recep");
     }
 
+    private Long usuarioAutenticado(Authentication authentication) {
+        if (authentication == null || !(authentication.getPrincipal() instanceof OdinUserDetails u)) return null;
+        return u.getIdUsuario();
+    }
+
     private Long usuario(Radicados r) {
 
         return r == null
                 || r.getId_usuario() == null
                 ? null
-                : r.getId_usuario().longValue();
+                : r.getId_usuario();
     }
 
     private Integer numero(Object v) {

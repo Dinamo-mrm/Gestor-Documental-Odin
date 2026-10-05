@@ -1,21 +1,39 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <script src="https://cdn.tailwindcss.com"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bitácora | ODIN</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Bitácora del Sistema | ODIN</title>
+    
+    
+    
+    <link rel="stylesheet" th:href="@{/css/globals.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/odin.css}">
+    <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
 </head>
 <body class="bg-[#f5f6f8] text-slate-800">
+
 <div class="min-h-screen flex">
-    <div th:replace="fragments/layout :: sidebar('bitacora')"></div>
-    <div class="flex-1 min-w-0">
-        <div th:replace="fragments/layout :: topbar('BITÁCORA')"></div>
-        <main class="px-4 md:px-8 py-6">
-            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-6">
+
+    <!-- SIDEBAR con menú hamburguesa responsive -->
+    <div th:replace="~{fragments/layout :: sidebar('bitacora')}"></div>
+
+    <!-- Overlay móvil -->
+    <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay" aria-hidden="true"></div>
+
+    <!-- CONTENIDO -->
+    <div class="flex-1 min-w-0 flex flex-col">
+
+        <!-- TOPBAR (incluye botón hamburguesa en móvil) -->
+        <div th:replace="~{fragments/layout :: topbar('Bitácora')}"></div>
+
+        <main class="px-4 md:px-8 py-6 flex-1">
+<div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-6">
                 <div>
-                    <h1 class="text-3xl font-extrabold text-slate-900">Bitácora del sistema</h1>
+                    <h1 class="odin-page-title">Bitácora del sistema</h1>
                     <p class="text-sm text-slate-500 mt-2">Trazabilidad de las acciones realizadas sobre los radicados.</p>
                 </div>
                 <a th:href="@{/view/tramites}" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-green-700 text-white text-sm font-semibold hover:bg-green-800">Gestión de trámites</a>
@@ -91,7 +109,13 @@
                 </div>
             </section>
         </main>
+
+
+
     </div>
 </div>
+
+    <script defer th:src="@{/js/script.js}"></script>
+    <script defer th:src="@{/js/odin-ui.js}"></script>
 </body>
 </html>

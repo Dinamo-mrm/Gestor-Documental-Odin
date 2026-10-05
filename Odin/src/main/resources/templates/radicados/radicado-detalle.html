@@ -1,10 +1,285 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ODIN · Detalle del radicado</title><link rel="stylesheet" th:href="@{/css/global.css}"><link rel="stylesheet" th:href="@{/css/styleguide.css}"><link rel="stylesheet" th:href="@{/css/style.css}"></head>
-<body><div th:replace="fragments/layout :: sidebar('tramites')"></div><div th:replace="fragments/layout :: topbar('ODIN')"></div>
-<main class="main px-4 md:px-8 py-6"><header class="header"><div><h1>Detalle del radicado</h1><p>Consulta, observaciones y trazabilidad documental</p></div><a class="secondary" th:href="@{/view/tramites}">Volver a gestión</a></header>
-<section class="content"><div class="table-card" style="padding:24px"><h2 th:text="${radicado.numero_radicado}">Radicado</h2><div class="grid md:grid-cols-2 gap-4" style="margin-top:18px"><p><strong>Asunto:</strong> <span th:text="${radicado.asunto}">-</span></p><p><strong>Remitente:</strong> <span th:text="${radicado.remitente}">-</span></p><p><strong>Fecha radicación:</strong> <span th:text="${radicado.fecha_radicado}">-</span></p><p><strong>Vencimiento:</strong> <span th:text="${radicado.fecha_vencimiento ?: 'Sin fecha'}">-</span></p><p><strong>Estado:</strong> <span th:text="${radicado.estado != null ? radicado.estado.nombre : radicado.id_estado}">-</span></p><p><strong>Responsable:</strong> <span th:text="${radicado.usuario != null ? radicado.usuario.nombre : radicado.id_usuario}">-</span></p><p><strong>Fecha de cierre:</strong> <span th:text="${radicado.fecha_cierre ?: 'Abierto'}">-</span></p><p><strong>Usuario de cierre:</strong> <span th:text="${radicado.id_usuario_cierre ?: 'Pendiente'}">-</span></p><p><strong>Trámite:</strong> <span th:text="${radicado.tramite != null ? radicado.tramite.nombre : radicado.id_tramite}">-</span></p><p><strong>Dependencia:</strong> <span th:text="${radicado.dependencias != null ? radicado.dependencias.nombre : radicado.id_dependencia}">-</span></p><p><strong>Serie:</strong> <span th:text="${radicado.codigo_serie ?: '-'}">-</span></p><p><strong>Subserie:</strong> <span th:text="${radicado.codigo_subserie ?: '-'}">-</span></p></div></div>
-<div class="table-card" style="padding:24px;margin-top:20px"><h2>Observaciones persistentes</h2><form class="filters" style="margin-top:15px" th:action="@{'/api/radicados/' + ${radicado.id_radicado} + '/observaciones'}" method="post" onsubmit="return enviarObservacion(event,this)"><input name="comentario" required maxlength="255" placeholder="Escriba una observación"><input name="usuario" type="number" min="1" placeholder="ID usuario"><button class="primary" type="submit">Guardar observación</button></form><div class="overflow-x-auto" style="margin-top:15px"><table><thead><tr><th>Fecha</th><th>Usuario</th><th>Comentario</th></tr></thead><tbody><tr th:each="o : ${observaciones}"><td th:text="${o.fecha}">-</td><td th:text="${o.id_usuario ?: '-'}">-</td><td th:text="${o.comentario}">-</td></tr><tr th:if="${#lists.isEmpty(observaciones)}"><td colspan="3">No hay observaciones.</td></tr></tbody></table></div></div>
-<div class="table-card" style="padding:24px;margin-top:20px"><h2>Historial de movimientos</h2><div class="overflow-x-auto" style="margin-top:15px"><table><thead><tr><th>Fecha</th><th>Acción</th><th>Usuario</th><th>Descripción</th></tr></thead><tbody><tr th:each="h : ${historial}"><td th:text="${h.fecha}">-</td><td th:text="${h.accion}">-</td><td th:text="${h.id_usuario ?: '-'}">-</td><td th:text="${h.descripcion}">-</td></tr><tr th:if="${#lists.isEmpty(historial)}"><td colspan="4">No hay movimientos registrados.</td></tr></tbody></table></div></div>
-<div class="table-card" style="padding:24px;margin-top:20px"><h2>Documentos asociados</h2><div class="overflow-x-auto" style="margin-top:15px"><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Tamaño</th><th>Fecha</th><th>Ruta</th></tr></thead><tbody><tr th:each="d : ${documentos}"><td th:text="${d.nombre}">-</td><td th:text="${d.tipo}">-</td><td th:text="${d.tamano}">-</td><td th:text="${d.fecha_subida}">-</td><td th:text="${d.ruta_archivo}">-</td></tr><tr th:if="${#lists.isEmpty(documentos)}"><td colspan="5">No hay documentos asociados.</td></tr></tbody></table></div></div></section></main>
-<script>async function enviarObservacion(e,form){e.preventDefault();const data=Object.fromEntries(new FormData(form));const r=await fetch(form.action,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});if(!r.ok){alert('No se pudo guardar la observación');return false;}location.reload();return false;}</script></body></html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Radicado | ODIN</title>
+    <script>
+      try { if (localStorage.getItem('odin-theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/globals.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/odin.css}">
+    <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
+    <style>
+        .card{background:#fff;border:1px solid #e2e8f0;border-radius:1rem;padding:1.25rem;margin-bottom:1rem}
+        .card h2{font-size:1rem;font-weight:700;margin:0 0 1rem;color:#0f172a}
+        .grid2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem 1.5rem}
+        @media (max-width:640px){.grid2{grid-template-columns:1fr}}
+        .grid2 p{margin:0;font-size:.875rem}
+        .grid2 strong{color:#64748b;font-weight:600;font-size:.7rem;text-transform:uppercase;display:block}
+        .btn-primary{background:#15803d;color:#fff;border:none;border-radius:.5rem;padding:.5rem 1rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+        .btn-secondary{background:#fff;color:#334155;border:1px solid #cbd5e1;border-radius:.5rem;padding:.5rem 1rem;font-weight:600;text-decoration:none;display:inline-block}
+        table{width:100%;border-collapse:collapse;font-size:.8rem}
+        th,td{padding:.5rem .65rem;border-bottom:1px solid #f1f5f9;text-align:left}
+        th{background:#f8fafc;font-size:.7rem;text-transform:uppercase;color:#64748b}
+        .dias-ok{color:#15803d;font-weight:700}
+        .dias-warn{color:#d97706;font-weight:700}
+        .dias-vencido{color:#dc2626;font-weight:700}
+        .badge{display:inline-block;padding:.15rem .5rem;border-radius:999px;font-size:.7rem;font-weight:700;background:#e2e8f0}
+        .actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem}
+
+        /* ===== Línea temporal unificada ===== */
+        .timeline{position:relative;padding-left:0;list-style:none;margin:0}
+        .timeline::before{content:"";position:absolute;left:15px;top:8px;bottom:8px;width:3px;background:linear-gradient(180deg,#39A900 0%,#cbd5e1 100%);border-radius:2px}
+        .tl-item{position:relative;padding:0 0 1.35rem 2.75rem}
+        .tl-item:last-child{padding-bottom:.25rem}
+        .tl-dot{position:absolute;left:6px;top:4px;width:20px;height:20px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #cbd5e1;background:#94a3b8;z-index:1}
+        .tl-radicacion .tl-dot{background:#39A900;box-shadow:0 0 0 2px #39A900}
+        .tl-historial .tl-dot{background:#2563eb;box-shadow:0 0 0 2px #2563eb}
+        .tl-observacion .tl-dot{background:#d97706;box-shadow:0 0 0 2px #d97706}
+        .tl-documento .tl-dot,.tl-anexo .tl-dot{background:#7c3aed;box-shadow:0 0 0 2px #7c3aed}
+        .tl-firma .tl-dot{background:#0d9488;box-shadow:0 0 0 2px #0d9488}
+        .tl-reasignacion .tl-dot{background:#e11d48;box-shadow:0 0 0 2px #e11d48}
+        .tl-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:.75rem;padding:.75rem 1rem}
+        .tl-head{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem .75rem;margin-bottom:.35rem}
+        .tl-tipo{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:.12rem .45rem;border-radius:999px;background:#e2e8f0;color:#334155}
+        .tl-radicacion .tl-tipo{background:#dcfce7;color:#166534}
+        .tl-historial .tl-tipo{background:#dbeafe;color:#1e40af}
+        .tl-observacion .tl-tipo{background:#fef3c7;color:#92400e}
+        .tl-documento .tl-tipo,.tl-anexo .tl-tipo{background:#ede9fe;color:#5b21b6}
+        .tl-firma .tl-tipo{background:#ccfbf1;color:#115e59}
+        .tl-reasignacion .tl-tipo{background:#ffe4e6;color:#9f1239}
+        .tl-titulo{font-weight:700;font-size:.9rem;color:#0f172a}
+        .tl-fecha{margin-left:auto;font-size:.75rem;color:#64748b;font-weight:600}
+        .tl-desc{font-size:.85rem;color:#334155;margin:.15rem 0}
+        .tl-meta{display:flex;flex-wrap:wrap;gap:.5rem 1rem;font-size:.75rem;color:#64748b;margin-top:.35rem}
+        .tl-meta span{display:inline-flex;align-items:center;gap:.25rem}
+        .tl-empty{text-align:center;padding:1.5rem;color:#64748b;font-size:.9rem}
+        .tl-legend{display:flex;flex-wrap:wrap;gap:.5rem .85rem;margin-bottom:1rem;font-size:.7rem;color:#64748b}
+        .tl-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:.3rem;vertical-align:middle}
+        .flow-bar{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem;margin-bottom:1rem;padding:.65rem .9rem;background:linear-gradient(90deg,#f0fdf4,#f8fafc);border:1px solid #bbf7d0;border-radius:.75rem;font-size:.75rem;font-weight:600;color:#166534}
+        .flow-bar span{opacity:.5}
+    </style>
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+<body class="bg-[#f5f6f8] text-slate-800">
+<div class="min-h-screen flex">
+    <div th:replace="~{fragments/layout :: sidebar('consulta')}"></div>
+    <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay"></div>
+
+    <div class="flex-1 min-w-0 flex flex-col">
+        <div th:replace="~{fragments/layout :: topbar('Consulta y seguimiento · Detalle')}"></div>
+
+        <main class="p-4 sm:p-6">
+            <div class="max-w-5xl mx-auto">
+
+                <div th:if="${radicado == null}" class="card">
+                    <p th:text="${error} ?: 'Radicado no encontrado'">No encontrado</p>
+                    <a class="btn-secondary" th:href="@{/view/consulta}">Volver a consulta</a>
+                </div>
+
+                <div th:if="${radicado != null}">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:1rem">
+                    <div>
+                        <h1 class="odin-page-title text-2xl font-bold" th:text="${radicado.numero_radicado}">E-2026-00001</h1>
+                        <p class="text-slate-600" th:text="${radicado.asunto}">Asunto del radicado</p>
+                    </div>
+                    <div class="actions">
+                        <a class="btn-primary" th:href="@{/api/radicados/{id}/comprobante(id=${radicado.id_radicado})}" target="_blank" rel="noopener">
+                            Imprimir comprobante PDF
+                        </a>
+                        <a class="btn-secondary" th:href="@{/view/consulta}">Volver a consulta</a>
+                        <a class="btn-secondary" th:href="@{/view/tramites}">Ir a gestión</a>
+                    </div>
+                </div>
+
+                <!-- Flujo visual de la experiencia -->
+                <div class="flow-bar" aria-label="Flujo de seguimiento">
+                    Radicado <span>→</span> Línea temporal <span>→</span> Eventos <span>→</span> Usuario <span>→</span> Dependencia <span>→</span> Estado <span>→</span> Documento <span>→</span> Observación
+                </div>
+
+                <!-- Datos principales -->
+                <div class="card">
+                    <h2>Datos del radicado</h2>
+                    <div class="grid2">
+                        <p><strong>Estado</strong>
+                            <span class="badge"
+                                  th:text="${radicado.id_estado != null and nombresEstado != null and nombresEstado.containsKey(radicado.id_estado) ? nombresEstado.get(radicado.id_estado) : (radicado.estado != null ? radicado.estado.nombre : radicado.id_estado)}">—</span>
+                        </p>
+                        <p><strong>Prioridad</strong> <span th:text="${radicado.prioridad ?: '-'}">—</span></p>
+                        <p><strong>Fecha radicación</strong> <span th:text="${radicado.fecha_radicado}">—</span></p>
+                        <p><strong>Vencimiento</strong> <span th:text="${radicado.fecha_vencimiento ?: 'Sin fecha'}">—</span></p>
+                        <p>
+                            <strong>Días restantes</strong>
+                            <span th:if="${radicado.diasRestantes == null}">—</span>
+                            <span th:if="${radicado.diasRestantes != null and radicado.diasRestantes > 3}" class="dias-ok"
+                                  th:text="${radicado.diasRestantes + ' días'}">5 días</span>
+                            <span th:if="${radicado.diasRestantes != null and radicado.diasRestantes >= 0 and radicado.diasRestantes <= 3}" class="dias-warn"
+                                  th:text="${radicado.diasRestantes + ' días'}">2 días</span>
+                            <span th:if="${radicado.diasRestantes != null and radicado.diasRestantes < 0}" class="dias-vencido"
+                                  th:text="${'Vencido hace ' + (radicado.diasRestantes * -1) + ' días'}">Vencido</span>
+                        </p>
+                                                <p><strong>Remitente</strong> <span th:text="${radicado.remitente ?: '-'}">—</span></p>
+                        <p><strong>Identificación</strong> <span th:text="${radicado.numeroIdentificacion ?: '-'}">—</span></p>
+                        <p><strong>Dependencia</strong>
+                            <span th:text="${radicado.id_dependencia != null and nombresDep != null and nombresDep.containsKey(radicado.id_dependencia) ? nombresDep.get(radicado.id_dependencia) : (radicado.id_dependencia != null ? radicado.id_dependencia : '-')}">—</span>
+                        </p>
+                        <p><strong>Responsable</strong>
+                            <span th:text="${radicado.id_usuario != null and nombresUsuario != null and nombresUsuario.containsKey(radicado.id_usuario) ? nombresUsuario.get(radicado.id_usuario) : (radicado.id_usuario != null ? radicado.id_usuario : '-')}">—</span>
+                        </p>
+                        <p><strong>Trámite</strong>
+                            <span th:text="${radicado.id_tramite != null and nombresTramite != null and nombresTramite.containsKey(radicado.id_tramite) ? nombresTramite.get(radicado.id_tramite) : (radicado.id_tramite != null ? radicado.id_tramite : '-')}">—</span>
+                        </p>
+                        <p><strong>Serie / Subserie</strong>
+                            <span th:text="${(radicado.codigo_serie ?: '-') + ' / ' + (radicado.codigo_subserie ?: '-')}">—</span>
+                        </p>
+                        <p><strong>Fecha de cierre</strong> <span th:text="${radicado.fecha_cierre ?: 'Abierto'}">—</span></p>
+                        <p><strong>Canal</strong> <span th:text="${radicado.canalRecepcion ?: '-'}">—</span></p>
+                    </div>
+                </div>
+
+                <!-- ========== LÍNEA TEMPORAL UNIFICADA ========== -->
+                <div class="card">
+                    <h2>Línea temporal de seguimiento</h2>
+                    <p style="font-size:.8rem;color:#64748b;margin:-.5rem 0 1rem">
+                        Vista integral: radicación, movimientos, reasignaciones, documentos, firmas y observaciones en orden cronológico.
+                    </p>
+                    <div class="tl-legend">
+                        <span><i style="background:#39A900"></i>Radicación</span>
+                        <span><i style="background:#2563eb"></i>Historial</span>
+                        <span><i style="background:#d97706"></i>Observación</span>
+                        <span><i style="background:#7c3aed"></i>Documento / Anexo</span>
+                        <span><i style="background:#0d9488"></i>Firma</span>
+                        <span><i style="background:#e11d48"></i>Reasignación</span>
+                    </div>
+
+                    <ul class="timeline" th:if="${timeline != null and !#lists.isEmpty(timeline)}">
+                        <li class="tl-item" th:each="ev : ${timeline}" th:classappend="${ev.icono}">
+                            <span class="tl-dot" aria-hidden="true"></span>
+                            <div class="tl-card">
+                                <div class="tl-head">
+                                    <span class="tl-tipo" th:text="${ev.tipo}">HISTORIAL</span>
+                                    <span class="tl-titulo" th:text="${ev.titulo}">Acción</span>
+                                    <span class="tl-fecha" th:text="${ev.fechaTexto}">01/01/2026 10:00</span>
+                                </div>
+                                <p class="tl-desc" th:if="${ev.descripcion != null and !#strings.isEmpty(ev.descripcion)}" th:text="${ev.descripcion}">Descripción</p>
+                                <div class="tl-meta">
+                                    <span th:if="${ev.usuario != null and ev.usuario != '—'}">👤 <strong th:text="${ev.usuario}">Usuario</strong></span>
+                                    <span th:if="${ev.meta != null and !#strings.isEmpty(ev.meta)}" th:text="${ev.meta}">Meta</span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="tl-empty" th:if="${timeline == null or #lists.isEmpty(timeline)}">
+                        Aún no hay eventos registrados para este radicado. Los movimientos, observaciones y documentos aparecerán aquí.
+                    </div>
+                </div>
+
+                <!-- Agregar observación -->
+                <div class="card">
+                    <h2>Agregar observación</h2>
+                    <form th:action="@{/api/radicados/{id}/observaciones(id=${radicado.id_radicado})}" method="post"
+                          style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-start">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <textarea name="comentario" rows="2" required placeholder="Escriba la observación…"
+                                  style="flex:1;min-width:220px;border:1px solid #cbd5e1;border-radius:.5rem;padding:.55rem .75rem;font-size:.875rem"></textarea>
+                        <button type="submit" class="btn-primary">Guardar observación</button>
+                    </form>
+                </div>
+
+                <!-- Firmas -->
+                <div class="card">
+                    <h2>Firmas / solicitudes de firma</h2>
+                    <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;align-items:end">
+                        <div>
+                            <label for="firmaUsuario" style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.25rem">Firmante</label>
+                            <select id="firmaUsuario" style="border:1px solid #cbd5e1;border-radius:.5rem;padding:.45rem .65rem;font-size:.875rem;min-width:180px">
+                                <option value="">Usuario de sesión</option>
+                                <option th:each="u : ${usuarios}" th:value="${u.id_usuario}" th:text="${u.nombre}">Usuario</option>
+                            </select>
+                        </div>
+                        <div style="flex:1;min-width:160px">
+                            <label for="firmaObs" style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.25rem">Observación</label>
+                            <input id="firmaObs" type="text" placeholder="Opcional" style="width:100%;border:1px solid #cbd5e1;border-radius:.5rem;padding:.45rem .65rem;font-size:.875rem">
+                        </div>
+                        <button type="button" class="btn-primary" th:onclick="|registrarFirma(${radicado.id_radicado})|">Solicitar firma</button>
+                    </div>
+                    <table>
+                        <thead><tr><th>Fecha</th><th>Usuario</th><th>Estado</th><th>Hash / Obs.</th></tr></thead>
+                        <tbody>
+                        <tr th:each="f : ${firmas}">
+                            <td th:text="${f.fechaFirma ?: '-'}">—</td>
+                            <td th:text="${f.idUsuario != null and nombresUsuario != null and nombresUsuario.containsKey(f.idUsuario) ? nombresUsuario.get(f.idUsuario) : f.idUsuario}">—</td>
+                            <td th:text="${f.estado ?: '-'}">—</td>
+                            <td th:text="${f.hashDocumento ?: f.observacion ?: '-'}">—</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(firmas)}"><td colspan="4">Sin firmas registradas.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Documentos (tabla de apoyo) -->
+                <div class="card">
+                    <h2>Documentos asociados</h2>
+                    <table>
+                        <thead><tr><th>Nombre</th><th>Tipo</th><th>Fecha</th><th>Tamaño</th></tr></thead>
+                        <tbody>
+                        <tr th:each="d : ${documentos}">
+                            <td th:text="${d.nombre ?: d.nombre_archivo}">—</td>
+                            <td th:text="${d.tipo ?: '-'}">—</td>
+                            <td th:text="${d.fecha_subida ?: '-'}">—</td>
+                            <td th:text="${d.tamano != null ? d.tamano + ' B' : '-'}">—</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(documentos)}"><td colspan="4">No hay documentos asociados.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                </div><!-- /radicado != null -->
+            </div>
+        </main>
+    </div>
+</div>
+<script>
+function csrfHeadersFirma(){
+    const h={'Content-Type':'application/json'};
+    const t=document.querySelector('meta[name="_csrf"]');
+    const n=document.querySelector('meta[name="_csrf_header"]');
+    if(t&&n) h[n.content]=t.content;
+    else {
+      const i=document.querySelector('input[name="_csrf"]');
+      if(i) h['X-CSRF-TOKEN']=i.value;
+    }
+    return h;
+}
+async function registrarFirma(id){
+    let idUsuario = null;
+    const sel = document.getElementById('firmaUsuario');
+    if(sel && sel.value) idUsuario = Number(sel.value);
+    const obs = (document.getElementById('firmaObs') && document.getElementById('firmaObs').value) || 'Solicitud de firma';
+    const body = { idRadicado: id, id_radicado: id, estado: 'PENDIENTE', observacion: obs };
+    if(idUsuario){ body.idUsuario = idUsuario; body.id_usuario = idUsuario; }
+    try {
+      const r = await fetch('/api/firmas', {
+        method:'POST',
+        headers: csrfHeadersFirma(),
+        body: JSON.stringify(body)
+      });
+      if(!r.ok){
+        let msg='No fue posible registrar la firma';
+        try { const j=await r.json(); if(j.error) msg+=': '+j.error; } catch(e){}
+        alert(msg+' (HTTP '+r.status+')');
+        return;
+      }
+      location.reload();
+    } catch(e){ alert('Error de red al registrar firma'); }
+}
+</script>
+<script defer th:src="@{/js/script.js}"></script>
+<script defer th:src="@{/js/odin-ui.js}"></script>
+</body>
+</html>

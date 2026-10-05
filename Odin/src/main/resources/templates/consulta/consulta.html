@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta y Seguimiento | ODIN</title>
+    <script>
+      try { if (localStorage.getItem('odin-theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/globals.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/odin.css}">
+    <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
+    <style>
+        .filter-card{background:#fff;border:1px solid #e2e8f0;border-radius:1rem;padding:1.25rem;margin-bottom:1rem}
+        .filter-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr auto;gap:.75rem;align-items:end}
+        @media (max-width:1200px){.filter-grid{grid-template-columns:1fr 1fr 1fr}}
+        @media (max-width:640px){.filter-grid{grid-template-columns:1fr}}
+        .filter-grid label{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.25rem}
+        .filter-grid input,.filter-grid select{width:100%;border:1px solid #cbd5e1;border-radius:.5rem;padding:.55rem .75rem;font-size:.875rem;background:#fff}
+        .btn-primary{background:#15803d;color:#fff;border:none;border-radius:.5rem;padding:.55rem 1rem;font-weight:600;cursor:pointer}
+        .btn-secondary{background:#fff;color:#334155;border:1px solid #cbd5e1;border-radius:.5rem;padding:.55rem 1rem;font-weight:600;text-decoration:none;display:inline-block}
+        .table-wrap{overflow-x:auto;border:1px solid #e2e8f0;border-radius:1rem;background:#fff}
+        .table-wrap table{width:100%;border-collapse:collapse;font-size:.8rem;min-width:1000px}
+        .table-wrap th{text-align:left;padding:.65rem .75rem;background:#f8fafc;color:#475569;font-size:.7rem;text-transform:uppercase;border-bottom:1px solid #e2e8f0}
+        .table-wrap td{padding:.65rem .75rem;border-bottom:1px solid #f1f5f9;color:#0f172a}
+        .badge-estado{background:#e2e8f0;color:#334155;font-size:.7rem;font-weight:700;padding:.15rem .5rem;border-radius:999px}
+        .kpi{background:#fff;border:1px solid #e2e8f0;border-radius:1rem;padding:1rem 1.15rem}
+        .kpi .lbl{font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b}
+        .kpi .val{font-size:1.5rem;font-weight:800;color:#0f172a}
+        .dias-ok{color:#15803d;font-weight:700}
+        .dias-warn{color:#d97706;font-weight:700}
+        .dias-vencido{color:#dc2626;font-weight:700}
+        .empty{text-align:center;color:#94a3b8;padding:2rem}
+    </style>
+</head>
+<body class="bg-[#f5f6f8] text-slate-800">
+<div class="min-h-screen flex">
+    <div th:replace="~{fragments/layout :: sidebar('consulta')}"></div>
+    <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay" aria-hidden="true"></div>
+
+    <div class="flex-1 min-w-0 flex flex-col">
+        <div th:replace="~{fragments/layout :: topbar('Consulta y Seguimiento')}"></div>
+
+        <main class="p-4 sm:p-6">
+            <div class="max-w-7xl mx-auto">
+                <h1 class="odin-page-title text-2xl font-bold text-slate-900 mb-1">Consulta y Seguimiento</h1>
+                <p class="text-slate-600 mb-4">Búsqueda avanzada, filtros por fecha y seguimiento de radicados (RF-33, RF-34, RF-35)</p>
+
+                <!-- KPIs -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                    <div class="kpi" style="border-left:3px solid #15803d">
+                        <div class="lbl">Resultados</div>
+                        <div class="val" th:text="${total != null ? total : 0}">0</div>
+                    </div>
+                    <div class="kpi" style="border-left:3px solid #d97706">
+                        <div class="lbl">Pendientes</div>
+                        <div class="val" th:text="${pendientes != null ? pendientes : 0}">0</div>
+                    </div>
+                    <div class="kpi" style="border-left:3px solid #dc2626">
+                        <div class="lbl">Vencidos</div>
+                        <div class="val" th:text="${vencidos != null ? vencidos : 0}">0</div>
+                    </div>
+                    <div class="kpi" style="border-left:3px solid #0f766e">
+                        <div class="lbl">Próximos a vencer (≤3 días)</div>
+                        <div class="val" th:text="${proximos != null ? proximos : 0}">0</div>
+                    </div>
+                </div>
+
+                <!-- Filtros completos RF-33 + RF-35 -->
+                <form class="filter-card" method="get" th:action="@{/view/consulta}">
+                    <div class="filter-grid">
+                        <div>
+                            <label>Texto (radicado, asunto, remitente)</label>
+                            <input type="text" name="texto" th:value="${textoFiltro}" placeholder="Buscar...">
+                        </div>
+                        <div>
+                            <label>Estado</label>
+                            <select name="estado">
+                                <option value="">Todos</option>
+                                <option th:each="e : ${estados}" th:value="${e.id_estado}"
+                                        th:selected="${estadoFiltro != null and estadoFiltro == e.id_estado}"
+                                        th:text="${e.nombre}">Estado</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Dependencia</label>
+                            <select name="dependencia">
+                                <option value="">Todas</option>
+                                <option th:each="d : ${dependencias}" th:value="${d.id_dependencia}"
+                                        th:selected="${dependenciaFiltro != null and dependenciaFiltro == d.id_dependencia}"
+                                        th:text="${d.nombre}">Dep</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Trámite</label>
+                            <select name="tramite">
+                                <option value="">Todos</option>
+                                <option th:each="t : ${tramites}" th:value="${t.idTramite}"
+                                        th:selected="${tramiteFiltro != null and tramiteFiltro == t.idTramite}"
+                                        th:text="${t.nombre}">Trámite</option>
+                            </select>
+                        </div>
+                        <!-- NUEVO: rango de fechas RF-35 -->
+                        <div>
+                            <label>Fecha desde</label>
+                            <input type="date" name="fechaDesde" th:value="${fechaDesdeFiltro}">
+                        </div>
+                        <div>
+                            <label>Fecha hasta</label>
+                            <input type="date" name="fechaHasta" th:value="${fechaHastaFiltro}">
+                        </div>
+                        <div>
+                            <button type="submit" class="btn-primary w-full">Buscar</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Tabla con días restantes RF-30 -->
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Radicado</th>
+                            <th>Asunto</th>
+                            <th>Trámite</th>
+                            <th>Estado</th>
+                            <th>Dependencia</th>
+                            <th>Responsable</th>
+                            <th>Vencimiento</th>
+                            <th>Días restantes</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${radicados == null or #lists.isEmpty(radicados)}">
+                            <td colspan="9" class="empty">No se encontraron radicados con los filtros aplicados.</td>
+                        </tr>
+                        <tr th:each="r : ${radicados}">
+                            <td th:text="${r.numero_radicado}">—</td>
+                            <td th:text="${r.asunto}">—</td>
+                            <td th:text="${r.id_tramite != null and nombresTramite.containsKey(r.id_tramite) ? nombresTramite.get(r.id_tramite) : '-'}">—</td>
+                            <td><span class="badge-estado" th:text="${r.id_estado != null and nombresEstado.containsKey(r.id_estado) ? nombresEstado.get(r.id_estado) : '-'}">—</span></td>
+                            <td th:text="${r.id_dependencia != null and nombresDep.containsKey(r.id_dependencia) ? nombresDep.get(r.id_dependencia) : '-'}">—</td>
+                            <td th:text="${r.id_usuario != null and nombresUsuario.containsKey(r.id_usuario) ? nombresUsuario.get(r.id_usuario) : '-'}">—</td>
+                            <td th:text="${r.fecha_vencimiento != null ? r.fecha_vencimiento : 'Sin fecha'}">—</td>
+                            <!-- RF-30: contador de días restantes -->
+                            <td>
+                                <span th:if="${r.diasRestantes == null}">—</span>
+                                <span th:if="${r.diasRestantes != null and r.diasRestantes > 3}" class="dias-ok"
+                                      th:text="${r.diasRestantes + ' días'}">5 días</span>
+                                <span th:if="${r.diasRestantes != null and r.diasRestantes >= 0 and r.diasRestantes <= 3}" class="dias-warn"
+                                      th:text="${r.diasRestantes + ' días'}">2 días</span>
+                                <span th:if="${r.diasRestantes != null and r.diasRestantes < 0}" class="dias-vencido"
+                                      th:text="${'Vencido hace ' + (r.diasRestantes * -1) + ' días'}">Vencido</span>
+                            </td>
+                            <td>
+                                <a class="btn-secondary" style="padding:.3rem .6rem;font-size:.75rem"
+                                   th:href="@{/view/radicados/detalle/{id}(id=${r.id_radicado})}">Ver</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<script defer th:src="@{/js/script.js}"></script>
+<script defer th:src="@{/js/odin-ui.js}"></script>
+</body>
+</html>

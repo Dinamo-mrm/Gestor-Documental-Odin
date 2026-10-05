@@ -5,17 +5,21 @@ import com.odin.odin.repository.UsuariosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/usuarios")
+@Tag(name="Usuarios", description="Administración de usuarios del sistema")
 public class UsuariosController
 {
     @Autowired
     private UsuariosRepository usuariosRepository;
 
     @GetMapping
+    @Operation(summary="Listar usuarios")
     public List<Usuarios> getAll()
     {
         return usuariosRepository.findAll();
@@ -23,6 +27,7 @@ public class UsuariosController
 
     // ✅ CORREGIDO: Añadir @PathVariable
     @GetMapping("/{id}")
+    @Operation(summary="Consultar usuario por ID")
     public ResponseEntity<Usuarios> getById(@PathVariable Long id)  // <-- @PathVariable añadido
     {
         return usuariosRepository.findById(id)
@@ -31,6 +36,7 @@ public class UsuariosController
     }
 
     @PostMapping
+    @Operation(summary="Crear usuario")
     public Usuarios create(@RequestBody Usuarios usuarios)
     {
         return usuariosRepository.save(usuarios);

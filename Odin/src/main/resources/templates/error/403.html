@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script>try{if(localStorage.getItem('odin-theme')==='dark')document.documentElement.classList.add('dark')}catch(e){}</script>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Acceso denegado | ODIN</title>
+    <link rel="stylesheet" th:href="@{/css/globals.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/odin.css}">
+    <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
+</head>
+<body class="odin-login-page">
+<section class="odin-login-card" style="max-width:520px">
+    <span class="odin-eyebrow">SEGURIDAD</span>
+    <h1 class="odin-page-title">Acceso denegado</h1>
+    <p>No tienes permisos suficientes para acceder a este recurso.</p>
+    <a class="odin-button-primary" th:href="@{/view/dashboard}">Ir al Dashboard</a>
+</section>
+    <script defer th:src="@{/js/odin-ui.js}"></script>
+</body>
+</html>

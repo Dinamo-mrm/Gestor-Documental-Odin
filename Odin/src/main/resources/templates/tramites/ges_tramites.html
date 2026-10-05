@@ -1,27 +1,493 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><meta content="width=device-width, initial-scale=1" name="viewport">
-    <title>ODIN · Gestión de Trámites</title>
-    <link rel="stylesheet" th:href="@{/css/global.css}"><link rel="stylesheet" th:href="@{/css/styleguide.css}"><link rel="stylesheet" th:href="@{/css/style.css}">
+    <script>
+      try { if (localStorage.getItem('odin-theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Trámites | ODIN</title>
+    <link rel="stylesheet" th:href="@{/css/globals.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/odin.css}">
+    <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
     <style>
-        .kpi-clickable{cursor:pointer;transition:transform .15s,box-shadow .15s}.kpi-clickable:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.14)}
-        .row-vencido{background:#fff1f2!important}.row-proximo{background:#fffbeb!important}
-        .badge-alerta{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:999px;font-size:.72rem;font-weight:700}
-        .badge-vencido{background:#dc2626;color:#fff}.badge-proximo{background:#d97706;color:#fff}.badge-ok{background:#16a34a;color:#fff}
-        .alert-summary{margin:0 0 16px;padding:12px 16px;border-radius:8px;background:#f8fafc;border-left:4px solid #64748b}
+        .badge-vencido{background:#dc2626;color:#fff}
+        .badge-proximo{background:#d97706;color:#fff}
+        .badge-ok{background:#16a34a;color:#fff}
+        .badge-estado{background:#e2e8f0;color:#334155;font-size:.7rem;font-weight:700;padding:.15rem .5rem;border-radius:999px;text-transform:lowercase}
+        .alert-summary{margin:0 0 1rem;padding:.85rem 1rem;border-radius:.75rem;border-left:4px solid #dc2626;background:#fef2f2;color:#7f1d1d;font-size:.9rem}
+        .filter-card{background:#fff;border:1px solid #e2e8f0;border-radius:1rem;padding:1rem 1.25rem;margin-bottom:1rem}
+        .filter-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr 1fr auto;gap:.75rem;align-items:end}
+        @media (max-width:1280px){.filter-grid{grid-template-columns:1fr 1fr 1fr}}
+        @media (max-width:640px){.filter-grid{grid-template-columns:1fr}}
+        .filter-grid label{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.25rem}
+        .filter-grid input,.filter-grid select{width:100%;border:1px solid #cbd5e1;border-radius:.5rem;padding:.55rem .75rem;font-size:.875rem;background:#fff}
+        .filter-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+        .btn-primary{background:#15803d;color:#fff;border:none;border-radius:.5rem;padding:.55rem 1rem;font-weight:600;cursor:pointer}
+        .btn-primary:hover{background:#166534}
+        .btn-secondary{background:#fff;color:#334155;border:1px solid #cbd5e1;border-radius:.5rem;padding:.55rem 1rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+        .btn-secondary:hover{background:#f8fafc}
+        .mass-actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.75rem}
+        .mass-actions button{background:#fff;border:1px solid #cbd5e1;border-radius:.5rem;padding:.4rem .85rem;font-size:.8rem;font-weight:600;color:#334155;cursor:pointer}
+        .mass-actions button:hover{background:#f8fafc}
+        .table-wrap{overflow-x:auto;border:1px solid #e2e8f0;border-radius:1rem;background:#fff}
+        .table-wrap table{width:100%;border-collapse:collapse;font-size:.8rem;min-width:1000px}
+        .table-wrap th{text-align:left;padding:.65rem .75rem;background:#f8fafc;color:#64748b;font-size:.65rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #e2e8f0;white-space:nowrap}
+        .table-wrap td{padding:.65rem .75rem;border-bottom:1px solid #f1f5f9;color:#334155;vertical-align:middle}
+        .table-wrap tbody tr:hover{background:#f8fafc}
+        .kpi-clickable{cursor:pointer;transition:transform .15s,box-shadow .15s}
+        .kpi-clickable:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.12)}
+        .btn-ver{display:inline-flex;align-items:center;gap:.35rem;background:#15803d;color:#fff!important;border:none;border-radius:.5rem;padding:.4rem .75rem;font-size:.75rem;font-weight:700;text-decoration:none}
+        .btn-ver:hover{background:#166534}
+        .btn-edit{display:inline-flex;align-items:center;background:#fff;color:#15803d;border:1px solid #86efac;border-radius:.5rem;padding:.35rem .65rem;font-size:.75rem;font-weight:600;text-decoration:none}
+        .pager{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.75rem;margin-top:1rem;padding:.5rem 0}
+        .pager-info{font-size:.85rem;color:#64748b}
+        .pager-btns{display:flex;gap:.35rem;flex-wrap:wrap}
+        .pager-btns a,.pager-btns span{display:inline-flex;align-items:center;justify-content:center;min-width:2rem;padding:.35rem .6rem;border-radius:.45rem;border:1px solid #cbd5e1;font-size:.8rem;font-weight:600;text-decoration:none;color:#334155;background:#fff}
+        .pager-btns a:hover{background:#f1f5f9}
+        .pager-btns .active{background:#15803d;border-color:#15803d;color:#fff}
+        .pager-btns .disabled{opacity:.45;pointer-events:none}
+        .dias-ok{color:#15803d;font-weight:700}
+        .dias-warn{color:#d97706;font-weight:700}
+        .dias-vencido{color:#dc2626;font-weight:700}
+        /* Tabs unificados */
+        .tabs{display:flex;gap:.25rem;margin-bottom:1.25rem;border-bottom:1px solid #e2e8f0;flex-wrap:wrap}
+        .tab-btn{padding:.65rem 1.1rem;font-size:.875rem;font-weight:700;color:#64748b;background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px}
+        .tab-btn:hover{color:#15803d}
+        .tab-btn.active{color:#15803d;border-bottom-color:#15803d}
+        .tab-panel{display:none}
+        .tab-panel.active{display:block}
+        .form-card{background:#fff;border:1px solid #e2e8f0;border-radius:1rem;padding:1.25rem;margin-bottom:1rem}
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+        @media (max-width:768px){.form-grid{grid-template-columns:1fr}}
+        .form-grid label,.form-card > label{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.3rem}
+        .form-grid input,.form-grid select,.form-grid textarea{width:100%;border:1px solid #cbd5e1;border-radius:.5rem;padding:.55rem .75rem;font-size:.875rem}
+        .form-hint{font-size:.75rem;color:#94a3b8;margin-top:.25rem}
+        .section-title{font-size:.95rem;font-weight:700;color:#0f172a;margin:0 0 1rem;padding-bottom:.5rem;border-bottom:1px solid #e2e8f0}
+        .check-row{display:flex;align-items:center;gap:.5rem;font-size:.875rem;font-weight:600;color:#334155}
+        .check-row input{width:auto}
     </style>
 </head>
-<body>
-<div th:replace="fragments/layout :: sidebar('tramites')"></div>
-<div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay"></div>
-<div th:replace="fragments/layout :: topbar('ODIN')"></div>
-<main class="main px-4 md:px-8 py-6">
-<header class="header"><div><h1>Gestión de Trámites</h1><p>Control, seguimiento y trazabilidad documental</p></div><div class="header-actions"><button class="secondary" type="button" id="btnExportar">Exportar</button><a class="primary" th:href="@{/view/tramites/form}">＋ Nuevo trámite</a></div></header>
-<section class="top"><div class="card"><div class="kpis"><div class="kpi green"><small>Pendientes</small><h2 th:text="${pendientes ?: 0}">0</h2></div><div class="kpi yellow"><small>En proceso</small><h2 th:text="${enProceso ?: 0}">0</h2></div><div class="kpi blue"><small>Finalizados</small><h2 th:text="${finalizados ?: 0}">0</h2></div><div class="kpi red kpi-clickable" id="kpiVencidos" title="Mostrar únicamente vencidos"><small>Vencidos</small><h2 th:text="${vencidos ?: 0}">0</h2></div><div class="kpi green"><small>Total</small><h2 th:text="${totalRadicados ?: 0}">0</h2></div></div></div></section>
-<div class="alert-summary" th:if="${(vencidos ?: 0) > 0}"><strong>Alerta documental:</strong> existen <span th:text="${vencidos}">0</span> radicado(s) vencido(s) que requieren atención inmediata.</div>
-<section class="toolbar"><form id="formFiltros" class="filters" method="get" th:action="@{/view/tramites}"><input name="texto" placeholder="Buscar radicado o asunto..." type="text" th:value="${textoFiltro}"><select name="estado"><option value="">Todos los estados</option><option th:each="e : ${estados}" th:text="${e.nombre}" th:value="${e.id_estado}" th:selected="${estadoFiltro == e.id_estado}"></option></select><select name="dependencia"><option value="">Todas las dependencias</option><option th:each="d : ${dependencias}" th:text="${d.nombre}" th:value="${d.id_dependencia}" th:selected="${dependenciaFiltro == d.id_dependencia}"></option></select><select name="tramite"><option value="">Todos los trámites</option><option th:each="t : ${tramites}" th:text="${t.nombre}" th:value="${t.idTramite}" th:selected="${tramiteFiltro == t.idTramite}"></option></select><select name="vencimiento" id="filtroVencimiento"><option value="">Todas las fechas</option><option value="vencidos" th:selected="${vencimientoFiltro == 'vencidos'}">Solo vencidos</option><option value="proximos" th:selected="${vencimientoFiltro == 'proximos'}">Próximos a vencer</option></select><button class="primary" type="submit">Filtrar</button><a class="secondary" th:href="@{/view/tramites}">Limpiar</a></form></section>
-<section class="content"><div class="table-card"><div class="mass"><button class="secondary" type="button" data-action="asignar">Asignar</button><button class="secondary" type="button" data-action="estado">Cambiar Estado</button><button class="secondary" type="button" data-action="reasignar">Reasignar</button><button class="secondary" type="button" data-action="cerrar">Cerrar</button></div><div class="overflow-x-auto"><table><thead><tr><th><input type="checkbox"></th><th>Radicado</th><th>Asunto</th><th>Trámite</th><th>Estado</th><th>Dependencia</th><th>Responsable</th><th>Prioridad</th><th>Serie</th><th>Subserie</th><th>Vencimiento</th><th></th></tr></thead><tbody><tr th:each="r : ${radicados}"><td><input type="checkbox" th:value="${r.id_radicado}"></td><td th:text="${r.numero_radicado}">-</td><td th:text="${r.asunto}">-</td><td th:text="${r.tramite != null ? r.tramite.nombre : r.id_tramite}">-</td><td><span class="status pending" th:text="${r.estado != null ? r.estado.nombre : r.id_estado}">-</span></td><td th:text="${r.dependencias != null ? r.dependencias.nombre : r.id_dependencia}">-</td><td th:text="${r.usuario != null ? r.usuario.nombre : r.id_usuario}">-</td><td th:text="${r.prioridad ?: 'MEDIA'}">MEDIA</td><td th:text="${r.codigo_serie ?: '-'}">-</td><td th:text="${r.codigo_subserie ?: '-'}">-</td><td><span th:text="${r.fecha_vencimiento ?: 'Sin fecha'}">-</span></td><td><a class="secondary" th:href="@{'/view/radicados/detalle/' + ${r.id_radicado}}">Ver</a></td></tr><tr th:if="${#lists.isEmpty(radicados)}"><td colspan="12">No hay radicados registrados</td></tr></tbody></table></div></div></section></main>
-<script th:src="@{/js/script.js}"></script>
-</body></html>
+<body class="bg-[#f5f6f8] text-slate-800">
+<div class="min-h-screen flex">
+    <div th:replace="~{fragments/layout :: sidebar('tramites')}"></div>
+    <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay" onclick="toggleSidebar()"></div>
+
+    <div class="flex-1 min-w-0 flex flex-col">
+        <div th:replace="~{fragments/layout :: topbar('Gestión de Trámites')}"></div>
+
+        <main class="px-4 md:px-8 py-6 flex-1">
+            <header class="odin-page-header" style="margin-bottom:1rem">
+                <div>
+                    <h1 class="odin-page-title">Gestión de Trámites</h1>
+                    <p class="odin-page-subtitle">Bandeja operativa + catálogo de tipos de trámite (RF-26, RF-28, RF-29, RF-32, RF-35)</p>
+                </div>
+            </header>
+
+            <!-- Pestañas: unifica ges_tramites + tramites/tramitesForm -->
+            <div class="tabs" role="tablist">
+                <button type="button" class="tab-btn active" data-tab="bandeja" role="tab" aria-selected="true">Bandeja operativa</button>
+                <button type="button" class="tab-btn" data-tab="catalogo" role="tab" aria-selected="false">Tipos de trámite</button>
+                <button type="button" class="tab-btn" data-tab="form-tipo" role="tab" aria-selected="false" id="tabFormLabel">Nuevo tipo de trámite</button>
+            </div>
+
+            <!-- ===================== TAB 1: BANDEJA OPERATIVA (radicados) ===================== -->
+            <div id="panel-bandeja" class="tab-panel active" role="tabpanel">
+
+                <section class="kpis" aria-label="Indicadores">
+                    <a th:href="@{/view/tramites(estado=1)}" class="kpi yellow kpi-clickable"><small>Pendientes</small><h2 th:text="${pendientes != null ? pendientes : 0}">0</h2></a>
+                    <a th:href="@{/view/tramites(estado=2)}" class="kpi blue kpi-clickable"><small>En proceso</small><h2 th:text="${enProceso != null ? enProceso : 0}">0</h2></a>
+                    <a th:href="@{/view/tramites(estado=3)}" class="kpi green kpi-clickable"><small>Finalizados</small><h2 th:text="${finalizados != null ? finalizados : 0}">0</h2></a>
+                    <a th:href="@{/view/tramites(vencimiento=vencidos)}" class="kpi red kpi-clickable"><small>Vencidos</small><h2 th:text="${vencidos != null ? vencidos : 0}">0</h2></a>
+                    <a th:href="@{/view/tramites}" class="kpi green kpi-clickable"><small>Total</small><h2 th:text="${totalRadicados != null ? totalRadicados : 0}">0</h2></a>
+                </section>
+
+                <div class="alert-summary" th:if="${vencidos != null and vencidos > 0}">
+                    <strong>Alerta documental:</strong>
+                    existen <span th:text="${vencidos}">0</span> radicado(s) vencido(s) que requieren atención inmediata.
+                </div>
+
+                <!-- Filtros RF-35 completos (estado, dependencia, fechas, vencimiento) -->
+                <form class="filter-card" method="get" th:action="@{/view/tramites}">
+                    <div class="filter-grid">
+                        <div>
+                            <label for="texto">Buscar</label>
+                            <input id="texto" name="texto" type="text" placeholder="Radicado o asunto..."
+                                   th:value="${textoFiltro}">
+                        </div>
+                        <div>
+                            <label for="estado">Estado</label>
+                            <select id="estado" name="estado">
+                                <option value="">Todos los estados</option>
+                                <option th:each="e : ${estados}" th:value="${e.id_estado}"
+                                        th:text="${e.nombre}"
+                                        th:selected="${estadoFiltro != null and estadoFiltro == e.id_estado}"></option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="dependencia">Dependencia</label>
+                            <select id="dependencia" name="dependencia">
+                                <option value="">Todas</option>
+                                <option th:each="d : ${dependencias}" th:value="${d.id_dependencia}"
+                                        th:text="${d.nombre}"
+                                        th:selected="${dependenciaFiltro != null and dependenciaFiltro == d.id_dependencia}"></option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="tramite">Trámite</label>
+                            <select id="tramite" name="tramite">
+                                <option value="">Todos</option>
+                                <option th:each="t : ${listaTramites}" th:value="${t.idTramite}"
+                                        th:text="${t.nombre}"
+                                        th:selected="${tramiteFiltro != null and tramiteFiltro == t.idTramite}"></option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="fechaDesde">Fecha desde</label>
+                            <input id="fechaDesde" name="fechaDesde" type="date" th:value="${fechaDesdeFiltro}">
+                        </div>
+                        <div>
+                            <label for="fechaHasta">Fecha hasta</label>
+                            <input id="fechaHasta" name="fechaHasta" type="date" th:value="${fechaHastaFiltro}">
+                        </div>
+                        <div>
+                            <label for="vencimiento">Vencimiento</label>
+                            <select id="vencimiento" name="vencimiento">
+                                <option value="" th:selected="${vencimientoFiltro == null or vencimientoFiltro == ''}">Todas</option>
+                                <option value="vencidos" th:selected="${vencimientoFiltro == 'vencidos'}">Vencidos</option>
+                                <option value="proximos" th:selected="${vencimientoFiltro == 'proximos'}">Próximos a vencer</option>
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button type="submit" class="btn-primary">Filtrar</button>
+                            <a class="btn-secondary" th:href="@{/view/tramites}">Limpiar</a>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="mass-actions">
+                    <button type="button" data-action="asignar">Asignar</button>
+                    <button type="button" data-action="estado">Cambiar Estado</button>
+                    <button type="button" data-action="reasignar">Reasignar</button>
+                    <button type="button" data-action="cerrar">Cerrar</button>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th><input type="checkbox" id="checkAll" onclick="document.querySelectorAll('#panel-bandeja tbody input[type=checkbox]').forEach(c=>c.checked=this.checked)"></th>
+                            <th>Radicado</th>
+                            <th>Asunto</th>
+                            <th>Trámite</th>
+                            <th>Estado</th>
+                            <th>Dependencia</th>
+                            <th>Responsable</th>
+                            <th>Prioridad</th>
+                            <th>Vencimiento</th>
+                            <th>Días rest.</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="r : ${radicados}">
+                            <td><input type="checkbox" th:value="${r.id_radicado}"></td>
+                            <td th:text="${r.numero_radicado}">-</td>
+                            <td th:text="${r.asunto}">-</td>
+                            <td th:text="${r.id_tramite != null and nombresTramite != null and nombresTramite.containsKey(r.id_tramite) ? nombresTramite.get(r.id_tramite) : (r.id_tramite != null ? r.id_tramite : '-')}">-</td>
+                            <td><span class="badge-estado" th:text="${r.id_estado != null and nombresEstado != null and nombresEstado.containsKey(r.id_estado) ? nombresEstado.get(r.id_estado) : (r.id_estado != null ? r.id_estado : '-')}">-</span></td>
+                            <td th:text="${r.id_dependencia != null and nombresDep != null and nombresDep.containsKey(r.id_dependencia) ? nombresDep.get(r.id_dependencia) : (r.id_dependencia != null ? r.id_dependencia : '-')}">-</td>
+                            <td th:text="${r.id_usuario != null and nombresUsuario != null and nombresUsuario.containsKey(r.id_usuario) ? nombresUsuario.get(r.id_usuario) : (r.id_usuario != null ? r.id_usuario : '-')}">-</td>
+                            <td th:text="${r.prioridad != null ? r.prioridad : 'MEDIA'}">MEDIA</td>
+                            <td th:text="${r.fecha_vencimiento != null ? r.fecha_vencimiento : 'Sin fecha'}">-</td>
+                            <td>
+                                <span th:if="${r.diasRestantes == null}">—</span>
+                                <span th:if="${r.diasRestantes != null and r.diasRestantes > 3}" class="dias-ok"
+                                      th:text="${r.diasRestantes + ' d'}">5 d</span>
+                                <span th:if="${r.diasRestantes != null and r.diasRestantes >= 0 and r.diasRestantes <= 3}" class="dias-warn"
+                                      th:text="${r.diasRestantes + ' d'}">2 d</span>
+                                <span th:if="${r.diasRestantes != null and r.diasRestantes < 0}" class="dias-vencido"
+                                      th:text="${'Venc. ' + (r.diasRestantes * -1) + ' d'}">Vencido</span>
+                            </td>
+                            <td class="whitespace-nowrap">
+                                <div style="display:flex;gap:.35rem;flex-wrap:wrap">
+                                <a class="btn-ver" th:href="@{'/view/radicados/detalle/' + ${r.id_radicado}}" title="Ver detalle">Ver</a>
+                                <a class="btn-edit" th:href="@{/api/radicados/{id}/comprobante(id=${r.id_radicado})}" target="_blank" rel="noopener" title="PDF">PDF</a>
+                               </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${radicados == null or #lists.isEmpty(radicados)}">
+                            <td colspan="11" style="text-align:center;padding:1.5rem;color:#64748b">No hay radicados registrados</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pager" th:if="${page != null}">
+                    <div class="pager-info">
+                        Mostrando <strong th:text="${#lists.size(radicados)}">0</strong> de
+                        <strong th:text="${totalElements}">0</strong> radicados
+                        <span th:if="${totalPages != null and totalPages > 0}">
+                            — Página <span th:text="${currentPage + 1}">1</span> / <span th:text="${totalPages}">1</span>
+                        </span>
+                    </div>
+                    <div class="pager-btns" th:if="${totalPages != null and totalPages > 1}">
+                        <a th:if="${currentPage > 0}"
+                           th:href="@{/view/tramites(page=${currentPage - 1}, texto=${textoFiltro}, estado=${estadoFiltro}, dependencia=${dependenciaFiltro}, tramite=${tramiteFiltro}, vencimiento=${vencimientoFiltro}, fechaDesde=${fechaDesdeFiltro}, fechaHasta=${fechaHastaFiltro})}">Anterior</a>
+                        <span th:if="${currentPage == 0}" class="disabled">Anterior</span>
+                        <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                           th:if="${i >= (currentPage > 2 ? currentPage - 2 : 0) and i <= (currentPage + 2)}"
+                           th:href="@{/view/tramites(page=${i}, texto=${textoFiltro}, estado=${estadoFiltro}, dependencia=${dependenciaFiltro}, tramite=${tramiteFiltro}, vencimiento=${vencimientoFiltro}, fechaDesde=${fechaDesdeFiltro}, fechaHasta=${fechaHastaFiltro})}"
+                           th:text="${i + 1}"
+                           th:classappend="${i == currentPage} ? ' active'">1</a>
+                        <a th:if="${currentPage + 1 < totalPages}"
+                           th:href="@{/view/tramites(page=${currentPage + 1}, texto=${textoFiltro}, estado=${estadoFiltro}, dependencia=${dependenciaFiltro}, tramite=${tramiteFiltro}, vencimiento=${vencimientoFiltro}, fechaDesde=${fechaDesdeFiltro}, fechaHasta=${fechaHastaFiltro})}">Siguiente</a>
+                        <span th:if="${currentPage + 1 >= totalPages}" class="disabled">Siguiente</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== TAB 2: CATÁLOGO TIPOS DE TRÁMITE ===================== -->
+            <div id="panel-catalogo" class="tab-panel" role="tabpanel">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem">
+                    <div>
+                        <h2 style="font-size:1.1rem;font-weight:700;margin:0">Catálogo de tipos de trámite</h2>
+                        <p style="font-size:.85rem;color:#64748b;margin:.25rem 0 0">Parametrización de plazos y configuración (RF-26, RF-28, RF-29)</p>
+                    </div>
+                    <button type="button" class="btn-primary" onclick="abrirFormTipo()">+ Nuevo tipo de trámite</button>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Días respuesta</th>
+                            <th>Prioridad def.</th>
+                            <th>Requiere resp.</th>
+                            <th>Activo</th>
+                            <th>Dependencia</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="t : ${listaTramites}">
+                            <td th:text="${t.idTramite}">—</td>
+                            <td>
+                                <strong th:text="${t.nombre}">Nombre</strong>
+                                <div style="font-size:.75rem;color:#94a3b8" th:text="${t.descripcion}">—</div>
+                            </td>
+                            <td>
+                                <span th:if="${t.diasRespuesta != null}" style="font-weight:700;color:#15803d"
+                                      th:text="${t.diasRespuesta + ' días'}">15 días</span>
+                                <span th:if="${t.diasRespuesta == null}" style="color:#94a3b8">Sin definir</span>
+                            </td>
+                            <td th:text="${t.prioridadDefault != null ? t.prioridadDefault : '-'}">MEDIA</td>
+                            <td th:text="${t.requiereRespuesta != null and t.requiereRespuesta ? 'Sí' : 'No'}">Sí</td>
+                            <td>
+                                <span class="badge-estado" th:classappend="${t.activo != null and t.activo} ? '' : ' badge-vencido'"
+                                      th:text="${t.activo != null and t.activo ? 'Activo' : 'Inactivo'}">Activo</span>
+                            </td>
+                            <td th:text="${t.idDependenciaResponsable != null ? t.idDependenciaResponsable : '-'}">—</td>
+                            <td>
+                                <a class="btn-edit" href="#"
+                                   th:attr="onclick=|editarTipo(${t.idTramite}, '${#strings.escapeJavaScript(t.nombre)}', '${#strings.escapeJavaScript(t.descripcion != null ? t.descripcion : '')}', ${t.diasRespuesta != null ? t.diasRespuesta : 'null'}, '${t.prioridadDefault != null ? t.prioridadDefault : ''}', ${t.requiereRespuesta != null and t.requiereRespuesta}, ${t.activo != null and t.activo}, ${t.idDependenciaResponsable != null ? t.idDependenciaResponsable : 'null'}, ${t.idEstadoInicial != null ? t.idEstadoInicial : 'null'})|">
+                                    Editar
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${listaTramites == null or #lists.isEmpty(listaTramites)}">
+                            <td colspan="8" style="text-align:center;padding:1.5rem;color:#64748b">No hay tipos de trámite parametrizados</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ===================== TAB 3: FORMULARIO TIPO DE TRÁMITE (RF-28, RF-29) ===================== -->
+            <div id="panel-form-tipo" class="tab-panel" role="tabpanel">
+                <form th:action="@{/view/tramites/save}" method="post" id="formTipoTramite">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <input type="hidden" name="idTramite" id="f_idTramite" value="">
+
+                    <div class="form-card">
+                        <h2 class="section-title">Información general</h2>
+                        <div class="form-grid">
+                            <div style="grid-column:1 / -1">
+                                <label for="f_nombre">Nombre del trámite *</label>
+                                <input type="text" id="f_nombre" name="nombre" required maxlength="150" placeholder="Ej: Derecho de petición">
+                            </div>
+                            <div style="grid-column:1 / -1">
+                                <label for="f_descripcion">Descripción</label>
+                                <textarea id="f_descripcion" name="descripcion" rows="3" placeholder="Descripción del trámite y criterios de uso"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <h2 class="section-title">Plazos y respuesta (RF-28, RF-29)</h2>
+                        <div class="form-grid">
+                            <div>
+                                <label for="f_diasRespuesta">Días de respuesta *</label>
+                                <input type="number" id="f_diasRespuesta" name="diasRespuesta" min="0" max="365" required
+                                       placeholder="Ej: 15">
+                                <p class="form-hint">Días hábiles o calendario según norma del trámite. Parametrizable sin redeploy.</p>
+                            </div>
+                            <div>
+                                <label for="f_prioridadDefault">Prioridad por defecto</label>
+                                <select id="f_prioridadDefault" name="prioridadDefault">
+                                    <option value="">Seleccione</option>
+                                    <option value="BAJA">Baja</option>
+                                    <option value="MEDIA">Media</option>
+                                    <option value="ALTA">Alta</option>
+                                    <option value="URGENTE">Urgente</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="f_idDependencia">Dependencia responsable</label>
+                                <select id="f_idDependencia" name="idDependenciaResponsable">
+                                    <option value="">Sin asignar</option>
+                                    <option th:each="d : ${dependencias}" th:value="${d.id_dependencia}" th:text="${d.nombre}">Dep</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="f_idEstadoInicial">Estado inicial</label>
+                                <select id="f_idEstadoInicial" name="idEstadoInicial">
+                                    <option value="">Por defecto del sistema</option>
+                                    <option th:each="e : ${estados}" th:value="${e.id_estado}" th:text="${e.nombre}">Estado</option>
+                                </select>
+                            </div>
+                            <div class="check-row">
+                                <input type="checkbox" id="f_requiereRespuesta" name="requiereRespuesta" value="true">
+                                <label for="f_requiereRespuesta" style="text-transform:none;font-size:.875rem;margin:0">Requiere respuesta formal</label>
+                            </div>
+                            <div class="check-row">
+                                <input type="checkbox" id="f_activo" name="activo" value="true" checked>
+                                <label for="f_activo" style="text-transform:none;font-size:.875rem;margin:0">Trámite activo</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+                        <button type="submit" class="btn-primary">Guardar tipo de trámite</button>
+                        <button type="button" class="btn-secondary" onclick="mostrarTab('catalogo')">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script>
+(function () {
+    function mostrarTab(id) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+        });
+        const panel = document.getElementById('panel-' + id);
+        const btn = document.querySelector('.tab-btn[data-tab="' + id + '"]');
+        if (panel) panel.classList.add('active');
+        if (btn) {
+            btn.classList.add('active');
+            btn.setAttribute('aria-selected', 'true');
+        }
+        if (id === 'form-tipo') {
+            document.getElementById('tabFormLabel').textContent =
+                document.getElementById('f_idTramite').value ? 'Editar tipo de trámite' : 'Nuevo tipo de trámite';
+        }
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => mostrarTab(btn.getAttribute('data-tab')));
+    });
+
+    window.mostrarTab = mostrarTab;
+
+    window.abrirFormTipo = function () {
+        document.getElementById('f_idTramite').value = '';
+        document.getElementById('f_nombre').value = '';
+        document.getElementById('f_descripcion').value = '';
+        document.getElementById('f_diasRespuesta').value = '';
+        document.getElementById('f_prioridadDefault').value = '';
+        document.getElementById('f_idDependencia').value = '';
+        document.getElementById('f_idEstadoInicial').value = '';
+        document.getElementById('f_requiereRespuesta').checked = false;
+        document.getElementById('f_activo').checked = true;
+        document.getElementById('tabFormLabel').textContent = 'Nuevo tipo de trámite';
+        mostrarTab('form-tipo');
+    };
+
+    window.editarTipo = function (id, nombre, descripcion, dias, prioridad, requiere, activo, dep, estado) {
+        document.getElementById('f_idTramite').value = id || '';
+        document.getElementById('f_nombre').value = nombre || '';
+        document.getElementById('f_descripcion').value = descripcion || '';
+        document.getElementById('f_diasRespuesta').value = (dias !== null && dias !== undefined) ? dias : '';
+        document.getElementById('f_prioridadDefault').value = prioridad || '';
+        document.getElementById('f_idDependencia').value = (dep !== null && dep !== undefined) ? dep : '';
+        document.getElementById('f_idEstadoInicial').value = (estado !== null && estado !== undefined) ? estado : '';
+        document.getElementById('f_requiereRespuesta').checked = !!requiere;
+        document.getElementById('f_activo').checked = activo !== false;
+        document.getElementById('tabFormLabel').textContent = 'Editar tipo de trámite';
+        mostrarTab('form-tipo');
+    };
+
+    // Si la URL trae ?tab=catalogo o ?tab=form-tipo
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab');
+    if (tab === 'catalogo' || tab === 'form-tipo') mostrarTab(tab);
+})();
+</script>
+<script defer th:src="@{/js/script.js}"></script>
+<script defer th:src="@{/js/odin-ui.js}"></script>
+
+
+<!-- Catálogos ocultos para modales de acciones -->
+<select id="catalogoUsuarios" hidden>
+  <option value="">Seleccione usuario...</option>
+  <option th:each="u : ${usuarios}" th:value="${u.id_usuario}" th:text="${u.nombre + ' (#' + u.id_usuario + ')'}">Usuario</option>
+</select>
+<select id="catalogoEstados" hidden>
+  <option value="">Seleccione estado...</option>
+  <option th:each="e : ${estados}" th:value="${e.id_estado}" th:text="${e.nombre}">Estado</option>
+</select>
+<select id="catalogoDependencias" hidden>
+  <option value="">Seleccione dependencia...</option>
+  <option th:each="d : ${dependencias}" th:value="${d.id_dependencia}" th:text="${d.nombre}">Dep</option>
+</select>
+
+<!-- Modales de acciones de bandeja -->
+<div id="odinModalBackdrop" class="odin-modal-backdrop" hidden></div>
+<div id="odinModal" class="odin-modal" hidden role="dialog" aria-modal="true">
+  <div class="odin-modal-card">
+    <h3 id="odinModalTitle">Acción</h3>
+    <p id="odinModalHelp" class="odin-modal-help"></p>
+    <div id="odinModalFields"></div>
+    <div class="odin-modal-actions">
+      <button type="button" class="btn-secondary" id="odinModalCancel">Cancelar</button>
+      <button type="button" class="btn-primary" id="odinModalOk">Confirmar</button>
+    </div>
+  </div>
+</div>
+<style>
+.odin-modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:80}
+.odin-modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:90;padding:1rem}
+.odin-modal[hidden],.odin-modal-backdrop[hidden]{display:none!important}
+.odin-modal-card{background:#fff;border-radius:1rem;border:1px solid #e2e8f0;max-width:420px;width:100%;padding:1.25rem;box-shadow:0 20px 50px rgba(15,23,42,.15)}
+.odin-modal-card h3{margin:0 0 .35rem;font-size:1.1rem;font-weight:800;color:#0f172a}
+.odin-modal-help{margin:0 0 1rem;font-size:.85rem;color:#64748b}
+.odin-modal-card label{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin:.5rem 0 .25rem}
+.odin-modal-card select,.odin-modal-card input,.odin-modal-card textarea{width:100%;border:1px solid #cbd5e1;border-radius:.5rem;padding:.55rem .75rem;font-size:.875rem}
+.odin-modal-actions{display:flex;justify-content:flex-end;gap:.5rem;margin-top:1.25rem}
+</style>
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+</body>
+</html>
