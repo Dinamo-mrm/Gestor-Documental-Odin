@@ -56,14 +56,13 @@ La documentación detallada del proyecto (módulos, instalación, equipo, captur
         <sub><b>Diego Olaya</b></sub>
       </a><br/>
       <sub> write</sub><br/>
-      <sub>~20 commits</sub>
     </td>
     <td align="center">
       <a href="https://github.com/juancamilo343">
         <img src="https://avatars.githubusercontent.com/u/213087527?v=4" width="115"/><br/>
         <sub><b>juancamilo343</b></sub>
       </a><br/>
-      <sub>Write · radicación / G1·G3</sub><br/>
+      <sub>Write</sub><br/>
     </td>
     <td align="center">
       <a href="https://github.com/JJMA04-code">
