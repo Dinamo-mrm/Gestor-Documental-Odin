@@ -32,6 +32,50 @@ La documentación detallada del proyecto (módulos, instalación, equipo, captur
 ### **[→ Abrir README completo del proyecto (Odin/README.md)](Odin/README.md)**
 
 ---
+### Equipo base — colaboradores del repositorio
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/norx01">
+        <img src="https://avatars.githubusercontent.com/u/19365584?v=4" width="115"/><br/>
+        <sub><b>Juan Pablo Pinillos</b></sub>
+      </a><br/>
+      <sub>Write · ingeniería / proyectos</sub><br/>
+    </td>
+    <td align="center">
+      <a href="https://github.com/Dinamo-mrm">
+        <img src="https://avatars.githubusercontent.com/u/179788566?v=4" width="115"/><br/>
+        <sub><b>Carlos Edo. Barahona</b></sub>
+      </a><br/>
+      <sub>Admin · owner del repo</sub><br/>
+    </td>
+    <td align="center">
+      <a href="https://github.com/diealeolagon-sketch">
+        <img src="https://avatars.githubusercontent.com/u/244035545?v=4" width="115"/><br/>
+        <sub><b>Diego Olaya</b></sub>
+      </a><br/>
+      <sub> write</sub><br/>
+      <sub>~20 commits</sub>
+    </td>
+    <td align="center">
+      <a href="https://github.com/juancamilo343">
+        <img src="https://avatars.githubusercontent.com/u/213087527?v=4" width="115"/><br/>
+        <sub><b>juancamilo343</b></sub>
+      </a><br/>
+      <sub>Write · radicación / G1·G3</sub><br/>
+    </td>
+    <td align="center">
+      <a href="https://github.com/JJMA04-code">
+        <img src="https://avatars.githubusercontent.com/u/255725275?v=4" width="115"/><br/>
+        <sub><b>JJMA04-code</b></sub>
+      </a><br/>
+      <sub>Write</sub><br/>
+    </td>
+  </tr>
+</table>
+
+---
 
 ## Arranque rápido
 
