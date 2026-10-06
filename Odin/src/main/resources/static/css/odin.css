@@ -19,8 +19,8 @@ body { color: var(--odin-text); background: var(--odin-bg); font-family: var(--s
 
 body *, button, input, select, textarea { font-family: inherit; }
 
-.odin-sena-logo { display:block; width:auto; height:52px; object-fit:contain; }
-.odin-sena-logo--login { height:72px; width:auto; margin-bottom:1rem; }
+.odin-odin-logo { display:block; width:auto; height:72px; object-fit:contain; }
+.odin-logo--login { height:120px; width:auto; margin-bottom:1rem; }
 .odin-brand-lockup { display:flex; align-items:center; gap:.9rem; }
 .odin-brand-lockup span { color:inherit; font-weight:700; letter-spacing:.03em; }
 .odin-empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.35rem; min-height:150px; padding:1.5rem; text-align:center; color:var(--odin-muted); border:1px dashed #cbd5da; border-radius:var(--odin-radius); background:#fafcfc; }

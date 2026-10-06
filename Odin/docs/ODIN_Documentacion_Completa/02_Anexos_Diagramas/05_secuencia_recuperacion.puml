@@ -1,0 +1,65 @@
+@startuml ODIN_Secuencia_Recuperacion
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam sequenceArrowThickness 1.5
+skinparam participantBorderColor #39A900
+skinparam participantBackgroundColor #E8F5E0
+title ODIN — Secuencia: UC-02 Recuperar / restablecer contraseña\nv2 · odinlogcol
+
+actor "Usuario" as U
+participant "PasswordReset\nController" as C
+participant "PasswordReset\nService" as S
+participant "UsuariosRepository" as UR
+database "Supabase" as DB
+
+== Solicitar recuperación ==
+U -> C : GET /recuperar-password
+C --> U : formulario identidad
+
+U -> C : POST (correo | identificación | nombre)
+activate C
+C -> S : iniciarRecuperacion(login)
+activate S
+S -> UR : findByLoginFlexible(login)
+UR -> DB : SELECT usuarios...
+DB --> UR : usuario
+UR --> S : Usuarios
+
+alt no encontrado
+  S --> C : error genérico
+  C --> U : mensaje (sin filtrar existencia)
+else OK
+  S -> S : generar token UUID\nexpira_en = now + 30 min
+  S -> DB : INSERT reset_password_tokens
+  DB --> S : OK
+  S --> C : correo enmascarado + token
+  C --> U : pantalla restablecer\n(o enlace si hay SMTP)
+end
+deactivate S
+deactivate C
+
+== Restablecer ==
+U -> C : GET /recuperar-password/restablecer?token=...
+activate C
+C -> S : validarToken(token)
+S -> DB : SELECT token WHERE usado=false\nAND expira_en > now
+DB --> S : token válido
+S --> C : OK
+C --> U : formulario nueva contraseña
+deactivate C
+
+U -> C : POST nueva + confirmación
+activate C
+C -> S : restablecer(token, password)
+activate S
+S -> S : BCrypt.encode(password)
+S -> DB : UPDATE usuarios SET password=?
+S -> DB : UPDATE tokens SET usado=true
+DB --> S : OK
+S --> C : éxito
+C --> U : redirect /login?reset=true
+deactivate S
+deactivate C
+
+@enduml

@@ -1,0 +1,84 @@
+@startuml ODIN_Casos_de_Uso
+!pragma layout smetana
+!theme plain
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam arrowColor #39A900
+skinparam actorBorderColor #39A900
+skinparam usecaseBorderColor #333333
+skinparam usecaseBackgroundColor #E8F5E0
+title ODIN — Diagrama de Casos de Uso\n(Ingeniería inversa · v2 · 2026-09-29)
+
+left to right direction
+
+actor "Usuario\nanónimo" as Anon
+actor "Usuario\nautenticado" as User
+actor "Funcionario\nventanilla" as Func
+actor "Administrador\nusuarios" as AdminU
+actor "Administrador\nroles" as AdminR
+actor "Consultor\nbitácora" as Bit
+
+rectangle "Sistema ODIN" {
+  usecase "UC-01 Iniciar sesión" as UC01
+  usecase "UC-02 Recuperar contraseña" as UC02
+  usecase "UC-N13 Cerrar sesión" as UC13
+  usecase "UC-N14 Acceso denegado 403" as UC14
+  usecase "UC-N15 Ver dashboard" as UC15
+
+  usecase "UC-03 Radicar entrada" as UC03
+  usecase "UC-04 Radicar salida" as UC04
+  usecase "UC-05 Adjuntar documentos" as UC05
+  usecase "UC-06 Asignar / reasignar" as UC06
+  usecase "UC-07 Cambiar estado" as UC07
+  usecase "UC-N18 Registrar observación" as UC18
+
+  usecase "UC-08 Consultar y buscar" as UC08
+  usecase "UC-09 Historial y trazabilidad" as UC09
+
+  usecase "UC-10 Comprobante PDF" as UC10 #FADBD8
+  usecase "UC-12 Reportes y alertas" as UC12
+
+  usecase "UC-11 Gestionar parámetros" as UC11
+  usecase "UC-N16 Gestionar usuarios" as UC16
+  usecase "UC-N17 Gestionar roles" as UC17
+  usecase "UC-N19 Gestionar CCD" as UC19
+}
+
+Anon --> UC01
+Anon --> UC02
+User --> UC13
+User --> UC14
+User --> UC15
+User --> UC08
+User --> UC09
+
+Func --> UC03
+Func --> UC04
+Func --> UC05
+Func --> UC06
+Func --> UC07
+Func --> UC18
+Func --> UC10
+
+AdminU --> UC16
+AdminR --> UC17
+User --> UC11
+User --> UC19
+Bit --> UC09
+User --> UC12
+
+note right of UC10
+  **Pendiente**
+  No implementado
+  en odinlogcol
+end note
+
+note bottom of UC12
+  Parcial: KPIs sí,
+  export formal no
+end note
+
+@enduml

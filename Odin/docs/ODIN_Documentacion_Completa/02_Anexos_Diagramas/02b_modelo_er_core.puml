@@ -1,0 +1,162 @@
+@startuml ODIN_Modelo_ER_Core
+!pragma layout smetana
+!theme plain
+skinparam linetype ortho
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam class {
+  BackgroundColor #E8F5E0
+  BorderColor #39A900
+  ArrowColor #555555
+  FontSize 12
+  HeaderBackgroundColor #39A900
+  HeaderFontColor #FFFFFF
+}
+skinparam packageBorderColor #39A900
+skinparam packageFontColor #1E8449
+skinparam packageFontStyle bold
+skinparam shadowing false
+
+title ODIN — Modelo ER (núcleo)\nradicados como centro · v3 · 2026-09-29
+
+entity "usuarios\n(G1)" as usuarios {
+  * id_usuario <<PK>>
+  --
+  nombre, correo
+  num_identificacion
+  id_rol <<FK>>
+  id_dependencia <<FK>>
+  estado
+}
+
+entity "roles\n(G1)" as roles {
+  * id_rol <<PK>>
+  --
+  rol, nombre, estado
+}
+
+entity "dependencias\n(G2)" as dep {
+  * id_dependencia <<PK>>
+  --
+  nombre, dependencia
+  codigo, tipo, estado
+}
+
+entity "ccd_series\n(G2)" as ser {
+  * id_serie <<PK>>
+  --
+  * codigo_serie <<UK>>
+  nombre_serie
+  codigo_unidad <<FK>>
+}
+
+entity "ccd_subseries\n(G2)" as sub {
+  * id_subserie <<PK>>
+  --
+  * codigo_subserie <<UK>>
+  id_serie <<FK>>
+  retencion_anios
+  disposicion_final
+  nivel_acceso
+}
+
+entity "radicados\n(G3 · NÚCLEO)" as rad #D5F5E3 {
+  * id_radicado <<PK>>
+  --
+  * numero_radicado <<UK>>
+  asunto, remitente
+  fecha_radicado
+  id_usuario <<FK>>
+  id_dependencia <<FK>>
+  id_estado <<FK>>
+  id_tramite <<FK>>
+  id_remitente <<FK>>
+  codigo_serie <<FK>>
+  codigo_subserie <<FK>>
+  tipo_radicado
+  prioridad
+}
+
+entity "estados\n(G3)" as est {
+  * id_estado <<PK>>
+  --
+  nombre, color
+  flujo_pqrsf
+}
+
+entity "tramites\n(G3)" as tra {
+  * id_tramite <<PK>>
+  --
+  nombre, descripcion
+  dias_respuesta
+  id_dependencia_responsable <<FK>>
+  id_estado_inicial <<FK>>
+}
+
+entity "remitentes_externos\n(G3)" as rem {
+  * id_remitente <<PK>>
+  --
+  nombre, apellido
+  num_identificacion
+}
+
+entity "documentos\n(G3)" as doc {
+  * id_documento <<PK>>
+  --
+  id_radicado <<FK>>
+  nombre_archivo
+  ruta_archivo, tipo
+  mime_type, checksum
+}
+
+entity "reasignaciones\n(G4)" as reas {
+  * id_reasignacion <<PK>>
+  --
+  id_radicado <<FK>>
+  id_usuario_anterior <<FK>>
+  id_usuario_nuevo <<FK>>
+  id_dependencia_nueva <<FK>>
+}
+
+entity "plantilla\n(G4 bitácora)" as pla {
+  * id_plantilla <<PK>>
+  --
+  id_radicado <<FK>>
+  id_usuario <<FK>>
+  accion, descripcion
+  fecha, datos jsonb
+}
+
+entity "auditoria_radicados\n(G4)" as aud {
+  * id_auditoria <<PK>>
+  --
+  id_radicado <<FK>>
+  id_usuario <<FK>>
+  accion, campo_modificado
+  datos_anteriores jsonb
+  datos_nuevos jsonb
+}
+
+' Relaciones principales
+usuarios }o--|| roles
+usuarios }o--|| dep
+rad }o--|| usuarios
+rad }o--|| dep
+rad }o--|| est
+rad }o--|| tra
+rad }o--o| rem
+rad }o--o| ser
+rad }o--o| sub
+rad ||--o{ doc
+rad ||--o{ reas
+rad ||--o{ pla
+rad ||--o{ aud
+ser ||--o{ sub
+tra }o--|| dep
+tra }o--|| est
+reas }o--o| usuarios
+pla }o--o| usuarios
+aud }o--|| usuarios
+
+@enduml

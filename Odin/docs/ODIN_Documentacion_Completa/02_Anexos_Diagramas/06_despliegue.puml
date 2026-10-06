@@ -1,0 +1,55 @@
+@startuml ODIN_Despliegue
+!pragma layout smetana
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam componentStyle rectangle
+skinparam node {
+  BackgroundColor #E8F5E0
+  BorderColor #39A900
+}
+title ODIN — Diagrama de Despliegue (arquitectura actual)\nSpring Boot + Thymeleaf + Supabase · v2
+
+node "Cliente" as Client {
+  component "Navegador\n(Chrome / Edge)" as Browser
+}
+
+node "Aplicación ODIN" as App {
+  component "Spring Boot\n(embedded Tomcat)" as Boot
+  component "Thymeleaf\ntemplates" as Thy
+  component "Spring Security\n+ BCrypt" as Sec
+  component "JPA / Hibernate" as JPA
+  Boot -down- Thy
+  Boot -down- Sec
+  Boot -down- JPA
+}
+
+node "Supabase Cloud" as Supa {
+  database "PostgreSQL\n(public schema\n26 tablas app)" as PG
+  component "Auth/Storage\n(opcional)" as SA
+}
+
+node "Almacenamiento\nlocal / volumen" as FS {
+  component "app.upload-dir\n(documentos adjuntos)" as Uploads
+}
+
+Browser -down-> Boot : HTTPS\n/login, /view/**
+JPA -down-> PG : JDBC\n(connection pool)
+Boot -down-> Uploads : MultipartFile\n(20 MB / 50 MB)
+
+note right of PG
+  project_ref:
+  qafgkqsqzinxenyosmln
+  FK e índices definidos
+end note
+
+note left of Sec
+  maximumSessions(1)
+  hasAuthority:
+  admin_usuarios,
+  admin_roles,
+  ver_bitacora,
+  ver_reportes
+end note
+
+@enduml

@@ -1,0 +1,418 @@
+@startuml ODIN_Modelo_ER
+!pragma layout smetana
+!theme plain
+skinparam linetype ortho
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam class {
+  BackgroundColor #E8F5E0
+  BorderColor #39A900
+  ArrowColor #555555
+  FontSize 11
+  HeaderBackgroundColor #39A900
+  HeaderFontColor #FFFFFF
+}
+skinparam packageBorderColor #39A900
+skinparam packageFontColor #1E8449
+skinparam packageFontStyle bold
+skinparam shadowing false
+skinparam nodesep 40
+skinparam ranksep 45
+
+title ODIN — Modelo Entidad-Relación (lógico)\nSupabase PostgreSQL · 26 tablas public · v3 · 2026-09-29\nAlineado a Grupo 4 Modelo de Datos v4.0
+
+' ============================================================
+' G1 SEGURIDAD
+' ============================================================
+package "G1 Seguridad" #F5FFF0 {
+  entity "usuarios" as usuarios {
+    * id_usuario : bigint <<PK>>
+    --
+    * nombre : varchar
+    * tipo_identificacion : varchar
+    * num_identificacion : varchar
+    * correo : varchar
+    * password : varchar
+    id_rol : bigint <<FK>>
+    * id_dependencia : bigint <<FK>>
+    direccion : varchar
+    telefono : varchar
+    * estado : varchar
+    * fecha_creacion : varchar
+  }
+
+  entity "roles" as roles {
+    * id_rol : bigint <<PK>>
+    --
+    * rol : varchar
+    * nombre : varchar
+    * estado : varchar
+  }
+
+  entity "permisos" as permisos {
+    * id_permiso : bigint <<PK>>
+    --
+    * nombre : varchar <<UK>>
+    * accion : varchar
+    * modulo : varchar
+    descripcion : text
+  }
+
+  entity "rol_permisos" as rp {
+    * id_rol : bigint <<FK>>
+    id_permiso : bigint <<FK>>
+    --
+    nombre : varchar
+    estado : varchar
+    nivel_acceso : int
+  }
+
+  entity "reset_password_tokens" as rpt {
+    * id_token : bigint <<PK>>
+    --
+    * id_usuario : bigint <<FK>>
+    * token : varchar
+    * expira_en : timestamp
+    usado : boolean
+    fecha_creacion : timestamp
+  }
+
+  entity "log_accesos" as loga {
+    * id_log : bigint <<PK>>
+    --
+    id_usuario : bigint <<FK>>
+    * accion : varchar
+    ip : varchar
+    user_agent : text
+    fecha : timestamp
+    * exito : boolean
+    motivo : varchar
+  }
+
+  entity "sesiones_usuario" as ses {
+    * id_sesion : bigint <<PK>>
+    --
+    id_usuario : bigint <<FK>>
+    token : text
+    ip : varchar
+    navegador : varchar
+    dispositivo : text
+    estado : varchar
+    fecha_inicio : timestamp
+    fecha_fin : timestamp
+    ultima_actividad : timestamp
+  }
+}
+
+' ============================================================
+' G2 ORG / CCD
+' ============================================================
+package "G2 Org / CCD" #F0F8FF {
+  entity "dependencias" as dep {
+    * id_dependencia : bigint <<PK>>
+    --
+    * nombre : varchar
+    * dependencia : varchar
+    * descripcion : varchar
+    * estado : varchar
+    codigo : varchar
+    tipo : varchar
+  }
+
+  entity "ccd_unidades" as uni {
+    * id_unidad : bigint <<PK>>
+    --
+    * codigo_unidad : varchar <<UK>>
+    * nombre_unidad : varchar
+    codigo_padre : varchar
+    * nivel : int
+    descripcion : text
+  }
+
+  entity "ccd_series" as ser {
+    * id_serie : bigint <<PK>>
+    --
+    * codigo_serie : varchar <<UK>>
+    * nombre_serie : varchar
+    * codigo_unidad : varchar <<FK>>
+    codigo_seccion : varchar
+    codigo_subseccion : varchar
+    descripcion : text
+    informacion_publica : varchar
+  }
+
+  entity "ccd_subseries" as sub {
+    * id_subserie : bigint <<PK>>
+    --
+    * codigo_subserie : varchar <<UK>>
+    * nombre_subserie : varchar
+    * id_serie : bigint <<FK>>
+    tipo_pqrsf : text
+    retencion_anios : int
+    disposicion_final : varchar
+    nivel_acceso : varchar
+    valor_documental : varchar
+    observaciones_retencion : text
+  }
+}
+
+' ============================================================
+' G3 CORE
+' ============================================================
+package "G3 Core radicación" #FFF8E8 {
+  entity "radicados" as rad {
+    * id_radicado : bigint <<PK>>
+    --
+    * numero_radicado : varchar <<UK>>
+    * asunto : varchar
+    * remitente : varchar
+    * fecha_radicado : varchar
+    fecha_vencimiento : varchar
+    fecha_limite : varchar
+    id_usuario : bigint <<FK>>
+    id_dependencia : bigint <<FK>>
+    id_estado : bigint <<FK>>
+    id_tramite : bigint <<FK>>
+    id_remitente : bigint <<FK>>
+    id_expediente : bigint <<FK>>
+    codigo_serie : varchar <<FK>>
+    codigo_subserie : varchar <<FK>>
+    id_serie : bigint <<FK>>
+    id_subserie : bigint <<FK>>
+    tipo_radicado : varchar
+    medio_recepcion : varchar
+    prioridad : varchar
+    confidencialidad : varchar
+  }
+
+  entity "remitentes_externos" as rem {
+    * id_remitente : bigint <<PK>>
+    --
+    * nombre : varchar
+    * apellido : varchar
+    * tipo_identificacion : varchar
+    * num_identificacion : varchar
+    correo : varchar
+    telefono : varchar
+    direccion : varchar
+    fecha_registro : varchar
+  }
+
+  entity "documentos" as doc {
+    * id_documento : bigint <<PK>>
+    --
+    id_radicado : bigint <<FK>>
+    * nombre : varchar
+    * nombre_archivo : varchar
+    * ruta_archivo : varchar
+    * tipo : varchar
+    tamano : int
+    * fecha_subida : varchar
+    mime_type : varchar
+    checksum : varchar
+    version_actual : int
+    fecha_limite_anexo : timestamptz
+  }
+
+  entity "anexos" as anx {
+    * id_anexo : bigint <<PK>>
+    --
+    id_radicado : bigint <<FK>>
+    * descripcion : varchar
+    * archivo : text
+    fecha_limite : timestamp
+  }
+
+  entity "tramites" as tra {
+    * id_tramite : bigint <<PK>>
+    --
+    nombre : varchar
+    * descripcion : varchar
+    id_dependencia_responsable : bigint <<FK>>
+    id_estado_inicial : bigint <<FK>>
+    dias_respuesta : int
+    prioridad_default : varchar
+    activo : boolean
+    requiere_respuesta : boolean
+    fecha_creacion : timestamp
+    fecha_actualizacion : timestamp
+    fecha_limite : timestamp
+  }
+
+  entity "estados" as est {
+    * id_estado : bigint <<PK>>
+    --
+    * nombre : varchar
+    color : varchar
+    flujo_pqrsf : boolean
+  }
+
+  entity "expedientes" as exp {
+    * id_expediente : bigint <<PK>>
+    --
+    * codigo_expediente : varchar <<UK>>
+    * nombre : varchar
+    descripcion : text
+    fecha_creacion : timestamp
+    estado : varchar
+  }
+
+  entity "versiones_documento" as ver {
+    * id_version : bigint <<PK>>
+    --
+    * id_documento : bigint <<FK>>
+    * version_numero : int
+    ruta_archivo : varchar
+    creado_por : bigint <<FK>>
+    fecha_version : timestamp
+    observacion : text
+  }
+}
+
+' ============================================================
+' G4 TRAZABILIDAD
+' ============================================================
+package "G4 Trazabilidad" #F8F0FF {
+  entity "plantilla" as pla {
+    * id_plantilla : bigint <<PK>>
+    --
+    id_evento : bigint
+    id_radicado : bigint <<FK>>
+    id_usuario : bigint <<FK>>
+    * accion : varchar
+    * descripcion : varchar
+    * fecha : varchar
+    accion_detalle : varchar
+    ip : varchar
+    datos : jsonb
+  }
+
+  entity "historial_radicado" as hist {
+    * id_historial : bigint <<PK>>
+    --
+    * id_radicado : bigint <<FK>>
+    * id_usuario : bigint <<FK>>
+    * accion : varchar
+    * descripcion : text
+    * fecha : timestamp
+  }
+
+  entity "observaciones" as obs {
+    * id_observacion : bigint <<PK>>
+    --
+    id_radicado : bigint <<FK>>
+    id_usuario : bigint <<FK>>
+    * comentario : varchar
+    * fecha : timestamp
+  }
+
+  entity "reasignaciones" as reas {
+    * id_reasignacion : bigint <<PK>>
+    --
+    id_radicado : bigint <<FK>>
+    id_usuario_anterior : bigint <<FK>>
+    id_usuario_nuevo : bigint <<FK>>
+    id_dependencia_nueva : bigint <<FK>>
+    * fecha : varchar
+  }
+
+  entity "notificaciones" as notif {
+    * id_notificacion : bigint <<PK>>
+    --
+    * id_usuario : bigint <<FK>>
+    id_radicado : bigint <<FK>>
+    * titulo : varchar
+    * mensaje : text
+    leida : boolean
+    * fecha : timestamp
+  }
+
+  entity "firmas" as firm {
+    * id_firma : bigint <<PK>>
+    --
+    * id_radicado : bigint <<FK>>
+    * id_usuario : bigint <<FK>>
+    fecha_firma : timestamp
+    estado : varchar
+    hash_documento : varchar
+    certificado : varchar
+    ip_firma : varchar
+    observacion : text
+  }
+
+  entity "auditoria_radicados" as aud {
+    * id_auditoria : bigint <<PK>>
+    --
+    * id_radicado : bigint <<FK>>
+    * id_usuario : bigint <<FK>>
+    * accion : varchar
+    campo_modificado : varchar
+    valor_anterior : text
+    valor_nuevo : text
+    datos_anteriores : jsonb
+    datos_nuevos : jsonb
+    ip : varchar
+    fecha : timestamp
+    comentario : text
+    tabla_afectada : varchar
+    registro_afectado : bigint
+  }
+}
+
+' ============================================================
+' RELACIONES G1
+' ============================================================
+usuarios }o--|| roles : id_rol
+usuarios }o--|| dep : id_dependencia
+roles ||--o{ rp : id_rol
+permisos ||--o{ rp : id_permiso
+usuarios ||--o{ rpt : id_usuario
+usuarios ||--o{ loga : id_usuario
+usuarios ||--o{ ses : id_usuario
+
+' ============================================================
+' RELACIONES G2
+' ============================================================
+uni ||--o{ ser : codigo_unidad
+ser ||--o{ sub : id_serie
+
+' ============================================================
+' RELACIONES G3 (núcleo = radicados)
+' ============================================================
+rad }o--|| usuarios : id_usuario
+rad }o--|| dep : id_dependencia
+rad }o--|| est : id_estado
+rad }o--|| tra : id_tramite
+rad }o--o| rem : id_remitente
+rad }o--o| ser : codigo_serie
+rad }o--o| sub : codigo_subserie
+rad }o--o| exp : id_expediente
+rad ||--o{ doc : id_radicado
+rad ||--o{ anx : id_radicado
+doc ||--o{ ver : id_documento
+ver }o--o| usuarios : creado_por
+tra }o--|| dep : id_dependencia_responsable
+tra }o--|| est : id_estado_inicial
+
+' ============================================================
+' RELACIONES G4
+' ============================================================
+rad ||--o{ pla : id_radicado
+rad ||--o{ hist : id_radicado
+rad ||--o{ obs : id_radicado
+rad ||--o{ reas : id_radicado
+rad ||--o{ notif : id_radicado
+rad ||--o{ firm : id_radicado
+rad ||--o{ aud : id_radicado
+pla }o--o| usuarios : id_usuario
+hist }o--|| usuarios : id_usuario
+obs }o--o| usuarios : id_usuario
+reas }o--o| usuarios : id_usuario_anterior
+reas }o--o| usuarios : id_usuario_nuevo
+reas }o--o| dep : id_dependencia_nueva
+notif }o--|| usuarios : id_usuario
+firm }o--|| usuarios : id_usuario
+aud }o--|| usuarios : id_usuario
+
+@enduml

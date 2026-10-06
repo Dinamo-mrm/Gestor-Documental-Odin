@@ -1,0 +1,62 @@
+@startuml ODIN_Secuencia_Login
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam sequenceArrowThickness 1.5
+skinparam responseMessageBelowArrow true
+skinparam sequenceLifeLineBorderColor #39A900
+skinparam participantBorderColor #39A900
+skinparam participantBackgroundColor #E8F5E0
+title ODIN — Secuencia: UC-01 Iniciar sesión (login flexible)\nv2 · odinlogcol
+
+actor "Usuario" as U
+participant "login.html" as V
+participant "Spring Security\n(filter chain)" as S
+participant "CustomUserDetails\nService" as C
+participant "UsuariosRepository" as R
+database "Supabase\nPostgreSQL" as DB
+
+U -> V : GET /login
+activate V
+V --> U : Formulario (correo | identificación | nombre)
+deactivate V
+
+U -> V : POST /login (login + password)
+activate V
+V -> S : Authentication attempt
+activate S
+S -> C : loadUserByUsername(login)
+activate C
+C -> R : findByLoginFlexible(login)
+activate R
+R -> DB : SELECT * FROM usuarios\nWHERE correo = ? OR num_identificacion = ?\nOR nombre = ?
+DB --> R : fila usuario
+R --> C : Usuarios
+deactivate R
+
+alt usuario no encontrado
+  C --> S : UsernameNotFoundException
+  S --> V : error
+  V --> U : /login?error=true
+else usuario encontrado
+  C -> C : verificar estado Activo\ny rol Activo
+  C -> R : cargar permisos del rol\n(rol_permisos + permisos)
+  R -> DB : SELECT permisos...
+  DB --> R : authorities
+  R --> C : lista permisos
+  C --> S : UserDetails\n(ROLE_* + admin_usuarios, …)
+  deactivate C
+  S -> S : BCrypt matches(password)
+  alt password incorrecta
+    S --> V : BadCredentials
+    V --> U : /login?error=true
+  else OK
+    S -> S : crear sesión\n(maximumSessions = 1)
+    S --> V : autenticado
+    V --> U : redirect /view/dashboard
+  end
+end
+deactivate S
+deactivate V
+
+@enduml

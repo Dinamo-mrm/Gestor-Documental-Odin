@@ -1,0 +1,51 @@
+@startuml ODIN_Secuencia_Reasignacion
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam sequenceArrowThickness 1.5
+skinparam participantBorderColor #39A900
+skinparam participantBackgroundColor #E8F5E0
+title ODIN — Secuencia: UC-06 Asignar / reasignar radicado\nv2 · odinlogcol
+
+actor "Funcionario" as F
+participant "ReasignacionesView\n/ Form" as V
+participant "Reasignaciones\nRepository" as RR
+participant "Radicados\nRepository" as RadR
+database "Supabase" as DB
+
+F -> V : GET /view/reasignaciones
+activate V
+V -> RR : findAll / listado
+RR -> DB : SELECT reasignaciones...
+DB --> RR : filas
+RR --> V : lista
+V --> F : tabla de reasignaciones
+deactivate V
+
+F -> V : GET form / seleccionar radicado
+activate V
+V --> F : formulario (usuario nuevo,\ndependencia nueva)
+deactivate V
+
+F -> V : POST /view/reasignaciones/save
+activate V
+V -> RR : save(Reasignaciones)
+activate RR
+RR -> DB : INSERT reasignaciones\n(id_radicado, id_usuario_anterior,\nid_usuario_nuevo, id_dependencia_nueva, fecha)
+DB --> RR : OK
+deactivate RR
+
+V -> RadR : update id_usuario /\nid_dependencia del radicado
+activate RadR
+RadR -> DB : UPDATE radicados SET\nid_usuario=?, id_dependencia=?\nWHERE id_radicado=?
+note right
+  numero_radicado
+  **NO se modifica**
+end note
+DB --> RadR : OK
+deactivate RadR
+
+V --> F : redirect /view/reasignaciones\n(mensaje éxito)
+deactivate V
+
+@enduml
