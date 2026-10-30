@@ -3,28 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nueva Radicación | ODIN</title>
+    <title>Radicación de Entrada | ODIN</title>
     <script>
       try { if (localStorage.getItem('odin-theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/globals.css}">
     <link rel="stylesheet" th:href="@{/css/styleguide.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/odin.css}">
     <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
     <style>
-        .form-card{background:#fff;border:1px solid #e2e8f0;border-radius:1rem;padding:1.5rem;margin-bottom:1rem}
-        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-        @media (max-width:768px){.form-grid{grid-template-columns:1fr}}
-        .form-grid label,.form-card label{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:.3rem}
-        .form-grid input,.form-grid select,.form-grid textarea,
-        .form-card input,.form-card select,.form-card textarea{width:100%;border:1px solid #cbd5e1;border-radius:.5rem;padding:.55rem .75rem;font-size:.875rem}
-        .btn-primary{background:#15803d;color:#fff;border:none;border-radius:.5rem;padding:.65rem 1.25rem;font-weight:700;cursor:pointer}
-        .btn-secondary{background:#fff;color:#334155;border:1px solid #cbd5e1;border-radius:.5rem;padding:.65rem 1.25rem;font-weight:600;text-decoration:none}
-        .anon-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:.75rem;padding:1rem;margin-bottom:1rem}
-        .section-title{font-size:1rem;font-weight:700;color:#0f172a;margin:0 0 1rem;padding-bottom:.5rem;border-bottom:1px solid #e2e8f0}
-        .hint{font-size:.75rem;color:#94a3b8;margin-top:.2rem}
+        .form-card { background:#fff; border:1px solid #e2e8f0; border-radius:1rem; padding:1.5rem; margin-bottom:1rem; }
+        .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+        @media (max-width:768px) { .form-grid { grid-template-columns:1fr; } }
+        .form-grid label, .form-card label { display:block; font-size:.7rem; font-weight:700; text-transform:uppercase; color:#64748b; margin-bottom:.3rem; }
+        .form-grid input, .form-grid select, .form-grid textarea,
+        .form-card input, .form-card select, .form-card textarea { width:100%; border:1px solid #cbd5e1; border-radius:.5rem; padding:.55rem .75rem; font-size:.875rem; transition: border-color .15s ease-in-out; }
+        .form-grid input:focus, .form-grid select:focus, .form-card textarea:focus { border-color: #15803d; outline: none; }
+        .btn-primary { background:#15803d; color:#fff; border:none; border-radius:.5rem; padding:.65rem 1.25rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:.5rem; }
+        .btn-primary:hover { background:#166534; }
+        .btn-secondary { background:#fff; color:#334155; border:1px solid #cbd5e1; border-radius:.5rem; padding:.65rem 1.25rem; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; }
+        .btn-secondary:hover { background:#f1f5f9; }
+        .anon-box { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:.75rem; padding:1rem; margin-bottom:1rem; }
+        .section-title { font-size:1rem; font-weight:700; color:#0f172a; margin:0 0 1rem; padding-bottom:.5rem; border-bottom:1px solid #e2e8f0; display:flex; align-items:center; gap:.5rem; }
+        .hint { font-size:.75rem; color:#94a3b8; margin-top:.2rem; }
+        
+        /* Dropzone estilo Drag & Drop */
+        .dropzone-box { border: 2px dashed #94a3b8; border-radius: .75rem; padding: 1.75rem 1rem; text-align: center; cursor: pointer; transition: all .2s; background: #f8fafc; }
+        .dropzone-box:hover, .dropzone-box.dragover { border-color: #15803d; background: #f0fdf4; }
+        .file-item { display: flex; align-items: center; justify-content: space-between; padding: .5rem .75rem; background: #f1f5f9; border-radius: .5rem; margin-top: .5rem; font-size: .82rem; }
+        .file-remove { color: #ef4444; cursor: pointer; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
+        .file-remove:hover { background: #fee2e2; }
     </style>
 </head>
 <body class="bg-[#f5f6f8] text-slate-800">
@@ -37,37 +48,115 @@
 
         <main class="p-4 sm:p-6">
             <div class="max-w-4xl mx-auto">
-                <h1 class="odin-page-title text-2xl font-bold mb-1">Registrar radicado</h1>
-                <p class="text-slate-600 mb-4">Formulario completo · RF-04 a RF-23 (incluye anónima y forma de respuesta)</p>
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h1 class="odin-page-title text-2xl font-bold mb-1">Radicación de Entrada</h1>
+                        <p class="text-slate-600 text-sm">Registro oficial de comunicaciones externas hacia la entidad (RF-04 a RF-23)</p>
+                    </div>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+                        <i class="fas fa-inbox mr-1"></i> Tipo Oficial: ENTRADA
+                    </span>
+                </div>
 
-                <form th:action="@{/view/radicados/guardar}" th:object="${radicado}" method="post" enctype="multipart/form-data">
+                <!-- Ventana emergente (Modal) de Confirmación de Radicación Exitosa -->
+                <div th:if="${radicacionExitosa == true}" id="modalRadicacionExitosa" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300">
+                    <div class="relative w-full max-w-lg bg-white rounded-2xl border-2 border-emerald-500 shadow-2xl p-6 transform transition-all scale-100 animate-in fade-in zoom-in-95">
+                        
+                        <!-- Encabezado con Icono Destacado -->
+                        <div class="flex items-center gap-3.5 mb-4">
+                            <div class="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 text-2xl font-bold shrink-0 shadow-inner">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-extrabold text-slate-800 tracking-tight">¡Radicación exitosa!</h2>
+                                <p class="text-xs text-slate-500 mt-0.5">El documento oficial ha sido registrado e incorporado satisfactoriamente al repositorio de ODIN.</p>
+                            </div>
+                        </div>
+
+                        <!-- Tarjeta de Datos Clave -->
+                        <div class="grid grid-cols-2 gap-3 p-4 bg-slate-50 border border-slate-200/80 rounded-xl text-xs mb-4">
+                            <div>
+                                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Número de Radicado</span>
+                                <span class="text-base font-extrabold text-emerald-700 tracking-wide font-mono" th:text="${savedRadicado != null ? savedRadicado.numero_radicado : 'E-2026-000001'}">E-2026-000001</span>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Fecha de Radicación</span>
+                                <span class="text-sm font-semibold text-slate-700" th:text="${savedRadicado != null ? savedRadicado.fecha_radicado : ''}">29/10/2026</span>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tipo de Radicado</span>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 mt-0.5">
+                                    <i class="fas fa-inbox mr-1"></i> ENTRADA
+                                </span>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Prioridad Asignada</span>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold mt-0.5"
+                                      th:classappend="${savedRadicado != null and savedRadicado.prioridad == 'URGENTE'} ? 'bg-red-100 text-red-800' : (${savedRadicado != null and savedRadicado.prioridad == 'ALTA'} ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800')"
+                                      th:text="${savedRadicado != null ? savedRadicado.prioridad : 'MEDIA'}">MEDIA</span>
+                            </div>
+                        </div>
+
+                        <!-- Anexos Digitales Almacenados -->
+                        <div class="mb-5 p-3 bg-slate-50/70 border border-slate-200/60 rounded-xl text-xs">
+                            <span class="block font-bold text-slate-600 uppercase mb-1.5 flex items-center justify-between">
+                                <span><i class="fas fa-paperclip text-slate-400 mr-1.5"></i> Documentos almacenados:</span>
+                                <span class="px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 font-bold" th:text="${archivos != null ? archivos : 0}">0</span>
+                            </span>
+                            <ul th:if="${nombresArchivos != null and not #lists.isEmpty(nombresArchivos)}" class="space-y-1.5 pl-1 max-h-28 overflow-y-auto">
+                                <li th:each="doc : ${nombresArchivos}" class="text-xs text-slate-700 flex items-center gap-2">
+                                    <i class="fas fa-file-pdf text-red-500"></i>
+                                    <span class="font-medium truncate" th:text="${doc}">documento.pdf</span>
+                                </li>
+                            </ul>
+                            <p th:if="${nombresArchivos == null or #lists.isEmpty(nombresArchivos)}" class="text-xs text-slate-400 italic">
+                                Sin archivos adjuntos digitales en este registro.
+                            </p>
+                        </div>
+
+                        <!-- Botones de Acción del Modal -->
+                        <div class="flex items-center justify-between gap-3 pt-2 border-t border-slate-100">
+                            <button type="button" onclick="window.print()" class="px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition inline-flex items-center gap-1.5">
+                                <i class="fas fa-print"></i> Imprimir Rótulo
+                            </button>
+                            <button type="button" onclick="cerrarModalRadicacion()" class="px-5 py-2 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 rounded-lg shadow-sm transition inline-flex items-center gap-1.5">
+                                <i class="fas fa-check"></i> Cerrar y Continuar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${success != null and not #strings.isEmpty(success) and radicacionExitosa != true}" class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 border border-green-200">
+                    <i class="fas fa-check-circle mr-1"></i> <span th:text="${success}"></span>
+                </div>
+
+                <form id="formRadicacion" th:action="@{/view/radicados/save}" th:object="${radicado}" method="post" enctype="multipart/form-data">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
-                    <!-- Tipo de radicación y consecutivo -->
+                    <!-- 1. Tipo y canal -->
                     <div class="form-card">
-                        <h2 class="section-title">Tipo y canal</h2>
+                        <h2 class="section-title"><i class="fas fa-file-invoice text-emerald-600"></i> Tipo de Radicación y Canal de Recepción</h2>
                         <div class="form-grid">
                             <div>
                                 <label>Tipo de radicación *</label>
-                                <select th:field="*{tipoRadicacion}" required>
-                                    <option value="ENTRADA">Entrada (E-)</option>
-                                    <option value="SALIDA">Salida (S-)</option>
-                                    <option value="INTERNO">Interno</option>
-                                </select>
-                                <p class="hint">El consecutivo se genera automáticamente según el tipo y vigencia (RF-05, RF-06).</p>
+                                <!-- Campo oculto con el valor garantizado para el servidor -->
+                                <input type="hidden" name="tipoRadicacion" value="ENTRADA">
+                                <!-- Campo visual bloqueado como solo lectura -->
+                                <input type="text" value="ENTRADA (E-YYYY-XXXXXX)" readonly class="bg-slate-100 text-slate-600 font-semibold cursor-not-allowed">
+                                <p class="hint">La radicación inicial es estrictamente de Entrada con consecutivo anual inmutable.</p>
                             </div>
                             <div>
                                 <label>Canal de recepción *</label>
                                 <select th:field="*{canalRecepcion}" required>
-                                    <option value="FISICO">Físico</option>
-                                    <option value="CORREO">Correo electrónico</option>
-                                    <option value="WEB">Portal web</option>
-                                    <option value="OTRO">Otro</option>
+                                    <option value="FISICO">Físico / Ventanilla</option>
+                                    <option value="CORREO">Correo electrónico institucional</option>
+                                    <option value="WEB">Portal web oficial</option>
+                                    <option value="OTRO">Otro canal formal</option>
                                 </select>
                             </div>
                             <div>
                                 <label>Tipo de documento</label>
-                                <select th:field="*{tipoDocumento}">
+                                <select id="selectTipoDocumento" th:field="*{tipoDocumento}" onchange="onTipoDocumentoChange(this)">
                                     <option value="">Seleccione...</option>
                                     <option value="OFICIO">Oficio</option>
                                     <option value="MEMORANDO">Memorando</option>
@@ -78,48 +167,59 @@
                             </div>
                             <div>
                                 <label>Trámite / tipo de solicitud *</label>
-                                <select th:field="*{id_tramite}" required>
-                                    <option value="">Seleccione...</option>
-                                    <option th:each="t : ${tramites}" th:value="${t.idTramite}" th:text="${t.nombre}">Trámite</option>
+                                <select id="selectTramite" th:field="*{id_tramite}" required onchange="onTramiteChange(this)">
+                                    <option value="">Seleccione un trámite...</option>
+                                    <option th:each="t : ${tramites}" 
+                                            th:value="${t.idTramite}" 
+                                            th:text="${t.nombre}"
+                                            th:data-dias="${t.diasRespuesta}"
+                                            th:data-prioridad="${t.prioridadDefault}"
+                                            th:data-dependencia="${t.idDependenciaResponsable}">Trámite</option>
                                 </select>
+                                <p class="hint">Al seleccionar el trámite se auto-calcula la prioridad, fecha límite y dependencia.</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- RF-09: Radicación anónima -->
-                    <div class="form-card">
-                        <h2 class="section-title">Remitente</h2>
+                    <!-- 2. Remitente y Radicación Anónima (RF-09) -->
+                    <div class="form-card" id="cardRemitente">
+                        <h2 class="section-title"><i class="fas fa-user-edit text-emerald-600"></i> Remitente / Solicitante Externo</h2>
                         <div class="anon-box">
                             <label style="display:flex;align-items:center;gap:.5rem;text-transform:none;font-size:.9rem;font-weight:600;color:#166534;cursor:pointer">
                                 <input type="checkbox" id="anonimo" name="anonimo" value="true" onchange="toggleAnonimo(this)">
-                                Radicación anónima (sin datos del remitente) — RF-09
+                                <span>Radicación anónima (Ley de Transparencia RF-09) — No exige identificación</span>
                             </label>
                         </div>
                         <div id="remitente-fields" class="form-grid">
                             <div>
-                                <label>Nombre / Razón social</label>
-                                <input type="text" th:field="*{remitente}" placeholder="Nombre completo o entidad">
+                                <label>Número de identificación (Buscar)</label>
+                                <div class="relative">
+                                    <input type="text" id="numeroIdentificacion" th:field="*{numeroIdentificacion}" placeholder="CC / NIT / CE" autocomplete="off">
+                                    <span id="remitenteSpinner" class="hidden absolute right-3 top-2.5 text-xs text-slate-400">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                    </span>
+                                </div>
+                                <p id="remitenteFeedback" class="hint"></p>
                             </div>
                             <div>
-                                <label>Número de identificación</label>
-                                <input type="text" th:field="*{numeroIdentificacion}" placeholder="CC / NIT / CE">
+                                <label>Nombre / Razón social *</label>
+                                <input type="text" id="remitenteNombre" th:field="*{remitente}" placeholder="Nombre completo o entidad solicitante" required>
                             </div>
                             <div>
                                 <label>Correo electrónico</label>
-                                <input type="email" th:field="*{correo}" placeholder="correo@ejemplo.com">
+                                <input type="email" id="correoSolicitante" th:field="*{correo}" placeholder="correo@ejemplo.com">
                             </div>
                             <div>
                                 <label>Teléfono</label>
-                                <input type="text" th:field="*{telefono}" placeholder="3001234567">
+                                <input type="text" id="telefonoSolicitante" th:field="*{telefono}" placeholder="3001234567">
                             </div>
                             <div>
-                                <label>Ciudad</label>
-                                <input type="text" th:field="*{ciudad}">
+                                <label>Ciudad / Dirección</label>
+                                <input type="text" id="ciudadSolicitante" th:field="*{ciudad}" placeholder="Ciudad o dirección de contacto">
                             </div>
-                            <!-- RF-14: Forma de respuesta -->
                             <div>
                                 <label>Forma de respuesta preferida *</label>
-                                <select name="formaRespuesta" required>
+                                <select id="formaRespuesta" name="formaRespuesta" required>
                                     <option value="ELECTRONICA">Electrónica (correo)</option>
                                     <option value="FISICA">Física (correspondencia)</option>
                                     <option value="PRESENCIAL">Presencial / ventanilla</option>
@@ -129,23 +229,24 @@
                         </div>
                     </div>
 
-                    <!-- Asignación TRD -->
+                    <!-- 3. Asignación y clasificación (CCD/TRD) -->
                     <div class="form-card">
-                        <h2 class="section-title">Asignación y clasificación (CCD/TRD)</h2>
+                        <h2 class="section-title"><i class="fas fa-sitemap text-emerald-600"></i> Asignación y Clasificación Documental</h2>
                         <div class="form-grid">
                             <div>
                                 <label>Dependencia destino *</label>
-                                <select th:field="*{id_dependencia}" required>
-                                    <option value="">Seleccione...</option>
+                                <select id="selectDependencia" th:field="*{id_dependencia}" required onchange="onDependenciaChange(this)">
+                                    <option value="">Seleccione una dependencia...</option>
                                     <option th:each="d : ${dependencias}" th:value="${d.id_dependencia}" th:text="${d.nombre}">Dep</option>
                                 </select>
                             </div>
                             <div>
-                                <label>Responsable (usuario)</label>
-                                <select th:field="*{id_usuario}">
-                                    <option value="">Asignar después</option>
+                                <label>Responsable asignado</label>
+                                <select id="selectResponsable" th:field="*{id_usuario}">
+                                    <option value="">Seleccione funcionario o se asignará automáticamente...</option>
                                     <option th:each="u : ${usuarios}" th:value="${u.id_usuario}" th:text="${u.nombre}">Usuario</option>
                                 </select>
+                                <p id="responsableFeedback" class="hint"></p>
                             </div>
                             <div>
                                 <label>Serie documental</label>
@@ -162,36 +263,44 @@
                                 </select>
                             </div>
                             <div>
-                                <label>Prioridad</label>
-                                <select th:field="*{prioridad}">
-                                    <option value="NORMAL">Normal</option>
+                                <div class="flex items-center justify-between mb-1">
+                                    <label class="mb-0">Prioridad asignada (automática)</label>
+                                    <span id="badgePrioridad" class="text-xs px-2 py-0.5 rounded-full font-semibold bg-blue-100 text-blue-800">Media</span>
+                                </div>
+                                <select id="selectPrioridad" th:field="*{prioridad}" class="bg-slate-100 text-slate-700 font-semibold cursor-not-allowed pointer-events-none" tabindex="-1">
+                                    <option value="BAJA">Baja</option>
+                                    <option value="MEDIA">Normal / Media</option>
                                     <option value="ALTA">Alta</option>
                                     <option value="URGENTE">Urgente</option>
                                 </select>
+                                <p class="hint">Determinada automáticamente según el trámite y tipo documental.</p>
                             </div>
                             <div>
-                                <label>Fecha de vencimiento (estimada)</label>
-                                <input type="date" th:field="*{fecha_vencimiento}">
-                                <p class="hint">Se calcula automáticamente según días de respuesta del trámite si se deja vacío.</p>
+                                <div class="flex items-center justify-between mb-1">
+                                    <label class="mb-0">Fecha límite de respuesta</label>
+                                    <span id="badgeDiasRestantes" class="hidden text-xs px-2 py-0.5 rounded-full font-semibold"></span>
+                                </div>
+                                <input type="date" id="fechaVencimiento" th:field="*{fecha_vencimiento}" readonly class="bg-slate-100 text-slate-700 font-semibold cursor-not-allowed">
+                                <p class="hint">Calculada automáticamente según los días de respuesta configurados en el trámite.</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Contenido -->
+                    <!-- 4. Contenido y Archivos Adjuntos (Drag & Drop, máx 5) -->
                     <div class="form-card">
-                        <h2 class="section-title">Contenido del documento</h2>
+                        <h2 class="section-title"><i class="fas fa-folder-open text-emerald-600"></i> Contenido y Archivos Adjuntos</h2>
                         <div style="margin-bottom:1rem">
                             <label>Asunto *</label>
-                            <input type="text" th:field="*{asunto}" required maxlength="500" placeholder="Asunto del documento">
+                            <input type="text" th:field="*{asunto}" required maxlength="500" placeholder="Asunto oficial del radicado">
                         </div>
                         <div style="margin-bottom:1rem">
-                            <label>Descripción / observaciones</label>
-                            <textarea th:field="*{descripcion}" rows="4" placeholder="Descripción breve o notas de radicación"></textarea>
+                            <label>Descripción / Observaciones</label>
+                            <textarea th:field="*{descripcion}" rows="3" placeholder="Observaciones o notas iniciales de la radicación"></textarea>
                         </div>
-                        <div class="form-grid">
+                        <div class="form-grid mb-4">
                             <div>
                                 <label>Número de folios</label>
-                                <input type="number" th:field="*{numeroFolios}" min="0">
+                                <input type="number" th:field="*{numeroFolios}" min="0" placeholder="1">
                             </div>
                             <div>
                                 <label>Soporte</label>
@@ -201,42 +310,463 @@
                                     <option value="HIBRIDO">Híbrido</option>
                                 </select>
                             </div>
-                            <div>
-                                <label>Confidencialidad</label>
-                                <select th:field="*{confidencialidad}">
-                                    <option value="PUBLICA">Pública</option>
-                                    <option value="RESERVADA">Reservada</option>
-                                    <option value="CLASIFICADA">Clasificada</option>
-                                </select>
+                        </div>
+
+                        <!-- Zona de archivos Drag & Drop (Máx 5 archivos, hasta 15MB c/u) -->
+                        <div>
+                            <label>Archivos Digitales Adjuntos (Máximo 5 archivos, hasta 15 MB c/u)</label>
+                            <div class="dropzone-box" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                                <i class="fas fa-cloud-upload-alt text-3xl text-emerald-600 mb-2"></i>
+                                <p class="text-sm font-semibold text-slate-700">Arrastra aquí los archivos o haz clic para seleccionarlos</p>
+                                <p class="hint">Formatos válidos: PDF, DOCX, XLSX, JPG, PNG · Máximo 5 archivos</p>
                             </div>
-                            <div>
-                                <label>Anexos (archivos)</label>
-                                <input type="file" name="anexos" multiple accept=".pdf,.doc,.docx,.jpg,.png,.xlsx">
-                                <p class="hint">Máx. tamaño según política institucional.</p>
-                            </div>
+                            <input type="file" id="fileInput" name="archivos" multiple accept=".pdf,.doc,.docx,.jpg,.png,.xlsx" style="display:none" onchange="handleFileSelect(this.files)">
+                            
+                            <div id="fileListContainer" class="mt-2"></div>
+                            <p id="fileLimitAlert" class="hint text-amber-600 hidden"><i class="fas fa-exclamation-triangle"></i> Límite alcanzado: Máximo 5 archivos permitidos.</p>
                         </div>
                     </div>
 
                     <div style="display:flex;gap:.75rem;flex-wrap:wrap">
-                        <button type="submit" class="btn-primary">Radicar documento</button>
-                        <a th:href="@{/view/tramites}" class="btn-secondary">Cancelar</a>
+                        <button type="submit" id="btnRadicar" class="btn-primary">
+                            <i class="fas fa-check"></i> Radicar Documento
+                        </button>
+                        <a th:href="@{/view/radicados/documental}" class="btn-secondary">
+                            <i class="fas fa-times mr-1"></i> Cancelar
+                        </a>
                     </div>
                 </form>
             </div>
         </main>
     </div>
 </div>
+
 <script>
+// --- GESTIÓN DE REMITENTE ANÓNIMO (RF-09) ---
 function toggleAnonimo(cb) {
     const fields = document.getElementById('remitente-fields');
     const inputs = fields.querySelectorAll('input, select');
+    const remitenteNombre = document.getElementById('remitenteNombre');
+    const feedback = document.getElementById('remitenteFeedback');
+
     inputs.forEach(el => {
         if (el.name === 'formaRespuesta') {
             if (cb.checked) el.value = 'NO_APLICA';
             return;
         }
         el.disabled = cb.checked;
-        if (cb.checked) el.value = '';
+        if (cb.checked) {
+            el.value = '';
+            el.removeAttribute('required');
+        }
+    });
+
+    if (cb.checked) {
+        remitenteNombre.value = 'ANÓNIMO (Ley de Transparencia)';
+        if (feedback) feedback.textContent = 'Radicación bajo reserva de identidad según Ley de Transparencia.';
+    } else {
+        remitenteNombre.value = '';
+        remitenteNombre.setAttribute('required', 'required');
+        if (feedback) feedback.textContent = '';
+    }
+}
+
+// --- AUTOCOMPLETADO DE REMITENTE / SOLICITANTE MEDIANTE NÚMERO DE IDENTIFICACIÓN ---
+let debounceRemitente = null;
+let ultimaIdentificacionConsultada = '';
+const inputNumDoc = document.getElementById('numeroIdentificacion');
+
+function ejecutarConsultaRemitente(valor) {
+    const feedback = document.getElementById('remitenteFeedback');
+    const spinner = document.getElementById('remitenteSpinner');
+    const cbAnonimo = document.getElementById('anonimo');
+
+    // Si está en modo radicación anónima, no ejecutar búsquedas
+    if (cbAnonimo && cbAnonimo.checked) {
+        if (spinner) spinner.classList.add('hidden');
+        return;
+    }
+
+    if (!valor || valor.length < 4) {
+        if (spinner) spinner.classList.add('hidden');
+        if (feedback) {
+            feedback.innerHTML = valor.length > 0 && valor.length < 4
+                ? '<span class="text-slate-400 text-xs"><i class="fas fa-info-circle mr-1"></i> Ingrese al menos 4 dígitos para consultar en el sistema.</span>'
+                : '';
+        }
+        return;
+    }
+
+    // Evitar consultar nuevamente el mismo valor si ya fue procesado
+    if (valor === ultimaIdentificacionConsultada) {
+        return;
+    }
+
+    // Estado: Búsqueda en progreso
+    if (spinner) spinner.classList.remove('hidden');
+    if (feedback) {
+        feedback.innerHTML = '<span class="text-slate-500 text-xs"><i class="fas fa-spinner fa-spin mr-1"></i> Consultando registros en el sistema...</span>';
+    }
+
+    fetch('/api/remitentes/' + encodeURIComponent(valor))
+        .then(function(r) {
+            return r.json().then(function(data) {
+                return { status: r.status, ok: r.ok, body: data };
+            });
+        })
+        .then(function(res) {
+            if (spinner) spinner.classList.add('hidden');
+            ultimaIdentificacionConsultada = valor;
+
+            if (res.ok && res.body && res.body.success && res.body.data) {
+                // Estado: Persona encontrada (en Gestión de Usuarios o Remitentes Frecuentes)
+                const d = res.body.data;
+                const nombreVal = d.nombre_completo || d.nombre;
+                const nombreInput = document.getElementById('remitenteNombre');
+                const correoInput = document.getElementById('correoSolicitante');
+                const telInput = document.getElementById('telefonoSolicitante');
+                const dirInput = document.getElementById('ciudadSolicitante');
+
+                // Autocompletar solo los campos con correspondencia real y que contengan datos
+                if (nombreInput && nombreVal) nombreInput.value = nombreVal;
+                if (correoInput && d.correo) correoInput.value = d.correo;
+                if (telInput && d.telefono) telInput.value = d.telefono;
+                if (dirInput && d.direccion) dirInput.value = d.direccion;
+
+                // Mensaje informativo del origen
+                if (feedback) {
+                    if (res.body.origen === 'USUARIO') {
+                        feedback.innerHTML = '<span class="text-emerald-600 dark:text-emerald-400 font-semibold text-xs">' +
+                            '<i class="fas fa-check-circle mr-1"></i> Persona registrada en Gestión de Usuarios. Datos autocompletados.</span>';
+                    } else {
+                        feedback.innerHTML = '<span class="text-emerald-600 dark:text-emerald-400 font-semibold text-xs">' +
+                            '<i class="fas fa-check-circle mr-1"></i> Remitente frecuente encontrado. Datos autocompletados.</span>';
+                    }
+                }
+            } else {
+                // Estado: Persona no registrada (C. Conservar datos diligenciados y habilitar ingreso manual)
+                if (feedback) {
+                    feedback.innerHTML = '<span class="text-slate-600 dark:text-slate-300 text-xs">' +
+                        '<i class="fas fa-info-circle text-blue-500 mr-1"></i> Persona no registrada en Gestión de Usuarios. Puede ingresar los datos manualmente.</span>';
+                }
+            }
+        })
+        .catch(function(err) {
+            // Estado: Error de consulta (D.5 y C.5: no bloquear el proceso de radicación)
+            if (spinner) spinner.classList.add('hidden');
+            if (feedback) {
+                feedback.innerHTML = '<span class="text-amber-600 dark:text-amber-400 text-xs">' +
+                    '<i class="fas fa-exclamation-triangle mr-1"></i> No fue posible consultar el registro en este momento. Puede ingresar los datos manualmente.</span>';
+            }
+        });
+}
+
+if (inputNumDoc) {
+    // Consulta con debounce mientras el usuario digita para evitar peticiones innecesarias
+    inputNumDoc.addEventListener('input', function() {
+        clearTimeout(debounceRemitente);
+        const valor = this.value.trim();
+
+        if (valor === '') {
+            ultimaIdentificacionConsultada = '';
+            const feedback = document.getElementById('remitenteFeedback');
+            const spinner = document.getElementById('remitenteSpinner');
+            if (spinner) spinner.classList.add('hidden');
+            if (feedback) feedback.innerHTML = '';
+            return;
+        }
+
+        debounceRemitente = setTimeout(function() {
+            ejecutarConsultaRemitente(valor);
+        }, 450);
+    });
+
+    // Consulta inmediata al perder el foco (blur) si no se ha consultado aún
+    inputNumDoc.addEventListener('blur', function() {
+        clearTimeout(debounceRemitente);
+        const valor = this.value.trim();
+        if (valor.length >= 4 && valor !== ultimaIdentificacionConsultada) {
+            ejecutarConsultaRemitente(valor);
+        }
+    });
+
+    // Permitir consulta inmediata al presionar tecla Enter sin enviar el formulario
+    inputNumDoc.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            clearTimeout(debounceRemitente);
+            const valor = this.value.trim();
+            if (valor.length >= 4) {
+                ejecutarConsultaRemitente(valor);
+            }
+        }
+    });
+}
+
+// --- CONTROL DEL MODAL EMERGENTE DE RADICACIÓN EXITOSA ---
+function cerrarModalRadicacion() {
+    const modal = document.getElementById('modalRadicacionExitosa');
+    if (modal) {
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        setTimeout(() => modal.remove(), 250);
+    }
+}
+
+// --- AUTOMATIZACIÓN DE PRIORIDAD SEGÚN TRÁMITE Y TIPO DOCUMENTAL ---
+function actualizarPrioridadAutomatica() {
+    const selTramite = document.getElementById('selectTramite');
+    const selTipoDoc = document.getElementById('selectTipoDocumento');
+    const selPrio = document.getElementById('selectPrioridad');
+    const badgePrio = document.getElementById('badgePrioridad');
+    if (!selPrio) return;
+
+    let prioCalculada = 'MEDIA'; // Base institucional estándar
+
+    // Prioridad por trámite
+    let prioTramite = '';
+    if (selTramite && selTramite.selectedIndex > 0) {
+        const opt = selTramite.options[selTramite.selectedIndex];
+        prioTramite = (opt.getAttribute('data-prioridad') || '').trim().toUpperCase();
+    }
+
+    // Prioridad por tipo de documento
+    let prioDoc = '';
+    if (selTipoDoc && selTipoDoc.value) {
+        const valDoc = selTipoDoc.value.toUpperCase();
+        if (valDoc === 'PETICION' || valDoc === 'QUEJA') {
+            prioDoc = 'ALTA';
+        } else if (valDoc === 'MEMORANDO' || valDoc === 'OFICIO') {
+            prioDoc = 'MEDIA';
+        } else if (valDoc === 'OTRO') {
+            prioDoc = 'BAJA';
+        }
+    }
+
+    // Regla de jerarquía institucional: URGENTE > ALTA > MEDIA > BAJA
+    const jerarquia = { 'URGENTE': 4, 'ALTA': 3, 'MEDIA': 2, 'BAJA': 1 };
+    let scoreTramite = jerarquia[prioTramite] || 0;
+    let scoreDoc = jerarquia[prioDoc] || 0;
+
+    if (scoreTramite > 0 || scoreDoc > 0) {
+        prioCalculada = (scoreTramite >= scoreDoc) ? prioTramite : prioDoc;
+    }
+
+    // Normalizar a valores estrictos de la restricción 'radicados_prioridad_check'
+    if (!['BAJA', 'MEDIA', 'ALTA', 'URGENTE'].includes(prioCalculada)) {
+        prioCalculada = 'MEDIA';
+    }
+
+    selPrio.value = prioCalculada;
+
+    // Actualizar badge visual
+    if (badgePrio) {
+        badgePrio.className = 'text-xs px-2 py-0.5 rounded-full font-semibold';
+        if (prioCalculada === 'URGENTE') {
+            badgePrio.classList.add('bg-red-100', 'text-red-800');
+            badgePrio.textContent = 'Urgente';
+        } else if (prioCalculada === 'ALTA') {
+            badgePrio.classList.add('bg-amber-100', 'text-amber-800');
+            badgePrio.textContent = 'Alta';
+        } else if (prioCalculada === 'BAJA') {
+            badgePrio.classList.add('bg-slate-100', 'text-slate-700');
+            badgePrio.textContent = 'Baja';
+        } else {
+            badgePrio.classList.add('bg-blue-100', 'text-blue-800');
+            badgePrio.textContent = 'Normal / Media';
+        }
+    }
+}
+
+function onTipoDocumentoChange(select) {
+    actualizarPrioridadAutomatica();
+}
+
+// --- CÁLCULO ESTRICTO DE PLAZOS EN DÍAS HÁBILES (EXCLUYE SÁBADOS Y DOMINGOS) ---
+function calcularFechaLimiteHabiles(fechaBase, diasHabiles) {
+    if (!fechaBase) fechaBase = new Date();
+    const fecha = new Date(fechaBase);
+    fecha.setHours(0, 0, 0, 0);
+    let agregados = 0;
+    // No contar el día de radicación como primer día de respuesta: comenzar al día siguiente
+    while (agregados < diasHabiles) {
+        fecha.setDate(fecha.getDate() + 1);
+        const diaSemana = fecha.getDay(); // 0 = Domingo, 6 = Sábado
+        if (diaSemana !== 0 && diaSemana !== 6) {
+            agregados++;
+        }
+    }
+    return fecha;
+}
+
+// --- REACTIVIDAD DE TRÁMITES (PLAZOS Y ASIGNACIÓN AUTOMÁTICA) ---
+function onTramiteChange(select) {
+    const selected = select.options[select.selectedIndex];
+    const inputVenc = document.getElementById('fechaVencimiento');
+    const badge = document.getElementById('badgeDiasRestantes');
+
+    // 1. Asignar prioridad automática según trámite y tipo documental
+    actualizarPrioridadAutomatica();
+
+    if (!selected || !selected.value) {
+        if (inputVenc) inputVenc.value = '';
+        if (badge) {
+            badge.className = 'hidden';
+            badge.textContent = '';
+        }
+        return;
+    }
+
+    const diasAttr = selected.getAttribute('data-dias');
+    const dias = (diasAttr !== null && diasAttr !== '') ? parseInt(diasAttr) : 15;
+    const dep = selected.getAttribute('data-dependencia');
+
+    // 2. Calcular fecha límite / vencimiento en DÍAS HÁBILES (excluyendo sábados y domingos)
+    const fechaLimite = calcularFechaLimiteHabiles(new Date(), dias);
+
+    const yyyy = fechaLimite.getFullYear();
+    const mm = String(fechaLimite.getMonth() + 1).padStart(2, '0');
+    const dd = String(fechaLimite.getDate()).padStart(2, '0');
+    if (inputVenc) inputVenc.value = `${yyyy}-${mm}-${dd}`;
+
+    // 3. Actualizar indicador visual de días hábiles restantes
+    actualizarIndicadorDias(dias);
+
+    // 4. Asignar dependencia responsable si está configurada en el trámite
+    if (dep) {
+        const selDep = document.getElementById('selectDependencia');
+        if (selDep) {
+            selDep.value = dep;
+            onDependenciaChange(selDep);
+        }
+    }
+}
+
+// Función para formatear e ilustrar el estado del plazo en DÍAS HÁBILES
+function actualizarIndicadorDias(dias) {
+    const badge = document.getElementById('badgeDiasRestantes');
+    if (!badge) return;
+
+    badge.className = 'text-xs px-2.5 py-1 rounded-full font-semibold inline-flex items-center gap-1.5';
+
+    if (dias > 3) {
+        // Plazo normal disponible
+        badge.classList.add('bg-emerald-100', 'text-emerald-800', 'dark:bg-emerald-900/40', 'dark:text-emerald-300');
+        badge.innerHTML = `<i class="fas fa-calendar-check mr-1"></i>Plazo: ${dias} días hábiles para responder`;
+    } else if (dias > 1 && dias <= 3) {
+        // Plazo próximo a vencer (2 a 3 días hábiles)
+        badge.classList.add('bg-amber-100', 'text-amber-800', 'dark:bg-amber-900/40', 'dark:text-amber-300');
+        badge.innerHTML = `<i class="fas fa-exclamation-triangle mr-1"></i>Atención: ${dias} días hábiles para responder`;
+    } else if (dias === 1) {
+        // Falta 1 día hábil (singular)
+        badge.classList.add('bg-orange-100', 'text-orange-800', 'dark:bg-orange-900/40', 'dark:text-orange-300');
+        badge.innerHTML = `<i class="fas fa-exclamation-circle mr-1"></i>Falta 1 día hábil para responder`;
+    } else if (dias === 0) {
+        // Vence hoy
+        badge.classList.add('bg-red-100', 'text-red-800', 'dark:bg-red-900/40', 'dark:text-red-300');
+        badge.innerHTML = `<i class="fas fa-exclamation-triangle mr-1"></i>Vence hoy`;
+    } else {
+        // Vencido
+        badge.classList.add('bg-red-200', 'text-red-900', 'dark:bg-red-950', 'dark:text-red-200');
+        badge.innerHTML = `<i class="fas fa-skull-crossbones mr-1"></i>Vencido hace ${Math.abs(dias)} día(s) hábil(es)`;
+    }
+}
+
+// --- REACTIVIDAD DE DEPENDENCIA (BUSCA RESPONSABLE / ENCARGADO) ---
+function onDependenciaChange(select) {
+    const idDep = select.value;
+    const feedback = document.getElementById('responsableFeedback');
+    if (!idDep) return;
+
+    fetch('/api/dependencias/' + encodeURIComponent(idDep) + '/responsable')
+        .then(r => r.json())
+        .then(res => {
+            if (res.success && res.data && res.data.id_usuario) {
+                const selResp = document.getElementById('selectResponsable');
+                if (selResp) selResp.value = res.data.id_usuario;
+                if (feedback) feedback.innerHTML = `<span class="text-emerald-600 font-semibold"><i class="fas fa-user-check"></i> Encargado: ${res.data.nombre}</span>`;
+            } else {
+                if (feedback) feedback.textContent = '';
+            }
+        })
+        .catch(() => {});
+}
+
+// --- GESTIÓN DE ARCHIVOS ADJUNTOS (DRAG & DROP, MÁXIMO 5) ---
+let fileList = [];
+const MAX_FILES = 5;
+const MAX_BYTES = 15 * 1024 * 1024; // 15MB
+
+const dropzone = document.getElementById('dropzone');
+if (dropzone) {
+    ['dragenter', 'dragover'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.add('dragover');
+        });
+    });
+    ['dragleave', 'drop'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.remove('dragover');
+        });
+    });
+    dropzone.addEventListener('drop', (e) => {
+        if (e.dataTransfer && e.dataTransfer.files) {
+            handleFileSelect(e.dataTransfer.files);
+        }
+    });
+}
+
+function handleFileSelect(files) {
+    const limitAlert = document.getElementById('fileLimitAlert');
+    for (let i = 0; i < files.length; i++) {
+        if (fileList.length >= MAX_FILES) {
+            if (limitAlert) limitAlert.classList.remove('hidden');
+            break;
+        }
+        const file = files[i];
+        if (file.size > MAX_BYTES) {
+            alert(`El archivo ${file.name} excede el peso máximo permitido (15 MB).`);
+            continue;
+        }
+        fileList.push(file);
+    }
+    syncFileInput();
+    renderFileList();
+}
+
+function removeFile(index) {
+    fileList.splice(index, 1);
+    const limitAlert = document.getElementById('fileLimitAlert');
+    if (fileList.length < MAX_FILES && limitAlert) {
+        limitAlert.classList.add('hidden');
+    }
+    syncFileInput();
+    renderFileList();
+}
+
+function syncFileInput() {
+    const input = document.getElementById('fileInput');
+    const dt = new DataTransfer();
+    fileList.forEach(f => dt.items.add(f));
+    input.files = dt.files;
+}
+
+function renderFileList() {
+    const container = document.getElementById('fileListContainer');
+    if (!container) return;
+    container.innerHTML = '';
+    fileList.forEach((file, idx) => {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        const kb = (file.size / 1024).toFixed(1);
+        item.innerHTML = `
+            <span><i class="far fa-file-alt text-emerald-600 mr-2"></i><strong>${file.name}</strong> (${kb} KB)</span>
+            <span class="file-remove" onclick="removeFile(${idx})"><i class="fas fa-trash-alt"></i> Quitar</span>
+        `;
+        container.appendChild(item);
     });
 }
 </script>

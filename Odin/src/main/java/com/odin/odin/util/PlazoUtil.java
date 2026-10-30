@@ -2,6 +2,7 @@ package com.odin.odin.util;
 
 import com.odin.odin.model.Radicados;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -11,9 +12,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Calcula vencimiento y días restantes.
- * Si no hay fecha_vencimiento/fecha_limite, usa fecha_radicado + días de respuesta del trámite.
- * Si el radicado está cerrado o en estado terminal, no muestra días.
+ * Utilidad transversal para el cálculo de vencimientos, fechas límite y días restantes.
+ * Proporciona métodos específicos para conteo en días calendario (por defecto institucional para consultas
+ * y gestión de trámites) y métodos dedicados para cálculo en días hábiles (utilizados en radicación documental).
  */
 public final class PlazoUtil {
 
@@ -29,6 +30,51 @@ public final class PlazoUtil {
     private static final Set<Long> ESTADOS_TERMINALES = Set.of(3L, 4L, 5L);
 
     private PlazoUtil() {}
+
+    /**
+     * Calcula la fecha límite sumando días hábiles a partir de la fecha base.
+     * Excluye sábados y domingos.
+     * No cuenta el día de radicación como primer día de respuesta (comienza el conteo al día siguiente).
+     */
+    public static LocalDate calcularFechaLimiteHabiles(LocalDate fechaBase, int diasHabiles) {
+        if (fechaBase == null) fechaBase = LocalDate.now();
+        if (diasHabiles <= 0) return fechaBase;
+
+        LocalDate cur = fechaBase;
+        int count = 0;
+        while (count < diasHabiles) {
+            cur = cur.plusDays(1);
+            DayOfWeek dow = cur.getDayOfWeek();
+            if (dow != DayOfWeek.SATURDAY && dow != DayOfWeek.SUNDAY) {
+                count++;
+            }
+        }
+        return cur;
+    }
+
+    /**
+     * Cuenta los días hábiles restantes entre la fecha actual y la fecha de vencimiento.
+     * Si la fecha ya venció, retorna un valor negativo con los días hábiles de mora.
+     */
+    public static int contarDiasHabilesRestantes(LocalDate desde, LocalDate hasta) {
+        if (desde == null || hasta == null) return 0;
+        if (desde.isEqual(hasta)) return 0;
+
+        boolean esFuturo = hasta.isAfter(desde);
+        LocalDate inicio = esFuturo ? desde : hasta;
+        LocalDate fin = esFuturo ? hasta : desde;
+
+        int habiles = 0;
+        LocalDate cur = inicio.plusDays(1);
+        while (!cur.isAfter(fin)) {
+            DayOfWeek dow = cur.getDayOfWeek();
+            if (dow != DayOfWeek.SATURDAY && dow != DayOfWeek.SUNDAY) {
+                habiles++;
+            }
+            cur = cur.plusDays(1);
+        }
+        return esFuturo ? habiles : -habiles;
+    }
 
     public static void aplicar(Radicados r) {
         aplicar(r, null);
@@ -67,6 +113,7 @@ public final class PlazoUtil {
             r.setFecha_vencimiento(venc.format(ISO));
         }
 
+        // Días calendario por defecto para compatibilidad institucional (Gestión de Trámites, Consulta, etc.)
         r.setDiasRestantes((int) ChronoUnit.DAYS.between(LocalDate.now(), venc));
     }
 
