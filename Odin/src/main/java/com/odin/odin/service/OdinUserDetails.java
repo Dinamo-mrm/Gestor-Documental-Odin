@@ -14,10 +14,17 @@ public class OdinUserDetails implements UserDetails {
     private final Long idUsuario;
     private final Collection<? extends GrantedAuthority> authorities;
     private final boolean enabled;
+    private volatile boolean debeCambiarPassword;
 
     public OdinUserDetails(String username, String password, String nombre, String correo,
                            Long idUsuario, Collection<? extends GrantedAuthority> authorities,
                            boolean enabled) {
+        this(username, password, nombre, correo, idUsuario, authorities, enabled, false);
+    }
+
+    public OdinUserDetails(String username, String password, String nombre, String correo,
+                           Long idUsuario, Collection<? extends GrantedAuthority> authorities,
+                           boolean enabled, boolean debeCambiarPassword) {
         this.username = username;
         this.password = password;
         this.nombre = nombre;
@@ -25,7 +32,11 @@ public class OdinUserDetails implements UserDetails {
         this.idUsuario = idUsuario;
         this.authorities = authorities;
         this.enabled = enabled;
+        this.debeCambiarPassword = debeCambiarPassword;
     }
+
+    public boolean isDebeCambiarPassword() { return debeCambiarPassword; }
+    public void setDebeCambiarPassword(boolean debeCambiarPassword) { this.debeCambiarPassword = debeCambiarPassword; }
 
     public String getNombre() { return nombre; }
     public String getCorreo() { return correo; }

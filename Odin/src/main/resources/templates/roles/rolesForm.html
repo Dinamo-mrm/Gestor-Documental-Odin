@@ -51,11 +51,16 @@
                         <label>Código / clave del rol *</label>
                         <input type="text" th:field="*{rol}" required maxlength="80" placeholder="ej: ANALISTA">
 
-                        <label>Estado</label>
-                        <select th:field="*{estado}">
-                            <option value="Activo">Activo</option>
-                            <option value="Inactivo">Inactivo</option>
-                        </select>
+                        <!-- Estado: Solo visible al editar un rol existente -->
+                        <div th:if="${rol.id_rol != null}">
+                            <label>Estado</label>
+                            <select th:field="*{estado}">
+                                <option value="Activo">Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                            </select>
+                        </div>
+                        <!-- Al crear un nuevo rol se asigna Activo automáticamente -->
+                        <input type="hidden" th:if="${rol.id_rol == null}" th:field="*{estado}" value="Activo">
                     </div>
 
                     <!-- Matriz de permisos RF-N16 -->

@@ -33,14 +33,27 @@ public class Rolesview {
     @Autowired(required = false) private RolPermisosRepository rolPermisosRepository;
 
     @GetMapping("/view/roles")
-    public String lista(@RequestParam(defaultValue = "0") int page, Model model) {
+    public String lista(@RequestParam(value = "buscar", required = false) String buscar,
+                        @RequestParam(value = "estado", required = false) String estado,
+                        @RequestParam(defaultValue = "0") int page,
+                        Model model) {
         if (page < 0) page = 0;
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
-        Page<?> pagina = rolesRepository.findAll(pageable);
+
+        String b = (buscar != null && !buscar.isBlank()) ? buscar.trim() : null;
+        String e = (estado != null && !estado.isBlank() && !"Todos".equalsIgnoreCase(estado)) ? estado.trim() : null;
+
+        Page<Roles> pagina = rolesRepository.buscarConFiltros(b, e, pageable);
         model.addAttribute("roles", pagina.getContent());
         model.addAttribute("page", pagina);
         model.addAttribute("currentPage", pagina.getNumber());
         model.addAttribute("totalPages", Math.max(pagina.getTotalPages(), 1));
+        model.addAttribute("totalElements", pagina.getTotalElements());
+
+        // Parámetros de filtros
+        model.addAttribute("buscar", buscar != null ? buscar : "");
+        model.addAttribute("estado", estado != null ? estado : "");
+
         return "roles/roles";
     }
 
@@ -67,8 +80,11 @@ public class Rolesview {
     public String save(@ModelAttribute("rol") Roles rol,
                        @RequestParam(value = "permisos", required = false) List<Long> permisos,
                        RedirectAttributes ra) {
-        if (rol.getEstado() == null || rol.getEstado().isBlank()) {
+        if (rol.getId_rol() == null) {
             rol.setEstado("Activo");
+        } else if (rol.getEstado() == null || rol.getEstado().isBlank()) {
+            Roles existente = rolesRepository.findById(rol.getId_rol()).orElse(null);
+            rol.setEstado(existente != null && existente.getEstado() != null ? existente.getEstado() : "Activo");
         }
         if ((rol.getRol() == null || rol.getRol().isBlank()) && rol.getNombre() != null) {
             rol.setRol(rol.getNombre());

@@ -6,6 +6,7 @@ import com.odin.odin.repository.NotificacionesRepository;
 import com.odin.odin.model.Notificaciones;
 import com.odin.odin.service.OdinUserDetails;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -59,6 +60,12 @@ public class UsuarioModelAdvice {
         return u != null && u.getCorreo() != null ? u.getCorreo() : "";
     }
 
+    @ModelAttribute("debeCambiarPassword")
+    public boolean debeCambiarPassword() {
+        OdinUserDetails u = usuarioActual();
+        return u != null && u.isDebeCambiarPassword();
+    }
+
     @ModelAttribute("notifCount")
     public long notifCount() {
         OdinUserDetails u = usuarioActual();
@@ -78,5 +85,88 @@ public class UsuarioModelAdvice {
             for (Notificaciones n : ns) items.add((n.getTitulo() == null ? "Aviso" : n.getTitulo()) + " — " + (n.getMensaje() == null ? "" : n.getMensaje()));
             return items;
         } catch (Exception e) { return Collections.singletonList("No hay notificaciones nuevas"); }
+    }
+
+    private boolean tieneAutoridad(String... authorities) {
+        OdinUserDetails u = usuarioActual();
+        if (u == null || u.getAuthorities() == null) return false;
+        for (GrantedAuthority ga : u.getAuthorities()) {
+            if (ga == null || ga.getAuthority() == null) continue;
+            String a = ga.getAuthority();
+            if ("ROLE_ADMIN".equals(a) || "ROLE_ROOT".equals(a) || "ROLE_ADMINISTRADOR".equals(a)) {
+                return true;
+            }
+            for (String auth : authorities) {
+                if (auth.equalsIgnoreCase(a)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @ModelAttribute("puedeUsuarios")
+    public boolean puedeUsuarios() {
+        return tieneAutoridad("admin_usuarios", "ver_usuarios");
+    }
+
+    @ModelAttribute("puedeRoles")
+    public boolean puedeRoles() {
+        return tieneAutoridad("admin_roles");
+    }
+
+    @ModelAttribute("puedeAcceso")
+    public boolean puedeAcceso() {
+        return puedeUsuarios() || puedeRoles();
+    }
+
+    @ModelAttribute("puedeDependencias")
+    public boolean puedeDependencias() {
+        return tieneAutoridad("ver_dependencias", "admin_ccd");
+    }
+
+    @ModelAttribute("puedeRadicados")
+    public boolean puedeRadicados() {
+        return tieneAutoridad("ver_radicados", "crear_radicado");
+    }
+
+    @ModelAttribute("puedeSeries")
+    public boolean puedeSeries() {
+        return tieneAutoridad("admin_ccd");
+    }
+
+    @ModelAttribute("puedeSubseries")
+    public boolean puedeSubseries() {
+        return tieneAutoridad("admin_ccd");
+    }
+
+    @ModelAttribute("puedeDocumentos")
+    public boolean puedeDocumentos() {
+        return tieneAutoridad("gestionar_documentos", "admin_ccd");
+    }
+
+    @ModelAttribute("puedeGestionDocumental")
+    public boolean puedeGestionDocumental() {
+        return puedeSeries() || puedeSubseries() || puedeDocumentos();
+    }
+
+    @ModelAttribute("puedeTramites")
+    public boolean puedeTramites() {
+        return tieneAutoridad("ver_tramites", "gestionar_tramites");
+    }
+
+    @ModelAttribute("puedeConsulta")
+    public boolean puedeConsulta() {
+        return tieneAutoridad("ver_radicados");
+    }
+
+    @ModelAttribute("puedeBitacora")
+    public boolean puedeBitacora() {
+        return tieneAutoridad("ver_bitacora");
+    }
+
+    @ModelAttribute("puedeReportes")
+    public boolean puedeReportes() {
+        return tieneAutoridad("ver_reportes");
     }
 }

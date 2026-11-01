@@ -45,14 +45,14 @@ public class EstadosView {
     }
 
     @GetMapping("/view/estados/edit/{id}")
-    public String edit(@PathVariable Long id, Model model) {
+    public String edit(@PathVariable Integer id, Model model) {
         Estados estados = estadosRepository.findById(id).orElse(null);
         model.addAttribute("estados", estados != null ? estados : new Estados());
         return "estados/estadosForm";
     }
 
     @PostMapping("/view/estados/delete/{id}")
-    public String delete(@PathVariable Long id, RedirectAttributes ra) {
+    public String delete(@PathVariable Integer id, RedirectAttributes ra) {
         estadosRepository.deleteById(id);
         ra.addFlashAttribute("mensaje", "Estado eliminado con éxito");
         return "redirect:/view/estados";
