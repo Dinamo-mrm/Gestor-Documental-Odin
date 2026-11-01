@@ -63,21 +63,72 @@
                         <input type="hidden" th:if="${rol.id_rol == null}" th:field="*{estado}" value="Activo">
                     </div>
 
-                    <!-- Matriz de permisos RF-N16 -->
+                    <!-- Matriz de permisos estructurada y clara -->
                     <div class="form-card">
-                        <h2 class="section-title">Permisos asignados</h2>
-                        <p style="font-size:.8rem;color:#64748b;margin-bottom:1rem">
-                            Seleccione los permisos que tendrá este rol. Solo usuarios con <code>admin_roles</code> pueden modificar.
-                        </p>
-                        <div class="perm-grid">
-                            <label class="perm-item" th:each="p : ${permisosDisponibles}">
-                                <input type="checkbox" name="permisos" th:value="${p.id_permiso}"
-                                       th:checked="${permisosAsignados != null and permisosAsignados.contains(p.id_permiso)}">
-                                <span th:text="${(p.nombre != null ? p.nombre : p.accion) + ' — ' + (p.descripcion != null ? p.descripcion : (p.modulo != null ? p.modulo : ''))}">permiso</span>
-                            </label>
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-3 mb-4">
+                            <div>
+                                <h2 class="section-title mb-0.5">Matriz de Permisos y Accesos</h2>
+                                <p class="text-xs text-slate-500">
+                                    Selecciona las acciones y pantallas que los usuarios con este rol podrán utilizar en ODIN.
+                                </p>
+                            </div>
+                            <div class="flex gap-2 shrink-0">
+                                <button type="button" onclick="marcarTodos(true)"
+                                        class="text-xs font-semibold text-green-700 bg-green-50 hover:bg-green-100 px-2.5 py-1 rounded border border-green-200 transition">
+                                    ✓ Marcar todos
+                                </button>
+                                <button type="button" onclick="marcarTodos(false)"
+                                        class="text-xs font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 px-2.5 py-1 rounded border border-slate-200 transition">
+                                    ✕ Desmarcar todos
+                                </button>
+                            </div>
                         </div>
-                        <p th:if="${#lists.isEmpty(permisosDisponibles)}" style="color:#94a3b8;font-size:.85rem">
-                            No hay permisos cargados. Ejecute el script de seed de permisos base.
+
+                        <!-- Categorías agrupadas -->
+                        <div class="space-y-5">
+                            <div th:each="cat : ${permisosPorCategoria}" class="bg-slate-50/70 rounded-xl p-4 border border-slate-200/80">
+                                
+                                <div class="flex items-center justify-between border-b border-slate-200 pb-2.5 mb-3">
+                                    <h3 class="text-xs font-extrabold uppercase tracking-wide text-slate-700 flex items-center gap-1.5">
+                                        <span th:text="${cat.key}">Categoría</span>
+                                    </h3>
+                                    <span class="text-[10px] font-bold text-slate-500 bg-white px-2 py-0.5 rounded-full border border-slate-200"
+                                          th:text="${#lists.size(cat.value)} + ' permisos'">
+                                    </span>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                                    <label th:each="p : ${cat.value}"
+                                           class="relative flex items-start gap-3 p-3 rounded-lg border bg-white shadow-xs cursor-pointer hover:border-green-400 hover:bg-green-50/20 transition group"
+                                           th:classappend="${permisosAsignados != null and permisosAsignados.contains(p.idPermiso)} ? 'border-green-500 ring-1 ring-green-500/20' : 'border-slate-200'">
+                                        <input type="checkbox" name="permisos" th:value="${p.idPermiso}"
+                                               onchange="toggleCheckVisual(this)"
+                                               th:checked="${permisosAsignados != null and permisosAsignados.contains(p.idPermiso)}"
+                                               class="mt-1 h-4 w-4 rounded border-slate-300 text-green-600 focus:ring-green-500 shrink-0">
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex items-center justify-between gap-1">
+                                                <span class="text-xs font-bold text-slate-900 group-hover:text-green-800"
+                                                      th:text="${p.titulo}">
+                                                    Título del permiso
+                                                </span>
+                                                <span class="text-[10px] font-mono text-slate-400 font-normal shrink-0"
+                                                      th:text="'[' + ${p.codigo} + ']'">
+                                                    [codigo]
+                                                </span>
+                                            </div>
+                                            <p class="text-[11px] text-slate-500 mt-0.5 leading-snug"
+                                               th:text="${p.descripcion}">
+                                                Descripción clara de lo que permite hacer.
+                                            </p>
+                                        </div>
+                                    </label>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <p th:if="${#maps.isEmpty(permisosPorCategoria)}" style="color:#94a3b8;font-size:.85rem" class="text-center py-6">
+                            No hay permisos cargados en la base de datos.
                         </p>
                     </div>
 

@@ -107,7 +107,7 @@ public class UsuarioModelAdvice {
 
     @ModelAttribute("puedeUsuarios")
     public boolean puedeUsuarios() {
-        return tieneAutoridad("admin_usuarios", "ver_usuarios");
+        return tieneAutoridad("admin_usuarios");
     }
 
     @ModelAttribute("puedeRoles")
