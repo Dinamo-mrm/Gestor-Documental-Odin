@@ -35,6 +35,8 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Controller
@@ -66,6 +68,12 @@ public class RadicadosView {
 
     @Autowired
     private DocumentosService documentosService;
+
+    @Autowired
+    private com.odin.odin.service.ConsecutivoRadicadoService consecutivoService;
+
+    @Autowired
+    private com.odin.odin.repository.RemitentesExternosRepository remitentesRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -155,10 +163,12 @@ public class RadicadosView {
                         radicado
                 );
 
+        List<String> nombresArchivosGuardados = new java.util.ArrayList<>();
         int archivosGuardados =
                 guardarArchivos(
                         savedRadicado,
-                        radicado.getArchivos()
+                        radicado.getArchivos(),
+                        nombresArchivosGuardados
                 );
 
         String mensaje =
@@ -186,6 +196,16 @@ public class RadicadosView {
         ra.addFlashAttribute(
                 "archivos",
                 archivosGuardados
+        );
+
+        ra.addFlashAttribute(
+                "nombresArchivos",
+                nombresArchivosGuardados
+        );
+
+        ra.addFlashAttribute(
+                "radicacionExitosa",
+                true
         );
 
         return "redirect:"
@@ -262,18 +282,16 @@ public class RadicadosView {
             String uri) {
 
         /*
-         * Generamos número automáticamente
-         * cuando el formulario no lo trae.
+         * Generamos número atómicamente con ConsecutivoRadicadoService (E-YYYY-XXXXXX).
          */
         if (!tieneTexto(radicado.getNumero_radicado())) {
             String tipo = tieneTexto(radicado.getTipoRadicacion())
                     ? radicado.getTipoRadicacion()
                     : radicado.getTipo_radicado();
-            String numero = jdbcTemplate.queryForObject(
-                    "select public.siguiente_numero_radicado(?)",
-                    String.class,
-                    tipo
-            );
+            if (!tieneTexto(tipo)) {
+                tipo = "ENTRADA";
+            }
+            String numero = consecutivoService.siguienteNumeroRadicado(tipo);
             radicado.setNumero_radicado(numero);
         }
 
@@ -286,23 +304,25 @@ public class RadicadosView {
         }
 
         /*
-         * Fecha de radicación.
+         * Normalización estricta de prioridad según la restricción 'radicados_prioridad_check':
+         * Valores válidos en PostgreSQL: 'BAJA', 'MEDIA', 'ALTA', 'URGENTE'.
+         * Si llega nula, vacía o 'NORMAL', se normaliza a 'MEDIA'.
          */
-        if (!tieneTexto(
-                radicado.getFecha_radicado()
-        )) {
-
-            String fecha =
-                    tieneTexto(
-                            radicado.getFechaDocumento()
-                    )
-                            ? radicado.getFechaDocumento()
-                            : LocalDateTime.now()
-                            .toLocalDate()
-                            .toString();
-
-            radicado.setFecha_radicado(fecha);
+        String prio = radicado.getPrioridad();
+        if (!tieneTexto(prio) || "NORMAL".equalsIgnoreCase(prio)) {
+            prio = "MEDIA";
+        } else {
+            prio = prio.trim().toUpperCase();
+            if (!prio.matches("BAJA|MEDIA|ALTA|URGENTE")) {
+                prio = "MEDIA";
+            }
         }
+        radicado.setPrioridad(prio);
+
+        /*
+         * Fecha de radicación oficial inmutable (se genera automáticamente con la fecha y hora actual).
+         */
+        radicado.setFecha_radicado(LocalDateTime.now().toLocalDate().toString());
 
         /*
          * Evita mandar "" hacia las FK
@@ -444,18 +464,45 @@ public class RadicadosView {
         }
 
         /*
-         * REMITENTE
+         * REMITENTE Y RADICACIÓN ANÓNIMA (RF-09)
          */
-        if (!tieneTexto(
-                radicado.getRemitente()
-        )) {
+        boolean esAnonimo = Boolean.TRUE.equals(radicado.getAnonimo())
+                || "ANONIMO".equalsIgnoreCase(radicado.getRemitente())
+                || "ANÓNIMO".equalsIgnoreCase(radicado.getRemitente());
 
-            radicado.setRemitente(
-                    valorODefecto(
-                            radicado.getResponsable(),
-                            "Anónimo"
-                    )
-            );
+        if (esAnonimo) {
+            radicado.setRemitente("ANÓNIMO (Ley de Transparencia)");
+            radicado.setId_remitente(null);
+        } else {
+            if (!tieneTexto(radicado.getRemitente())) {
+                radicado.setRemitente(valorODefecto(radicado.getResponsable(), "Anónimo"));
+            }
+
+            // Gestionar o sincronizar con tabla remitentes_externos si trae documento
+            if (tieneTexto(radicado.getNumeroIdentificacion())) {
+                try {
+                    String numDoc = radicado.getNumeroIdentificacion().trim();
+                    var optRem = remitentesRepository.findByNumIdentificacion(numDoc);
+                    if (optRem.isPresent()) {
+                        radicado.setId_remitente(optRem.get().getId_remitente());
+                    } else {
+                        com.odin.odin.model.RemitentesExternos nuevoRem = com.odin.odin.model.RemitentesExternos.builder()
+                                .num_identificacion(numDoc)
+                                .tipo_identificacion(tieneTexto(radicado.getTipoDocumento()) ? radicado.getTipoDocumento() : "CC")
+                                .nombre(radicado.getRemitente())
+                                .apellido("")
+                                .correo(radicado.getCorreo())
+                                .telefono(radicado.getTelefono())
+                                .direccion(radicado.getCiudad())
+                                .fecha_registro(LocalDateTime.now().toString())
+                                .build();
+                        var guardado = remitentesRepository.save(nuevoRem);
+                        radicado.setId_remitente(guardado.getId_remitente());
+                    }
+                } catch (Exception e) {
+                    // Si ocurre un error al persistir remitente externo, no bloquear la radicación
+                }
+            }
         }
 
         /*
@@ -476,7 +523,8 @@ public class RadicadosView {
 
     private int guardarArchivos(
             Radicados radicado,
-            MultipartFile[] archivos) {
+            MultipartFile[] archivos,
+            List<String> nombresGuardados) {
 
         if (archivos == null
                 || archivos.length == 0) {
@@ -485,6 +533,7 @@ public class RadicadosView {
         }
 
         int guardados = 0;
+        int maxArchivos = 5;
 
         try {
 
@@ -500,6 +549,10 @@ public class RadicadosView {
 
             for (MultipartFile archivo
                     : archivos) {
+
+                if (guardados >= maxArchivos) {
+                    break;
+                }
 
                 if (archivo == null
                         || archivo.isEmpty()) {
@@ -571,6 +624,10 @@ public class RadicadosView {
                 documento.setMime_type(archivo.getContentType());
                 documento.setVersion_actual(1);
                 documentosService.guardar(documento, radicado.getId_usuario(), "Versión inicial");
+
+                if (nombresGuardados != null) {
+                    nombresGuardados.add(nombreOriginal);
+                }
 
                 guardados++;
             }
