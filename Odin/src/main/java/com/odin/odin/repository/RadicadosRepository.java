@@ -13,6 +13,9 @@ import java.util.List;
 
 public interface RadicadosRepository extends JpaRepository<Radicados, Long> {
 
+    @Query(value = "SELECT nextval('radicados_numero_seq')", nativeQuery = true)
+    Long nextNumeroRadicado();
+
     @Query("SELECT r FROM Radicados r ORDER BY r.id_radicado DESC")
     List<Radicados> findTop5UltimosRadicados();
 

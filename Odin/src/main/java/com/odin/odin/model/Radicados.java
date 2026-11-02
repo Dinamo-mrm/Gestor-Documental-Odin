@@ -47,6 +47,12 @@ public class Radicados {
     @Column(name = "id_usuario")
     private Long id_usuario;
 
+    @Column(name = "id_serie")
+    private Long id_serie;
+
+    @Column(name = "id_subserie")
+    private Long id_subserie;
+
     @Column(name = "codigo_serie", length = 50)
     private String codigo_serie;
 
