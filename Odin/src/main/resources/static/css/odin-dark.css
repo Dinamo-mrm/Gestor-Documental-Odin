@@ -1,119 +1,389 @@
-html.dark { color-scheme: dark; }
-html:not(.dark) { color-scheme: light; }
+/* =========================================================
+   ODIN - PALETA MODO OSCURO INSTITUCIONAL SENA
+   Verde corporativo: #39a900 (57, 169, 0)
+   Verde oscuro:      #007832 (0, 120, 50)
+   Azul oscuro:       #00304d (0, 48, 77)
+   Violeta:           #71277a (113, 39, 122)
+   ========================================================= */
 
-html.dark body,
-html.dark body.bg-\[\#f5f6f8\],
-html.dark body.text-slate-800 {
-  background: #0b1220 !important;
-  color: #e2e8f0 !important;
+html.dark {
+  color-scheme: dark;
+}
+html:not(.dark) {
+  color-scheme: light;
 }
 
+/* 1. Fondo base y tipografía general */
+html.dark body,
+html.dark body.bg-\[\#f5f6f8\],
+html.dark body.text-slate-800,
+html.dark .min-h-screen {
+  background-color: #001b2e !important; /* Azul oscuro profundo SENA */
+  color: #f1f5f9 !important;
+}
+
+/* 2. Logo ODIN en el sidebar */
+html.dark .odin-odin-logo {
+  filter: brightness(0) invert(1) !important;
+}
+
+/* 3. Contenedores, Tarjetas, Formularios y Secciones */
 html.dark .bg-white,
 html.dark .card,
 html.dark .table-card,
 html.dark .filter-card,
 html.dark .table-wrap,
+html.dark .form-card,
+html.dark .rep-card,
+html.dark .kpi-mini,
 html.dark .rounded-xl.border,
+html.dark .rounded-lg.border,
 html.dark .odin-page-header,
-html.dark header.odin-page-header > div {
-  background: #1e293b !important;
-  border-color: #334155 !important;
-  color: #e2e8f0 !important;
+html.dark header.odin-page-header > div,
+html.dark .odin-card,
+html.dark .login-card {
+  background-color: #00304d !important; /* Azul oscuro SENA oficial */
+  border-color: #004d7a !important;     /* Borde azul armonizado */
+  color: #f1f5f9 !important;
 }
 
+/* 4. Títulos y Textos */
 html.dark .odin-page-title,
-html.dark h1, html.dark h2, html.dark h3,
-html.dark .text-slate-800, html.dark .text-slate-900 {
-  color: #f8fafc !important;
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4,
+html.dark .section-title,
+html.dark .rep-card h3,
+html.dark .text-slate-800,
+html.dark .text-slate-900 {
+  color: #ffffff !important;
 }
+
+html.dark .section-title {
+  border-bottom-color: #004d7a !important;
+}
+
 html.dark .odin-page-subtitle,
-html.dark .text-slate-500, html.dark .text-slate-600,
-html.dark .kpi small, html.dark label, html.dark th {
+html.dark .text-slate-500,
+html.dark .text-slate-600,
+html.dark .rep-card p,
+html.dark .hint,
+html.dark p.hint,
+html.dark label,
+html.dark th {
   color: #94a3b8 !important;
 }
 
-html.dark .kpi, html.dark a.kpi {
-  background: #1e293b !important;
-  border: 1px solid #334155 !important;
+/* 5. KPIs y Estadísticas (Total, Pendientes, En proceso, Vencidos, etc.) */
+html.dark .kpi,
+html.dark a.kpi {
+  background-color: #00304d !important;
+  border-color: #004d7a !important;
 }
-html.dark .kpi h2 { color: #38bdf8 !important; }
+
+/* Forzar números de KPI a blanco puro en todos los módulos */
+html.dark .kpi h2,
+html.dark .kpi .val,
+html.dark .kpi strong,
+html.dark .kpi-mini .val,
+html.dark .card strong {
+  color: #ffffff !important;
+}
+
+/* Labels de KPI */
+html.dark .kpi small,
+html.dark .kpi .lbl,
+html.dark .kpi-mini .lbl,
+html.dark .card span {
+  color: #cbd5e1 !important;
+}
+
+/* Bordes indicadores de los KPI acordes a la paleta */
 html.dark .kpi.yellow { border-left: 4px solid #f59e0b !important; }
-html.dark .kpi.blue { border-left: 4px solid #3b82f6 !important; }
-html.dark .kpi.green { border-left: 4px solid #22c55e !important; }
+html.dark .kpi.blue { border-left: 4px solid #007832 !important; } /* Verde oscuro SENA */
+html.dark .kpi.green { border-left: 4px solid #39a900 !important; } /* Verde corporativo SENA */
 html.dark .kpi.red { border-left: 4px solid #ef4444 !important; }
+html.dark .kpi.violet,
+html.dark .kpi.purple { border-left: 4px solid #71277a !important; } /* Violeta SENA */
 
-html.dark table thead, html.dark table thead th {
-  background: #0f172a !important;
+/* 6. Tablas */
+html.dark table thead,
+html.dark table thead th,
+html.dark .table-wrap th,
+html.dark .odin-table th {
+  background-color: #002236 !important;
   color: #94a3b8 !important;
+  border-bottom: 1px solid #004d7a !important;
 }
-html.dark table tbody td { color: #e2e8f0 !important; border-color: #334155 !important; }
-html.dark table tbody tr:hover { background: #334155 !important; }
+html.dark table tbody td,
+html.dark .table-wrap td,
+html.dark .odin-table td {
+  color: #e2e8f0 !important;
+  border-color: #003d63 !important;
+}
+html.dark table tbody tr:hover,
+html.dark .table-wrap tbody tr:hover,
+html.dark .odin-table tbody tr:hover {
+  background-color: #003d63 !important;
+}
 
-html.dark input, html.dark select, html.dark textarea {
-  background: #0f172a !important;
-  border-color: #475569 !important;
+/* 7. Entradas, Formularios y Selección */
+html.dark input,
+html.dark select,
+html.dark textarea,
+html.dark .filter-grid input,
+html.dark .filter-grid select,
+html.dark .form-grid input,
+html.dark .form-grid select,
+html.dark .form-grid textarea {
+  background-color: #002236 !important;
+  border: 1px solid #004d7a !important;
+  color: #ffffff !important;
+}
+html.dark input:focus,
+html.dark select:focus,
+html.dark textarea:focus,
+html.dark .filter-grid input:focus,
+html.dark .filter-grid select:focus {
+  border-color: #39a900 !important; /* Verde corporativo SENA */
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(57, 169, 0, 0.3) !important;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* 8. Botones y Acciones */
+/* Primarios: Verde corporativo SENA #39a900 con hover en Verde oscuro SENA #007832 */
+html.dark .btn-primary,
+html.dark .rep-btn-xlsx,
+html.dark button[type="submit"]:not(.rep-btn):not(#main-sidebar button) {
+  background-color: #39a900 !important;
+  border-color: #39a900 !important;
+  color: #ffffff !important;
+}
+html.dark .btn-primary:hover,
+html.dark .rep-btn-xlsx:hover,
+html.dark button[type="submit"]:not(.rep-btn):not(#main-sidebar button):hover {
+  background-color: #007832 !important;
+  border-color: #007832 !important;
+}
+
+/* Secundarios: Fondo azul oscuro con borde definido */
+html.dark .btn-secondary,
+html.dark .mass-actions button,
+html.dark .pager-btns a,
+html.dark .pager-btns span:not(.active),
+html.dark .rep-card a.rep-btn[style*="background:#fff"],
+html.dark .rep-card a.rep-btn[style*="background: #fff"] {
+  background-color: #00243a !important;
+  border: 1px solid #004d7a !important;
   color: #e2e8f0 !important;
 }
+html.dark .btn-secondary:hover,
+html.dark .mass-actions button:hover,
+html.dark .pager-btns a:hover {
+  background-color: #003859 !important;
+  color: #ffffff !important;
+}
 
-/* ===== SIDEBAR + SUBMENÚS: texto siempre legible ===== */
+/* Acciones en Reportes */
+html.dark .rep-card:hover {
+  border-color: #39a900 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+}
+html.dark .rep-card a.rep-btn[style*="background:#0f172a"],
+html.dark .rep-card a.rep-btn[style*="background: #0f172a"] {
+  background-color: #007832 !important;
+  border-color: #39a900 !important;
+  color: #ffffff !important;
+}
+
+/* 9. Sidebar */
 html.dark #main-sidebar,
 html.dark aside {
-  background: #0f172a !important;
+  background-color: #001726 !important;
+  border-color: #002f4a !important;
   color: #e2e8f0 !important;
 }
 html.dark #main-sidebar a,
 html.dark #main-sidebar button,
 html.dark #main-sidebar span,
 html.dark #main-sidebar nav {
-  color: #e2e8f0 !important;
+  color: #cbd5e1 !important;
 }
 html.dark #main-sidebar a:hover,
 html.dark #main-sidebar button:hover {
-  background: #1e293b !important;
+  background-color: #002d47 !important;
   color: #ffffff !important;
 }
 html.dark #dropdown-acceso,
 html.dark #dropdown-documental,
 html.dark #main-sidebar .bg-slate-50\/70,
 html.dark #main-sidebar [id^="dropdown-"] {
-  background: #1e293b !important;
-  border-color: #334155 !important;
+  background-color: #002236 !important;
+  border-color: #003859 !important;
 }
 html.dark #dropdown-acceso a,
 html.dark #dropdown-documental a,
 html.dark #main-sidebar [id^="dropdown-"] a {
-  color: #f1f5f9 !important;
+  color: #e2e8f0 !important;
   opacity: 1 !important;
 }
 html.dark #main-sidebar .text-slate-400,
 html.dark #main-sidebar .text-slate-500,
 html.dark #main-sidebar .text-slate-600 {
-  color: #cbd5e1 !important;
+  color: #94a3b8 !important;
 }
+/* Menú activo en sidebar: Verde oscuro SENA #007832 */
 html.dark #main-sidebar .bg-green-50 {
-  background: #14532d !important;
+  background-color: #007832 !important;
 }
 html.dark #main-sidebar .text-green-700 {
+  color: #ffffff !important;
+}
+
+/* 10. Topbar en modo oscuro: Verde institucional SENA */
+html.dark div[class*="bg-green-700"] {
+  background-color: #007832 !important;
+}
+
+/* 11. Banners y Alertas */
+html.dark .alert-summary {
+  background-color: rgba(113, 39, 122, 0.25) !important; /* Toque Violeta SENA #71277a */
+  border-left: 4px solid #ef4444 !important;
+  border-color: #71277a !important;
+  color: #fecaca !important;
+}
+html.dark .bg-amber-50,
+html.dark .bg-yellow-50 {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+  color: #fde68a !important;
+}
+html.dark .bg-green-50 {
+  background-color: rgba(57, 169, 0, 0.12) !important;
+  border-color: rgba(57, 169, 0, 0.35) !important;
+  color: #86efac !important;
+}
+html.dark .anon-box {
+  background-color: #002236 !important;
+  border-color: #004d7a !important;
+}
+html.dark .anon-box label {
   color: #86efac !important;
 }
 
-html.dark .alert-summary {
-  background: #3f1d1d !important;
-  border-color: #7f1d1d !important;
-  color: #fecaca !important;
+/* 12. Pestañas / Tabs */
+html.dark .tabs {
+  border-bottom-color: #004d7a !important;
 }
-html.dark .btn-secondary, html.dark .mass-actions button {
-  background: #1e293b !important;
-  border-color: #475569 !important;
-  color: #e2e8f0 !important;
+html.dark .tab-btn {
+  color: #94a3b8 !important;
 }
-html.dark .border-slate-200, html.dark .border-slate-100 {
-  border-color: #334155 !important;
+html.dark .tab-btn:hover {
+  color: #39a900 !important;
+}
+html.dark .tab-btn.active {
+  color: #39a900 !important;
+  border-bottom-color: #39a900 !important;
 }
 
-#odinNotifPanel { min-width: 18rem; max-width: 22rem; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+/* 13. Notificaciones */
+#odinNotifPanel { min-width: 18rem; max-width: 22rem; box-shadow: 0 10px 40px rgba(0,0,0,.35); }
 html.dark #odinNotifPanel {
-  background: #1e293b !important;
-  border-color: #475569 !important;
+  background-color: #00304d !important;
+  border-color: #004d7a !important;
   color: #e2e8f0 !important;
+}
+html.dark #odinNotifPanel .bg-slate-50 {
+  background-color: #002236 !important;
+}
+html.dark #odinNotifPanel ul li:hover {
+  background-color: #003859 !important;
+}
+html.dark #odinNotifPanel .text-slate-800 {
+  color: #ffffff !important;
+}
+
+/* 14. Bordes utilitarios generales */
+html.dark .border-slate-200,
+html.dark .border-slate-100 {
+  border-color: #004d7a !important;
+}
+
+/* 15. Detalle del radicado y Línea temporal (Timeline) */
+html.dark .flow-bar {
+  background: linear-gradient(90deg, rgba(0, 120, 50, 0.35), #002236) !important;
+  border-color: #007832 !important;
+  color: #86efac !important;
+}
+html.dark .flow-bar span {
+  color: #cbd5e1 !important;
+  opacity: 0.75 !important;
+}
+html.dark .timeline::before {
+  background: linear-gradient(180deg, #39a900 0%, #004d7a 100%) !important;
+}
+html.dark .tl-dot {
+  border-color: #00304d !important;
+}
+html.dark .tl-card {
+  background-color: #002236 !important;
+  border: 1px solid #004d7a !important;
+  color: #f1f5f9 !important;
+}
+html.dark .tl-titulo {
+  color: #ffffff !important;
+}
+html.dark .tl-fecha {
+  color: #94a3b8 !important;
+}
+html.dark .tl-desc {
+  color: #e2e8f0 !important;
+}
+html.dark .tl-meta,
+html.dark .tl-meta span {
+  color: #cbd5e1 !important;
+}
+html.dark .tl-meta strong {
+  color: #ffffff !important;
+}
+html.dark .tl-tipo {
+  background-color: #003859 !important;
+  color: #e2e8f0 !important;
+  border: 1px solid #004d7a !important;
+}
+html.dark .tl-radicacion .tl-tipo {
+  background-color: rgba(57, 169, 0, 0.22) !important;
+  color: #86efac !important;
+  border: 1px solid rgba(57, 169, 0, 0.5) !important;
+}
+html.dark .tl-historial .tl-tipo {
+  background-color: rgba(37, 99, 235, 0.25) !important;
+  color: #93c5fd !important;
+  border: 1px solid rgba(59, 130, 246, 0.5) !important;
+}
+html.dark .tl-observacion .tl-tipo {
+  background-color: rgba(217, 119, 6, 0.25) !important;
+  color: #fde68a !important;
+  border: 1px solid rgba(245, 158, 11, 0.5) !important;
+}
+html.dark .tl-documento .tl-tipo,
+html.dark .tl-anexo .tl-tipo {
+  background-color: rgba(113, 39, 122, 0.4) !important;
+  color: #e9d5ff !important;
+  border: 1px solid rgba(168, 85, 247, 0.5) !important;
+}
+html.dark .tl-firma .tl-tipo {
+  background-color: rgba(13, 148, 136, 0.25) !important;
+  color: #99f6e4 !important;
+  border: 1px solid rgba(20, 184, 166, 0.5) !important;
+}
+html.dark .tl-reasignacion .tl-tipo {
+  background-color: rgba(225, 29, 72, 0.25) !important;
+  color: #fda4af !important;
+  border: 1px solid rgba(244, 63, 94, 0.5) !important;
 }

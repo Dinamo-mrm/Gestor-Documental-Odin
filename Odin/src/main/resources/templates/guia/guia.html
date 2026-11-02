@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Interactiva de ODIN | SENA</title>
+    <!-- Mismo encabezado que usan las demás pantallas de ODIN (tema oscuro + Tailwind + estilos globales) -->
+    <script>
+      try { if (localStorage.getItem('odin-theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/globals.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/odin.css}">
+    <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
+    <!-- Hoja de estilos exclusiva de la Guía Interactiva (HTML, CSS y JS separados) -->
+    <link rel="stylesheet" th:href="@{/css/guia.css}">
+</head>
+<body class="bg-[var(--odin-bg)] text-slate-900 antialiased">
+
+<!-- Contenedor raíz con permisos reales de Spring Security inyectados por GuiaView -->
+<div id="guiaApp"
+     class="flex min-h-screen"
+     th:attr="data-permisos=${permisosCsv},data-admin=${esAdminGuia}">
+
+    <!-- Menú lateral institucional con 'guia' activo -->
+    <div th:replace="~{fragments/layout :: sidebar('guia')}"></div>
+    <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay" aria-hidden="true"></div>
+
+    <div class="flex flex-1 flex-col min-w-0">
+        <!-- Barra superior institucional -->
+        <div th:replace="~{fragments/layout :: topbar('Guía Interactiva de ODIN')}"></div>
+
+        <main class="flex-1 p-5 md:p-8 max-w-7xl w-full mx-auto">
+
+            <!-- =========================================================================
+                 1. HERO / BIENVENIDA + BARRA DE PROGRESO + CONTROLES DEL RECORRIDO
+                 ========================================================================= -->
+            <section id="sec-bienvenida" class="guia-hero mb-6">
+                <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                    <div class="max-w-3xl">
+                        <span class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-white mb-3">
+                            <span>🎓</span> Centro de Aprendizaje Interactivo — 100 % Local y Seguro
+                        </span>
+                        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white">
+                            Guía Completa e Interactiva de ODIN
+                        </h1>
+                        <p class="mt-2 text-sm md:text-base text-emerald-50/95 leading-relaxed">
+                            Bienvenido(a). Perfil detectado:
+                            <strong class="underline decoration-emerald-300" th:text="${perfilDetectado}">Usuario Autenticado</strong>.
+                            Aquí puedes explorar cada módulo paso a paso, practicar en simuladores sin afectar la base de datos y validar qué pantallas tienes habilitadas según tu rol.
+                        </p>
+
+                        <!-- Botones de acción rápida en el Hero -->
+                        <div class="mt-5 flex flex-wrap items-center gap-2.5 guia-no-print">
+                            <button type="button" id="btnIniciarTourGuia" class="guia-btn guia-btn-primary shadow-md">
+                                ✨ Iniciar recorrido guiado (Tour)
+                            </button>
+                            <button type="button" id="btnContinuarGuia" class="guia-btn bg-white text-slate-900 hover:bg-emerald-50 hidden">
+                                ▶ Continuar donde lo dejé
+                            </button>
+                            <button type="button" id="btnImprimirGuia" class="guia-btn bg-white/15 text-white border border-white/25 hover:bg-white/25">
+                                🖨️ Imprimir / Guardar PDF
+                            </button>
+                            <button type="button" id="btnReiniciarProgresoGuia" class="guia-btn bg-rose-500/20 text-rose-100 border border-rose-300/30 hover:bg-rose-500/35">
+                                🔄 Reiniciar mi progreso
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta de progreso de lectura y Quiz -->
+                    <div class="bg-black/25 backdrop-blur-sm border border-white/20 rounded-xl p-4 min-w-[270px] lg:w-80">
+                        <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-emerald-200">
+                            <span>Progreso de lectura</span>
+                            <span id="guiaMejorPuntajeQuiz" class="text-amber-300">Quiz: sin intentos</span>
+                        </div>
+                        <div class="guia-progress-track">
+                            <div id="guiaProgressBar" class="guia-progress-fill"></div>
+                        </div>
+                        <div id="guiaProgressText" class="text-xs font-semibold text-white">
+                            0 de 13 módulos completados (0%)
+                        </div>
+                        <p class="mt-2 text-[11px] text-emerald-100/80">
+                            Se guarda automáticamente en este navegador (<code>localStorage</code>).
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Banner de felicitación cuando llega al 100% -->
+                <div id="guiaCertificadoBox" class="hidden mt-5 rounded-xl bg-emerald-950/70 border border-emerald-300/50 p-4 text-white">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div>
+                            <div class="text-sm font-extrabold text-emerald-300 uppercase tracking-wider">
+                                🏆 ¡Felicitaciones! Has completado el 100 % de la Guía de ODIN
+                            </div>
+                            <p class="text-xs text-emerald-50 mt-1">
+                                Ya conoces todos los flujos operativos y de administración del gestor documental institucional.
+                            </p>
+                        </div>
+                        <a href="#sec-quiz" class="guia-btn guia-btn-primary text-xs shrink-0">
+                            Ir a la Autoevaluación (Quiz) →
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =========================================================================
+                 2. BUSCADOR EN VIVO + RUTAS DE APRENDIZAJE POR PERFIL
+                 ========================================================================= -->
+            <section class="guia-section-card p-5 mb-6 guia-no-print">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+                    <!-- Buscador instantáneo -->
+                    <div class="lg:col-span-5">
+                        <label for="guiaBuscadorInput" class="block text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">
+                            🔎 Buscar en toda la guía (Atajo: tecla <kbd class="px-1.5 py-0.5 rounded bg-slate-200 text-slate-800 text-[10px]">/</kbd>)
+                        </label>
+                        <div class="relative flex items-center">
+                            <input type="search"
+                                   id="guiaBuscadorInput"
+                                   class="guia-search-input pr-20"
+                                   placeholder="Ej: radicado anónimo, semáforo, 403, subserie, firma...">
+                            <button type="button"
+                                    id="btnLimpiarBusquedaGuia"
+                                    class="absolute right-2 text-xs font-bold text-slate-500 hover:text-slate-800 px-2 py-1 rounded">
+                                Limpiar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Selector de rutas de aprendizaje por rol -->
+                    <div class="lg:col-span-7">
+                        <div class="text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">
+                            🧭 Filtrar por Ruta de Aprendizaje según tu perfil
+                        </div>
+                        <div id="guiaRutasContainer" class="flex flex-wrap gap-2">
+                            <!-- Renderizado por guia.js -->
+                        </div>
+                        <p id="guiaRutaDescripcion" class="mt-2 text-xs text-slate-500">
+                            Mostrando todos los módulos del sistema ODIN.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =========================================================================
+                 LAYOUT DE 2 COLUMNAS: CONTENIDO PRINCIPAL + ÍNDICE LATERAL STICKY (TOC)
+                 ========================================================================= -->
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+
+                <!-- COLUMNA PRINCIPAL (9 columnas en pantallas grandes) -->
+                <div class="xl:col-span-9 space-y-8 min-w-0">
+
+                    <!-- 3. HUB VISUAL DE MÓDULOS -->
+                    <section id="sec-hub" class="guia-section-card p-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+                            <div>
+                                <h2 class="text-xl font-extrabold">1. Mapa de Módulos de ODIN</h2>
+                                <p class="text-xs text-slate-500 mt-0.5">
+                                    Las tarjetas indican con un distintivo verde si tu usuario actual tiene permiso para abrir el módulo o si está en modo aprendizaje.
+                                </p>
+                            </div>
+                        </div>
+                        <div id="guiaHubGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Tarjetas generadas dinámicamente por guia.js -->
+                        </div>
+                    </section>
+
+                    <!-- 4. LECCIONES PASO A PASO POR MÓDULO -->
+                    <section id="sec-lecciones" class="space-y-4">
+                        <div class="guia-section-card p-5">
+                            <h2 class="text-xl font-extrabold">2. Lecciones Paso a Paso por Módulo</h2>
+                            <p class="text-xs text-slate-500 mt-1">
+                                Haz clic en el encabezado de cualquier módulo para desplegar su explicación detallada, tabla de campos, capturas de referencia y errores frecuentes.
+                            </p>
+                        </div>
+                        <div id="guiaLeccionesContainer">
+                            <!-- Acordeones de los 13 módulos generados por guia.js -->
+                        </div>
+                    </section>
+
+                    <!-- 5. LABORATORIO DE SIMULADORES INTERACTIVOS -->
+                    <section id="sec-simuladores" class="space-y-6 guia-no-print">
+                        <div class="guia-section-card p-5 border-l-4 border-l-[#39a900]">
+                            <h2 class="text-xl font-extrabold">3. Laboratorio de Simuladores Interactivos (Sandbox)</h2>
+                            <p class="text-xs text-slate-500 mt-1">
+                                Practica los flujos más importantes de ODIN con total tranquilidad. <strong>Ninguna acción en esta sección modifica ni guarda registros en Supabase/PostgreSQL.</strong>
+                            </p>
+                        </div>
+
+                        <!-- 5.1 SIMULADOR DE RADICACIÓN -->
+                        <div id="sec-sim-radicacion" class="guia-sim-box">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                                <div>
+                                    <span class="text-xs font-extrabold uppercase tracking-wider text-[#39a900]">Simulador #1</span>
+                                    <h3 class="text-lg font-extrabold">Formulario Sandbox de Radicación</h3>
+                                    <p class="text-xs text-slate-500">
+                                        Replica las 4 secciones del formulario real (<code>/view/radicados</code>), valida campos obligatorios y genera un comprobante educativo.
+                                    </p>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <button type="button" id="btnSimCargarEjemplo" class="guia-btn guia-btn-secondary text-xs">
+                                        ⚡ Cargar datos de ejemplo
+                                    </button>
+                                    <button type="button" id="btnSimLimpiar" class="guia-btn guia-btn-outline text-xs">
+                                        Limpiar
+                                    </button>
+                                </div>
+                            </div>
+
+                            <form id="simRadicacionForm" class="space-y-4" novalidate>
+                                <!-- Sección 1: Tipo y canal -->
+                                <div class="p-4 rounded-xl border border-slate-200/80 dark:border-slate-700/60">
+                                    <div class="text-xs font-extrabold uppercase tracking-wider text-[#39a900] mb-3">
+                                        Sección A · Tipo de Radicación y Canal
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                        <div>
+                                            <label for="simTipoRad" class="block text-xs font-bold mb-1">Tipo de radicación *</label>
+                                            <select id="simTipoRad" class="odin-input text-xs">
+                                                <option value="">Seleccione...</option>
+                                                <option value="entrada">Entrada (Ciudadano / Externo)</option>
+                                                <option value="interno">Interno (Entre dependencias)</option>
+                                                <option value="salida">Salida (Respuesta oficial)</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="simCanal" class="block text-xs font-bold mb-1">Canal de recepción *</label>
+                                            <select id="simCanal" class="odin-input text-xs">
+                                                <option value="">Seleccione...</option>
+                                                <option value="Fisico">Físico (Ventanilla)</option>
+                                                <option value="Correo electronico">Correo electrónico</option>
+                                                <option value="Formulario web">Formulario web</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="simTramite" class="block text-xs font-bold mb-1">Trámite / Solicitud *</label>
+                                            <select id="simTramite" class="odin-input text-xs">
+                                                <option value="">Seleccione...</option>
+                                                <option value="Derecho de Petición General">Derecho de Petición General (15 días)</option>
+                                                <option value="Petición de Información">Petición de Información (10 días)</option>
+                                                <option value="Queja o Reclamo">Queja o Reclamo (15 días)</option>
+                                                <option value="Acción de Tutela">Acción de Tutela (2 días)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sección 2: Remitente -->
+                                <div class="p-4 rounded-xl border border-slate-200/80 dark:border-slate-700/60">
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                                        <span class="text-xs font-extrabold uppercase tracking-wider text-[#39a900]">
+                                            Sección B · Datos del Remitente
+                                        </span>
+                                        <label class="inline-flex items-center gap-2 text-xs font-bold cursor-pointer">
+                                            <input type="checkbox" id="simAnonimo" class="rounded border-slate-300">
+                                            <span>Radicación anónima (sin datos del remitente)</span>
+                                        </label>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                        <div>
+                                            <label for="simRemitente" class="block text-xs font-bold mb-1">Nombre / Razón social *</label>
+                                            <input type="text" id="simRemitente" class="odin-input text-xs" placeholder="Ej: María Fernanda Gómez">
+                                        </div>
+                                        <div>
+                                            <label for="simDocumento" class="block text-xs font-bold mb-1">CC / NIT / CE</label>
+                                            <input type="text" id="simDocumento" class="odin-input text-xs" placeholder="Ej: 1098765432">
+                                        </div>
+                                        <div>
+                                            <label for="simCorreo" class="block text-xs font-bold mb-1">Correo electrónico</label>
+                                            <input type="email" id="simCorreo" class="odin-input text-xs" placeholder="correo@ejemplo.com">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sección 3: Asignación y CCD/TRD -->
+                                <div class="p-4 rounded-xl border border-slate-200/80 dark:border-slate-700/60">
+                                    <div class="text-xs font-extrabold uppercase tracking-wider text-[#39a900] mb-3">
+                                        Sección C · Asignación y Clasificación Documental (CCD / TRD)
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                                        <div>
+                                            <label for="simDependencia" class="block text-xs font-bold mb-1">Dependencia destino *</label>
+                                            <select id="simDependencia" class="odin-input text-xs">
+                                                <option value="">Seleccione...</option>
+                                                <option value="Coordinación Académica">Coordinación Académica</option>
+                                                <option value="Dirección Regional">Dirección Regional</option>
+                                                <option value="Gestión Documental">Gestión Documental</option>
+                                                <option value="Bienestar al Aprendiz">Bienestar al Aprendiz</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="simResponsable" class="block text-xs font-bold mb-1">Funcionario responsable *</label>
+                                            <select id="simResponsable" class="odin-input text-xs">
+                                                <option value="">Seleccione...</option>
+                                                <option value="Coordinador Académico">Coordinador Académico</option>
+                                                <option value="Analista de Trámites">Analista de Trámites</option>
+                                                <option value="Líder de Bienestar">Líder de Bienestar</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="simSerie" class="block text-xs font-bold mb-1">Serie documental *</label>
+                                            <select id="simSerie" class="odin-input text-xs">
+                                                <option value="">Seleccione serie...</option>
+                                                <option value="1.1012-27">1.1012-27 · DERECHOS DE PETICIÓN</option>
+                                                <option value="1.1013-27">1.1013-27 · QUEJAS Y RECLAMOS</option>
+                                                <option value="1.2020-27">1.2020-27 · INFORMES TÉCNICOS</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="simSubserie" class="block text-xs font-bold mb-1">Subserie documental</label>
+                                            <select id="simSubserie" class="odin-input text-xs">
+                                                <option value="">Seleccione primero una serie...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sección 4: Contenido -->
+                                <div class="p-4 rounded-xl border border-slate-200/80 dark:border-slate-700/60">
+                                    <div class="text-xs font-extrabold uppercase tracking-wider text-[#39a900] mb-3">
+                                        Sección D · Contenido del Documento
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                                        <div class="sm:col-span-2">
+                                            <label for="simAsunto" class="block text-xs font-bold mb-1">Asunto (mínimo 5 caracteres) *</label>
+                                            <input type="text" id="simAsunto" class="odin-input text-xs" placeholder="Describa claramente la solicitud...">
+                                        </div>
+                                        <div>
+                                            <label for="simPrioridad" class="block text-xs font-bold mb-1">Prioridad *</label>
+                                            <select id="simPrioridad" class="odin-input text-xs">
+                                                <option value="Media">Media</option>
+                                                <option value="Alta">Alta</option>
+                                                <option value="Baja">Baja</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="simFolios" class="block text-xs font-bold mb-1">Número de folios</label>
+                                            <input type="number" id="simFolios" class="odin-input text-xs" value="1" min="1">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-end">
+                                    <button type="submit" class="guia-btn guia-btn-primary">
+                                        🧪 Simular Radicación (Sin guardar en BD)
+                                    </button>
+                                </div>
+                            </form>
+
+                            <!-- Mensajes de validación y comprobante simulado -->
+                            <div id="simValidacionBox" class="hidden mt-4"></div>
+                            <div id="simComprobanteBox" class="hidden mt-4"></div>
+                        </div>
+
+                        <!-- 5.2 LÍNEA DE TIEMPO INTERACTIVA DEL CICLO DE VIDA -->
+                        <div id="sec-ciclo-vida" class="guia-sim-box">
+                            <span class="text-xs font-extrabold uppercase tracking-wider text-[#39a900]">Simulador #2</span>
+                            <h3 class="text-lg font-extrabold">Ciclo de Vida Interactivo de un Radicado</h3>
+                            <p class="text-xs text-slate-500 mb-4">
+                                Haz clic en cada una de las 6 etapas para ver qué ocurre internamente en ODIN, qué estado toma el radicado y en qué pantalla se ejecuta.
+                            </p>
+                            <div id="guiaCicloVidaStepNav" class="guia-lifecycle-track mb-4">
+                                <!-- Botones de etapas generados por guia-simuladores.js -->
+                            </div>
+                            <div id="guiaCicloVidaDetalle">
+                                <!-- Detalle de la etapa activa -->
+                            </div>
+                        </div>
+
+                        <!-- 5.3 SIMULADOR DEL SEMÁFORO DE PLAZOS -->
+                        <div id="sec-semaforo" class="guia-sim-box">
+                            <span class="text-xs font-extrabold uppercase tracking-wider text-[#39a900]">Simulador #3</span>
+                            <h3 class="text-lg font-extrabold">Calculadora del Semáforo de Plazos y Vencimientos</h3>
+                            <p class="text-xs text-slate-500 mb-4">
+                                En Consulta y Seguimiento (<code>/view/consulta</code>), ODIN calcula los días restantes entre la fecha actual y <code>fecha_vencimiento</code>. Prueba distintas fechas o estados:
+                            </p>
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                                <div class="md:col-span-4">
+                                    <label for="simFechaVencimiento" class="block text-xs font-bold mb-1">Fecha límite de vencimiento</label>
+                                    <input type="date" id="simFechaVencimiento" class="odin-input text-xs">
+                                </div>
+                                <div class="md:col-span-4">
+                                    <label for="simEstadoPlazo" class="block text-xs font-bold mb-1">Estado actual del radicado</label>
+                                    <select id="simEstadoPlazo" class="odin-input text-xs">
+                                        <option value="en tramite">En trámite (pendiente)</option>
+                                        <option value="en_proceso">En proceso</option>
+                                        <option value="respondido">Respondido</option>
+                                        <option value="finalizado">Finalizado (cerrado)</option>
+                                    </select>
+                                </div>
+                                <div class="md:col-span-4 flex flex-wrap gap-1.5">
+                                    <button type="button" data-sim-dias="-5" class="guia-btn guia-btn-outline text-[11px] py-1.5 px-2.5">
+                                        Hace 5 días (Vencido)
+                                    </button>
+                                    <button type="button" data-sim-dias="2" class="guia-btn guia-btn-outline text-[11px] py-1.5 px-2.5">
+                                        En 2 días (Próximo)
+                                    </button>
+                                    <button type="button" data-sim-dias="10" class="guia-btn guia-btn-outline text-[11px] py-1.5 px-2.5">
+                                        En 10 días (A tiempo)
+                                    </button>
+                                    <button type="button" data-sim-dias="-3" data-sim-estado="finalizado" class="guia-btn guia-btn-outline text-[11px] py-1.5 px-2.5">
+                                        Finalizado
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="simSemaforoResultado" class="mt-4">
+                                <!-- Resultado del semáforo renderizado por guia-simuladores.js -->
+                            </div>
+                        </div>
+
+                        <!-- 5.4 SIMULADOR DE MATRIZ DE PERMISOS RBAC -->
+                        <div id="sec-matriz" class="guia-sim-box">
+                            <span class="text-xs font-extrabold uppercase tracking-wider text-[#39a900]">Simulador #4</span>
+                            <h3 class="text-lg font-extrabold">Simulador de Roles y Permisos (Spring Security RBAC)</h3>
+                            <p class="text-xs text-slate-500 mb-3">
+                                Selecciona un perfil predefinido o activa/desactiva permisos individuales para comprobar qué rutas devuelven <code>200 OK</code> y cuáles bloquean con <code>403 Acceso Denegado</code>.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <button type="button" data-rol-preset="recepcion" class="guia-btn guia-btn-secondary text-xs">
+                                    Perfil Recepción / Ventanilla
+                                </button>
+                                <button type="button" data-rol-preset="gestor" class="guia-btn guia-btn-secondary text-xs">
+                                    Perfil Gestor de Trámites
+                                </button>
+                                <button type="button" data-rol-preset="consulta" class="guia-btn guia-btn-secondary text-xs">
+                                    Perfil Consulta / Auditoría
+                                </button>
+                                <button type="button" data-rol-preset="admin" class="guia-btn guia-btn-primary text-xs">
+                                    Perfil Administrador (Todos)
+                                </button>
+                                <button type="button" data-rol-preset="ninguno" class="guia-btn guia-btn-outline text-xs">
+                                    Sin permisos especiales
+                                </button>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                                    Permisos asignados al rol simulado:
+                                </div>
+                                <div id="simMatrizPermisosChecks" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                                    <!-- Checkboxes de permisos generados por guia-simuladores.js -->
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                                    Resultado de acceso por pantalla:
+                                </div>
+                                <div id="simMatrizPantallasResult" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                                    <!-- Estado 200 OK / 403 generado por guia-simuladores.js -->
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 6. ESCENARIOS PRÁCTICOS "¿QUÉ HARÍA YO?" -->
+                    <section id="sec-escenarios" class="guia-section-card p-6 guia-no-print">
+                        <h2 class="text-xl font-extrabold">4. Casos Prácticos: "¿Qué haría yo si...?"</h2>
+                        <p class="text-xs text-slate-500 mt-1 mb-4">
+                            Analiza situaciones reales de operación en el SENA y elige la decisión correcta antes de ver la retroalimentación.
+                        </p>
+                        <div id="guiaEscenariosContainer" class="space-y-4">
+                            <!-- Escenarios renderizados por guia-simuladores.js -->
+                        </div>
+                    </section>
+
+                    <!-- 7. AUTOEVALUACIÓN (QUIZ INTERACTIVO) -->
+                    <section id="sec-quiz" class="guia-section-card p-6 guia-no-print">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+                            <div>
+                                <h2 class="text-xl font-extrabold">5. Autoevaluación del Módulo (Quiz)</h2>
+                                <p class="text-xs text-slate-500 mt-0.5">
+                                    Responde las 7 preguntas para medir tu dominio sobre ODIN. Tu mejor puntaje quedará registrado en tu navegador.
+                                </p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="button" id="btnCalificarQuizGuia" class="guia-btn guia-btn-primary text-xs">
+                                    ✅ Calificar respuestas
+                                </button>
+                                <button type="button" id="btnReiniciarQuizSolo" class="guia-btn guia-btn-outline text-xs">
+                                    Limpiar selección
+                                </button>
+                            </div>
+                        </div>
+                        <div id="guiaQuizResultadoBox" class="hidden mb-4"></div>
+                        <div id="guiaQuizContainer" class="space-y-4">
+                            <!-- Preguntas del Quiz renderizadas por guia-simuladores.js -->
+                        </div>
+                    </section>
+
+                    <!-- 8. GLOSARIO DOCUMENTAL CON TOOLTIPS -->
+                    <section id="sec-glosario" class="guia-section-card p-6">
+                        <h2 class="text-xl font-extrabold">6. Glosario de Gestión Documental y Seguridad</h2>
+                        <p class="text-xs text-slate-500 mt-1 mb-4">
+                            Pasa el cursor o haz clic sobre cualquier término técnico como
+                            <span class="guia-glossary-term" data-termino="Radicado">Radicado</span>,
+                            <span class="guia-glossary-term" data-termino="CCD">CCD</span>,
+                            <span class="guia-glossary-term" data-termino="TRD">TRD</span>,
+                            <span class="guia-glossary-term" data-termino="RBAC">RBAC</span> o
+                            <span class="guia-glossary-term" data-termino="SHA-256">SHA-256</span>
+                            para ver su definición flotante instantánea, o consulta el listado completo aquí abajo:
+                        </p>
+                        <div id="guiaGlosarioGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <!-- Tarjetas del glosario generadas por guia.js -->
+                        </div>
+                    </section>
+
+                    <!-- 9. PREGUNTAS FRECUENTES Y SOLUCIÓN DE PROBLEMAS (FAQ) -->
+                    <section id="sec-faq" class="guia-section-card p-6">
+                        <h2 class="text-xl font-extrabold">7. Preguntas Frecuentes y Solución de Problemas (FAQ)</h2>
+                        <p class="text-xs text-slate-500 mt-1 mb-4">
+                            Respuestas rápidas a las dudas más habituales sobre bloqueo de cuenta, visibilidad por dependencia, modo oscuro y permisos.
+                        </p>
+                        <div id="guiaFaqContainer" class="space-y-2.5">
+                            <!-- Acordeón FAQ generado por guia.js -->
+                        </div>
+                    </section>
+
+                </div>
+
+                <!-- COLUMNA DERECHA: ÍNDICE STICKY (TOC) CON SCROLL-SPY -->
+                <aside class="xl:col-span-3 guia-toc-sticky guia-no-print">
+                    <div class="guia-section-card p-4">
+                        <div class="text-xs font-extrabold uppercase tracking-wider text-[#39a900] mb-2">
+                            📑 Índice de la Guía
+                        </div>
+                        <nav class="space-y-1">
+                            <a href="#sec-bienvenida" class="guia-toc-link active">Inicio y Progreso</a>
+                            <a href="#sec-hub" class="guia-toc-link">1. Mapa de Módulos</a>
+                            <a href="#sec-lecciones" class="guia-toc-link">2. Lecciones Paso a Paso</a>
+                            <a href="#sec-simuladores" class="guia-toc-link">3. Laboratorio de Simuladores</a>
+                            <a href="#sec-sim-radicacion" class="guia-toc-link pl-6 text-xs">↳ Sandbox de Radicación</a>
+                            <a href="#sec-ciclo-vida" class="guia-toc-link pl-6 text-xs">↳ Ciclo de Vida</a>
+                            <a href="#sec-semaforo" class="guia-toc-link pl-6 text-xs">↳ Semáforo de Plazos</a>
+                            <a href="#sec-matriz" class="guia-toc-link pl-6 text-xs">↳ Matriz de Permisos</a>
+                            <a href="#sec-escenarios" class="guia-toc-link">4. Casos "¿Qué haría yo?"</a>
+                            <a href="#sec-quiz" class="guia-toc-link">5. Autoevaluación (Quiz)</a>
+                            <a href="#sec-glosario" class="guia-toc-link">6. Glosario Documental</a>
+                            <a href="#sec-faq" class="guia-toc-link">7. Preguntas Frecuentes</a>
+                        </nav>
+
+                        <hr class="my-3 border-slate-200 dark:border-slate-700">
+
+                        <div class="text-[11px] text-slate-500 space-y-1.5">
+                            <div><strong>Atajos de teclado:</strong></div>
+                            <div>• <kbd class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-100">/</kbd> Enfocar buscador</div>
+                            <div>• <kbd class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-100">←</kbd> <kbd class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-100">→</kbd> Navegar el Tour</div>
+                            <div>• <kbd class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-100">Esc</kbd> Cerrar Tour</div>
+                        </div>
+                    </div>
+                </aside>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Tooltip flotante reutilizable para el Glosario -->
+<div id="guiaFloatingTooltip" class="guia-floating-tooltip" role="tooltip"></div>
+
+<!-- Botón flotante para volver arriba -->
+<button type="button" id="btnVolverArribaGuia" class="guia-back-to-top guia-no-print" title="Volver arriba" aria-label="Volver arriba">
+    ↑
+</button>
+
+<!-- Scripts separados del módulo Guía Interactiva (100% vanilla JS comentado en español) -->
+<!-- Nota: odin-ui.js y guia-tour.js ya se cargan desde el fragmento topbar de layout.html -->
+<script defer th:src="@{/js/script.js}"></script>
+<script defer th:src="@{/js/guia-datos.js}"></script>
+<script defer th:src="@{/js/guia.js}"></script>
+<script defer th:src="@{/js/guia-simuladores.js}"></script>
+</body>
+</html>

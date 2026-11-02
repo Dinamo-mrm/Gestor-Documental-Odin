@@ -3,8 +3,15 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | ODIN</title>
+    <script>
+      try { if (localStorage.getItem('odin-theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
+    </script>
     <script src="https://cdn.tailwindcss.com"></script><script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" th:href="@{/css/globals.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/odin.css}">
+    <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
     <style>body{font-family:Inter,Arial,sans-serif}.chart-box{position:relative;min-height:300px}</style>
 </head>
 <body class="bg-[#f5f6f8] text-slate-800">
@@ -49,9 +56,23 @@
         </main>
     </div>
 </div>
-<style>.card{background:#fff;border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;box-shadow:0 1px 2px #0000000d;transition:.2s;display:block}.card:hover{box-shadow:0 4px 12px #00000014}.card span{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b}.card strong{display:block;font-size:1.55rem;font-weight:800;margin-top:.25rem}.badge{padding:.25rem .5rem;border-radius:9999px;font-size:.7rem}</style>
+<style>
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;box-shadow:0 1px 2px #0000000d;transition:.2s;display:block}
+.card:hover{box-shadow:0 4px 12px #00000014}
+.card span{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b}
+.card strong{display:block;font-size:1.55rem;font-weight:800;margin-top:.25rem}
+.badge{padding:.25rem .5rem;border-radius:9999px;font-size:.7rem}
+html.dark .card{background:#00304d!important;border-color:#004d7a!important;color:#f1f5f9!important}
+html.dark .card span{color:#94a3b8!important}
+html.dark .card strong{color:#ffffff!important}
+</style>
 <script defer th:src="@{/js/script.js}"></script>
 <script th:inline="javascript">
+const isDark = document.documentElement.classList.contains('dark');
+if (isDark && typeof Chart !== 'undefined') {
+    Chart.defaults.color = '#cbd5e1';
+    Chart.defaults.borderColor = '#004d7a';
+}
 const labels=['Pendientes','En trámite','Finalizados','Rechazados','Vencidos'];const values=[[[${pendientes?:0}]],[[${enTramite?:0}]],[[${finalizados?:0}]],[[${rechazados?:0}]],[[${vencidos?:0}]]];const colors=['#FBBF24','#60A5FA','#34D399','#F87171','#991B1B'];
 const d=document.getElementById('estadoChart');if(d)new Chart(d,{type:'doughnut',data:{labels,datasets:[{data:values,backgroundColor:colors,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
 const b=document.getElementById('dashboardChart');if(b)new Chart(b,{type:'bar',data:{labels,datasets:[{label:'Radicados',data:values,backgroundColor:colors,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,ticks:{precision:0}}},plugins:{legend:{display:false}}}});

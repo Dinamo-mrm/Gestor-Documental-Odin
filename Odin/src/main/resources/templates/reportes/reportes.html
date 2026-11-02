@@ -21,12 +21,21 @@
         .rep-actions{display:flex;flex-wrap:wrap;gap:.5rem}
         .rep-btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem .9rem;border-radius:.5rem;font-size:.8rem;font-weight:600;text-decoration:none}
         .rep-btn-pdf{background:#dc2626;color:#fff}
-        .rep-btn-xlsx{background:#15803d;color:#fff}
-        .rep-btn-csv{background:#0f766e;color:#fff}
+        .rep-btn-xlsx{background:#39a900;color:#fff}
+        .rep-btn-csv{background:#007832;color:#fff}
+        .rep-btn-primary{background:#39a900;color:#fff}
+        .rep-btn-secondary{background:#fff;color:#007832;border:1px solid #86efac}
         .rep-btn:hover{opacity:.9}
         .kpi-mini{background:#fff;border:1px solid #e2e8f0;border-radius:1rem;padding:1rem 1.15rem}
         .kpi-mini .lbl{font-size:.7rem;font-weight:700;text-transform:uppercase;color:#64748b}
         .kpi-mini .val{font-size:1.6rem;font-weight:800;color:#0f172a;margin-top:.15rem}
+        html.dark .rep-card{background:#00304d!important;border-color:#004d7a!important;color:#f1f5f9!important}
+        html.dark .rep-card h3{color:#ffffff!important}
+        html.dark .rep-card p{color:#cbd5e1!important}
+        html.dark .kpi-mini{background:#00304d!important;border-color:#004d7a!important}
+        html.dark .kpi-mini .lbl{color:#cbd5e1!important}
+        html.dark .kpi-mini .val{color:#ffffff!important}
+        html.dark .rep-btn-secondary{background:#00243a!important;color:#86efac!important;border-color:#004d7a!important}
     </style>
 </head>
 <body class="bg-[#f5f6f8] text-slate-800">
@@ -81,8 +90,8 @@
                         <h3>Consulta y seguimiento</h3>
                         <p>Para filtros por estado, dependencia, trámite o vencimiento use la vista de consulta operativa.</p>
                         <div class="rep-actions">
-                            <a class="rep-btn" style="background:#0f172a;color:#fff" th:href="@{/view/consulta}">Abrir consulta</a>
-                            <a class="rep-btn" style="background:#fff;color:#15803d;border:1px solid #86efac" th:href="@{/view/tramites}">Gestión de trámites</a>
+                            <a class="rep-btn rep-btn-primary" th:href="@{/view/consulta}">Abrir consulta</a>
+                            <a class="rep-btn rep-btn-secondary" th:href="@{/view/tramites}">Gestión de trámites</a>
                         </div>
                     </div>
                 </div>

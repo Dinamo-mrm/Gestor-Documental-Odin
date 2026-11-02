@@ -18,17 +18,18 @@
         .card h2{font-size:1rem;font-weight:700;margin:0 0 1rem;color:#0f172a}
         .grid2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem 1.5rem}
         @media (max-width:640px){.grid2{grid-template-columns:1fr}}
-        .grid2 p{margin:0;font-size:.875rem}
-        .grid2 strong{color:#64748b;font-weight:600;font-size:.7rem;text-transform:uppercase;display:block}
-        .btn-primary{background:#15803d;color:#fff;border:none;border-radius:.5rem;padding:.5rem 1rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
-        .btn-secondary{background:#fff;color:#334155;border:1px solid #cbd5e1;border-radius:.5rem;padding:.5rem 1rem;font-weight:600;text-decoration:none;display:inline-block}
+        .grid2 p{margin:0;font-size:.875rem;color:#0f172a}
+        .grid2 strong{color:#64748b;font-weight:700;font-size:.7rem;text-transform:uppercase;display:block;margin-bottom:.15rem}
+        .btn-primary{background:#39a900;color:#fff;border:none;border-radius:.5rem;padding:.5rem 1rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;transition:.15s}
+        .btn-primary:hover{background:#007832}
+        .btn-secondary{background:#fff;color:#334155;border:1px solid #cbd5e1;border-radius:.5rem;padding:.5rem 1rem;font-weight:600;text-decoration:none;display:inline-block;transition:.15s}
         table{width:100%;border-collapse:collapse;font-size:.8rem}
         th,td{padding:.5rem .65rem;border-bottom:1px solid #f1f5f9;text-align:left}
         th{background:#f8fafc;font-size:.7rem;text-transform:uppercase;color:#64748b}
         .dias-ok{color:#15803d;font-weight:700}
         .dias-warn{color:#d97706;font-weight:700}
         .dias-vencido{color:#dc2626;font-weight:700}
-        .badge{display:inline-block;padding:.15rem .5rem;border-radius:999px;font-size:.7rem;font-weight:700;background:#e2e8f0}
+        .badge{display:inline-block;padding:.15rem .55rem;border-radius:999px;font-size:.7rem;font-weight:700;background:#e2e8f0;color:#1e293b}
         .actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem}
 
         /* ===== Línea temporal unificada ===== */
@@ -43,9 +44,9 @@
         .tl-documento .tl-dot,.tl-anexo .tl-dot{background:#7c3aed;box-shadow:0 0 0 2px #7c3aed}
         .tl-firma .tl-dot{background:#0d9488;box-shadow:0 0 0 2px #0d9488}
         .tl-reasignacion .tl-dot{background:#e11d48;box-shadow:0 0 0 2px #e11d48}
-        .tl-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:.75rem;padding:.75rem 1rem}
+        .tl-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:.75rem;padding:.85rem 1.05rem}
         .tl-head{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem .75rem;margin-bottom:.35rem}
-        .tl-tipo{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:.12rem .45rem;border-radius:999px;background:#e2e8f0;color:#334155}
+        .tl-tipo{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:.15rem .5rem;border-radius:999px;background:#e2e8f0;color:#334155}
         .tl-radicacion .tl-tipo{background:#dcfce7;color:#166534}
         .tl-historial .tl-tipo{background:#dbeafe;color:#1e40af}
         .tl-observacion .tl-tipo{background:#fef3c7;color:#92400e}
@@ -54,14 +55,42 @@
         .tl-reasignacion .tl-tipo{background:#ffe4e6;color:#9f1239}
         .tl-titulo{font-weight:700;font-size:.9rem;color:#0f172a}
         .tl-fecha{margin-left:auto;font-size:.75rem;color:#64748b;font-weight:600}
-        .tl-desc{font-size:.85rem;color:#334155;margin:.15rem 0}
+        .tl-desc{font-size:.85rem;color:#334155;margin:.25rem 0}
         .tl-meta{display:flex;flex-wrap:wrap;gap:.5rem 1rem;font-size:.75rem;color:#64748b;margin-top:.35rem}
         .tl-meta span{display:inline-flex;align-items:center;gap:.25rem}
         .tl-empty{text-align:center;padding:1.5rem;color:#64748b;font-size:.9rem}
-        .tl-legend{display:flex;flex-wrap:wrap;gap:.5rem .85rem;margin-bottom:1rem;font-size:.7rem;color:#64748b}
-        .tl-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:.3rem;vertical-align:middle}
+        .tl-legend{display:flex;flex-wrap:wrap;gap:.5rem .85rem;margin-bottom:1rem;font-size:.75rem;color:#64748b}
+        .tl-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:.35rem;vertical-align:middle}
         .flow-bar{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem;margin-bottom:1rem;padding:.65rem .9rem;background:linear-gradient(90deg,#f0fdf4,#f8fafc);border:1px solid #bbf7d0;border-radius:.75rem;font-size:.75rem;font-weight:600;color:#166534}
-        .flow-bar span{opacity:.5}
+        .flow-bar span{opacity:.6}
+
+        /* ===== Coherencia visual Modo Oscuro SENA ===== */
+        html.dark .grid2 p{color:#f1f5f9!important}
+        html.dark .grid2 strong{color:#94a3b8!important}
+        html.dark .grid2 span:not(.badge):not(.dias-ok):not(.dias-warn):not(.dias-vencido){color:#ffffff!important;font-weight:500}
+        html.dark .badge{background:#002236!important;color:#86efac!important;border:1px solid #39a900!important}
+        html.dark .dias-ok{color:#4ade80!important}
+        html.dark .dias-warn{color:#fbbf24!important}
+        html.dark .dias-vencido{color:#f87171!important}
+        html.dark .flow-bar{background:linear-gradient(90deg,rgba(0,120,50,.35),#002236)!important;border-color:#007832!important;color:#86efac!important}
+        html.dark .flow-bar span{color:#cbd5e1!important;opacity:.75}
+        html.dark .timeline::before{background:linear-gradient(180deg,#39a900 0%,#004d7a 100%)!important}
+        html.dark .tl-dot{border-color:#00304d!important}
+        html.dark .tl-card{background:#002236!important;border:1px solid #004d7a!important;box-shadow:0 4px 14px rgba(0,0,0,.22)}
+        html.dark .tl-titulo{color:#ffffff!important}
+        html.dark .tl-fecha{color:#94a3b8!important}
+        html.dark .tl-desc{color:#e2e8f0!important}
+        html.dark .tl-meta,html.dark .tl-meta span{color:#cbd5e1!important}
+        html.dark .tl-meta strong{color:#ffffff!important}
+        html.dark .tl-legend,html.dark .tl-legend span{color:#cbd5e1!important}
+        html.dark .tl-empty{color:#94a3b8!important}
+        html.dark .tl-tipo{background:#003859!important;color:#e2e8f0!important;border:1px solid #004d7a}
+        html.dark .tl-radicacion .tl-tipo{background:rgba(57,169,0,.22)!important;color:#86efac!important;border:1px solid rgba(57,169,0,.5)}
+        html.dark .tl-historial .tl-tipo{background:rgba(37,99,235,.25)!important;color:#93c5fd!important;border:1px solid rgba(59,130,246,.5)}
+        html.dark .tl-observacion .tl-tipo{background:rgba(217,119,6,.25)!important;color:#fde68a!important;border:1px solid rgba(245,158,11,.5)}
+        html.dark .tl-documento .tl-tipo,html.dark .tl-anexo .tl-tipo{background:rgba(113,39,122,.4)!important;color:#e9d5ff!important;border:1px solid rgba(168,85,247,.5)}
+        html.dark .tl-firma .tl-tipo{background:rgba(13,148,136,.25)!important;color:#99f6e4!important;border:1px solid rgba(20,184,166,.5)}
+        html.dark .tl-reasignacion .tl-tipo{background:rgba(225,29,72,.25)!important;color:#fda4af!important;border:1px solid rgba(244,63,94,.5)}
     </style>
 <meta name="_csrf" th:content="${_csrf.token}"/>
 <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
@@ -123,7 +152,7 @@
                             <span th:if="${radicado.diasRestantes != null and radicado.diasRestantes < 0}" class="dias-vencido"
                                   th:text="${'Vencido hace ' + (radicado.diasRestantes * -1) + ' días'}">Vencido</span>
                         </p>
-                                                <p><strong>Remitente</strong> <span th:text="${radicado.remitente ?: '-'}">—</span></p>
+                        <p><strong>Remitente</strong> <span th:text="${radicado.remitente ?: '-'}">—</span></p>
                         <p><strong>Identificación</strong> <span th:text="${radicado.numeroIdentificacion ?: '-'}">—</span></p>
                         <p><strong>Dependencia</strong>
                             <span th:text="${radicado.id_dependencia != null and nombresDep != null and nombresDep.containsKey(radicado.id_dependencia) ? nombresDep.get(radicado.id_dependencia) : (radicado.id_dependencia != null ? radicado.id_dependencia : '-')}">—</span>
@@ -145,7 +174,7 @@
                 <!-- ========== LÍNEA TEMPORAL UNIFICADA ========== -->
                 <div class="card">
                     <h2>Línea temporal de seguimiento</h2>
-                    <p style="font-size:.8rem;color:#64748b;margin:-.5rem 0 1rem">
+                    <p class="text-slate-500" style="font-size:.8rem;margin:-.5rem 0 1rem">
                         Vista integral: radicación, movimientos, reasignaciones, documentos, firmas y observaciones en orden cronológico.
                     </p>
                     <div class="tl-legend">

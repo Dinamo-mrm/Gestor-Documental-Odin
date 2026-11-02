@@ -181,7 +181,7 @@ public class RadicacionService {
     }
 
     private void aplicarReglasDelTramite(Radicados r, Tramites tramite) {
-        r.setId_estado(tramite.getIdEstadoInicial());
+        r.setId_estado(tramite.getIdEstadoInicial() != null ? tramite.getIdEstadoInicial().longValue() : null);
         r.setId_dependencia(tramite.getIdDependenciaResponsable());
         Dependencias dependencia = dependenciasRepository.findById(tramite.getIdDependenciaResponsable())
                 .orElseThrow(() -> new IllegalArgumentException("La dependencia responsable no existe"));
