@@ -78,18 +78,28 @@
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
                                     Rol
                                 </label>
-                                <input type="number" th:field="*{id_rol}" required
-                                       placeholder="ID rol"
-                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                                <select th:field="*{id_rol}" required
+                                        class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                                    <option value="">Seleccione un Rol</option>
+                                    <option th:each="r : ${listaRoles}"
+                                            th:value="${r.id_rol}"
+                                            th:text="${(r.nombre != null and !r.nombre.isBlank()) ? r.nombre : r.rol}">
+                                    </option>
+                                </select>
                             </div>
 
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
                                     Dependencia
                                 </label>
-                                <input type="number" th:field="*{id_dependencia}" required
-                                       placeholder="ID dependencia"
-                                       class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                                <select th:field="*{id_dependencia}" required
+                                        class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
+                                    <option value="">Seleccione una Dependencia</option>
+                                    <option th:each="d : ${listaDependencias}"
+                                            th:value="${d.id_dependencia}"
+                                            th:text="${d.nombre + (d.dependencia != null ? ' (' + d.dependencia + ')' : '')}">
+                                    </option>
+                                </select>
                             </div>
 
                             <div>
@@ -138,37 +148,53 @@
                                        class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
                             </div>
 
-                            <div>
+                            <!-- Contraseña al crear: Automática con la cédula -->
+                            <div th:if="${usuarios.id_usuario == null}" class="md:col-span-2">
+                                <div class="rounded-lg bg-emerald-50 border border-emerald-200 p-3.5 flex items-start gap-3">
+                                    <span class="text-lg leading-none">🔑</span>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-emerald-900 uppercase tracking-wide">Contraseña inicial automática</h4>
+                                        <p class="text-xs text-emerald-800 mt-0.5 leading-relaxed">
+                                            La contraseña de acceso inicial será el <strong>número de identificación (cédula)</strong> del usuario. El sistema le solicitará cambiarla cuando inicie sesión.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contraseña al editar: Opcional -->
+                            <div th:if="${usuarios.id_usuario != null}">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                    Clave
+                                    Cambiar Contraseña <span class="text-slate-400 font-normal lowercase">(en blanco para no cambiar)</span>
                                 </label>
-                                <input required th:field="*{password}" type="password"
-                                       placeholder="Contraseña"
+                                <input th:field="*{password}" type="password"
+                                       placeholder="Nueva contraseña (opcional)"
                                        class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
                             </div>
 
-                            <div>
+                            <!-- Estado: Solo visible al editar un usuario existente -->
+                            <div th:if="${usuarios.id_usuario != null}">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
                                     Estado
                                 </label>
                                 <select th:field="*{estado}" required
                                         class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
-                                    <option value="">Seleccione</option>
                                     <option value="Activo">Activo</option>
                                     <option value="Inactivo">Inactivo</option>
                                 </select>
                             </div>
+                            <!-- Si es nuevo usuario, se asigna Activo automáticamente sin preguntar -->
+                            <input type="hidden" th:if="${usuarios.id_usuario == null}" th:field="*{estado}" value="Activo" />
 
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
                                     Teléfono
                                 </label>
                                 <input type="text" th:field="*{telefono}" required
-                                       placeholder="Email o teléfono"
+                                       placeholder="Teléfono de contacto"
                                        class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
                             </div>
 
-                            <div>
+                            <div th:classappend="${usuarios.id_usuario == null} ? 'md:col-span-2' : ''">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
                                     Dirección
                                 </label>

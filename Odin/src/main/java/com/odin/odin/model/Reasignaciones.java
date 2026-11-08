@@ -54,8 +54,8 @@ public class Reasignaciones {
     }
     public Long getId_reasignacion() { return id_reasignacion; }
     public void setId_reasignacion(Long value) { this.id_reasignacion = value; }
-    public Integer getId_radicado() { return id_radicado; }
-    public void setId_radicado(Integer value) { this.id_radicado = value; }
+    public Long getId_radicado() { return id_radicado; }
+    public void setId_radicado(Long value) { this.id_radicado = value; }
     public Long getId_usuario_anterior() { return id_usuario_anterior; }
     public void setId_usuario_anterior(Long value) { this.id_usuario_anterior = value; }
     public Long getId_usuario_nuevo() { return id_usuario_nuevo; }

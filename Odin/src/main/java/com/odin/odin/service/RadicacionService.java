@@ -181,7 +181,7 @@ public class RadicacionService {
     }
 
     private void aplicarReglasDelTramite(Radicados r, Tramites tramite) {
-        r.setId_estado(tramite.getIdEstadoInicial());
+        r.setId_estado(tramite.getIdEstadoInicial() != null ? tramite.getIdEstadoInicial().longValue() : null);
         r.setId_dependencia(tramite.getIdDependenciaResponsable());
         Dependencias dependencia = dependenciasRepository.findById(tramite.getIdDependenciaResponsable())
                 .orElseThrow(() -> new IllegalArgumentException("La dependencia responsable no existe"));
@@ -215,19 +215,13 @@ public class RadicacionService {
 
     private void aplicarClasificacion(Radicados r) {
         if (texto(r.getCodigo_serie())) {
-            var serie = seriesRepository.findByCodigoSerie(r.getCodigo_serie())
+            seriesRepository.findByCodigoSerie(r.getCodigo_serie())
                     .orElseThrow(() -> new IllegalArgumentException("La serie documental seleccionada no existe"));
-            r.setId_serie(serie.getId_serie());
-        } else {
-            r.setId_serie(null);
         }
 
         if (texto(r.getCodigo_subserie())) {
-            var subserie = subseriesRepository.findByCodigoSubserie(r.getCodigo_subserie())
+            subseriesRepository.findByCodigoSubserie(r.getCodigo_subserie())
                     .orElseThrow(() -> new IllegalArgumentException("La subserie documental seleccionada no existe"));
-            r.setId_subserie(subserie.getId_subserie());
-        } else {
-            r.setId_subserie(null);
         }
     }
 

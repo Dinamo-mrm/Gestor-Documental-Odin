@@ -72,54 +72,68 @@
                 </div>
             </div>
 
-            <!-- BUSCADOR -->
-            <section class="mb-5">
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-4 flex items-center text-slate-400">
-                        🔍
-                    </span>
-                    <input type="text"
-                           placeholder="Buscar por nombre o tipo de rol..."
-                           class="w-full rounded-lg border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-600 shadow-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100">
-                </div>
-            </section>
+            <!-- FORMULARIO DE BÚSQUEDA Y FILTROS -->
+            <form method="get" th:action="@{/view/roles}" id="formFiltrosRoles">
 
-            <!-- CARD TABLA -->
-            <section class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-
-                <!-- FILTROS -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 px-5 py-4 border-b border-slate-100">
-
-                    <!-- ESTADO -->
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                            Estado
-                        </label>
-                        <select class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 outline-none focus:border-green-500">
-                            <option>Todos</option>
-                            <option>Activo</option>
-                            <option>Inactivo</option>
-                        </select>
+                <!-- BUSCADOR -->
+                <section class="mb-5">
+                    <div class="relative flex items-center">
+                        <span class="absolute inset-y-0 left-4 flex items-center text-slate-400">
+                            🔍
+                        </span>
+                        <input type="text"
+                               name="buscar"
+                               th:value="${buscar}"
+                               placeholder="Buscar por nombre o tipo de rol..."
+                               class="w-full rounded-lg border border-slate-200 bg-white py-3 pl-11 pr-24 text-sm text-slate-600 shadow-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100">
+                        <button type="submit"
+                                class="absolute right-2 rounded-md bg-[#2fa300] text-white px-4 py-1.5 text-xs font-bold hover:bg-[#248400] transition shadow-sm">
+                            Buscar
+                        </button>
                     </div>
+                </section>
 
-                    <!-- ACCIONES DE EXPORTACIÓN -->
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                            Exportar
-                        </label>
-                        <div class="flex gap-2">
-                            <a th:href="@{/view/roles/pdf}"
-                               class="flex-1 rounded-md border border-slate-200 px-3 py-2 text-center text-sm text-slate-600 hover:bg-slate-50">
-                                PDF
-                            </a>
-                            <a th:href="@{/view/roles/excel}"
-                               class="flex-1 rounded-md border border-slate-200 px-3 py-2 text-center text-sm text-slate-600 hover:bg-slate-50">
-                                Excel
-                            </a>
+                <!-- CARD TABLA -->
+                <section class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+
+                    <!-- FILTROS -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 px-5 py-4 border-b border-slate-100 items-end">
+
+                        <!-- ESTADO -->
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
+                                Estado
+                            </label>
+                            <select name="estado" onchange="this.form.submit()"
+                                    class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 outline-none focus:border-green-500">
+                                <option value="" th:selected="${estado == null or estado == ''}">Todos</option>
+                                <option value="Activo" th:selected="${estado == 'Activo'}">Activo</option>
+                                <option value="Inactivo" th:selected="${estado == 'Inactivo'}">Inactivo</option>
+                            </select>
                         </div>
-                    </div>
 
-                </div>
+                        <!-- ACCIONES DE EXPORTACIÓN Y LIMPIAR -->
+                        <div class="flex items-center gap-2">
+                            <a th:if="${(buscar != null and !buscar.isBlank()) or (estado != null and !estado.isBlank())}"
+                               th:href="@{/view/roles}"
+                               class="rounded-md border border-red-300 text-red-600 px-3 py-2 text-center text-xs font-semibold hover:bg-red-50 transition w-full"
+                               title="Quitar todos los filtros">
+                                ✕ Limpiar filtros
+                            </a>
+                            <div class="flex gap-2" th:classappend="${(buscar != null and !buscar.isBlank()) or (estado != null and !estado.isBlank())} ? 'w-auto' : 'w-full'">
+                                <a th:href="@{/view/roles/pdf}"
+                                   class="flex-1 rounded-md border border-slate-200 px-3 py-2 text-center text-sm text-slate-600 hover:bg-slate-50">
+                                    PDF
+                                </a>
+                                <a th:href="@{/view/roles/excel}"
+                                   class="flex-1 rounded-md border border-slate-200 px-3 py-2 text-center text-sm text-slate-600 hover:bg-slate-50">
+                                    Excel
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+            </form>
 
                 <!-- TABLA -->
                 <div class="overflow-x-auto">
@@ -194,8 +208,14 @@
 
                         <!-- ESTADO VACÍO -->
                         <tr th:if="${#lists.isEmpty(roles)}">
-                            <td colspan="5" class="px-6 py-10 text-center text-slate-500">
-                                No hay roles registrados en este momento.
+                            <td colspan="5" class="px-6 py-12 text-center text-slate-500">
+                                <div class="flex flex-col items-center justify-center gap-2">
+                                    <span class="text-2xl">🔍</span>
+                                    <p class="font-medium text-slate-700">No se encontraron roles con los filtros seleccionados.</p>
+                                    <a th:href="@{/view/roles}" class="text-xs text-green-700 font-bold underline hover:text-green-800">
+                                        Limpiar filtros y ver todos los roles
+                                    </a>
+                                </div>
                             </td>
                         </tr>
 
@@ -204,15 +224,28 @@
                 </div>
 
                 <!-- FOOTER -->
-                <div class="flex items-center justify-between px-5 py-4 border-t border-slate-100 text-xs text-slate-500">
-                    <span th:text="'Mostrando ' + ${#lists.size(roles)} + ' roles registrados'">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-4 border-t border-slate-100 text-xs text-slate-500">
+                    <span th:text="'Mostrando ' + (${roles != null ? #lists.size(roles) : 0}) + ' de ' + (${totalElements != null ? totalElements : 0}) + ' roles'">
                         Mostrando roles registrados
                     </span>
 
-                    <div class="flex items-center gap-2">
-                        <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-slate-100">‹</button>
-                        <button class="w-8 h-8 rounded-md bg-[#2fa300] text-white font-bold">1</button>
-                        <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-slate-100">›</button>
+                    <div class="flex items-center gap-1.5" th:if="${totalPages > 1}">
+                        <a th:if="${currentPage > 0}"
+                           th:href="@{/view/roles(page=${currentPage - 1}, buscar=${buscar}, estado=${estado})}"
+                           class="w-8 h-8 rounded-md border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100 transition"
+                           title="Página anterior">
+                            ‹
+                        </a>
+                        <span class="px-3 py-1 font-semibold text-slate-700 bg-slate-100 rounded-md"
+                              th:text="'Página ' + (${currentPage + 1}) + ' de ' + ${totalPages}">
+                            Página 1 de 1
+                        </span>
+                        <a th:if="${currentPage + 1 < totalPages}"
+                           th:href="@{/view/roles(page=${currentPage + 1}, buscar=${buscar}, estado=${estado})}"
+                           class="w-8 h-8 rounded-md border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100 transition"
+                           title="Página siguiente">
+                            ›
+                        </a>
                     </div>
                 </div>
 
