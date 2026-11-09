@@ -34,6 +34,19 @@ public class RadicadosController {
     @Autowired private AuditoriaRadicadosService auditoriaService;
     @Autowired private com.odin.odin.service.RadicadoPlazoService plazoService;
     @Autowired private com.odin.odin.service.ConsecutivoRadicadoService consecutivoService;
+    @Autowired private com.odin.odin.service.ClasificacionDocumentalService clasificacionService;
+
+    @GetMapping("/clasificacion-automatica")
+    @Operation(summary="Obtener serie y subserie documental calculadas automáticamente según trámite y tipo documental")
+    public ResponseEntity<?> clasificacionAutomatica(
+            @RequestParam(required = false) Long idTramite,
+            @RequestParam(required = false) String tipoDocumento) {
+        var res = clasificacionService.determinarClasificacion(idTramite, tipoDocumento);
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "data", res
+        ));
+    }
 
     @GetMapping
     @Operation(summary="Listar radicados")
@@ -245,6 +258,32 @@ public class RadicadosController {
             radicado.setId_remitente(null);
         } else if (radicado.getRemitente() == null || radicado.getRemitente().trim().isEmpty()) {
             radicado.setRemitente("Anónimo");
+        }
+
+        // Automatización 1: Responsable según dependencia
+        if (radicado.getId_dependencia() != null) {
+            var activos = usuariosRepository.findActivosByDependencia(radicado.getId_dependencia());
+            if (!activos.isEmpty()) {
+                boolean pertenece = false;
+                if (radicado.getId_usuario() != null) {
+                    for (var u : activos) {
+                        if (u.getId_usuario().equals(radicado.getId_usuario())) {
+                            pertenece = true;
+                            break;
+                        }
+                    }
+                }
+                if (!pertenece) {
+                    radicado.setId_usuario(activos.get(0).getId_usuario());
+                }
+            }
+        }
+
+        // Automatización 2: Serie y Subserie documental automáticas
+        var clasif = clasificacionService.determinarClasificacion(radicado.getId_tramite(), radicado.getTipoDocumento());
+        if (clasif.isDeterminada()) {
+            radicado.setCodigo_serie(clasif.getCodigoSerie());
+            radicado.setCodigo_subserie(clasif.getCodigoSubserie());
         }
 
         plazoService.aplicarReglas(radicado);

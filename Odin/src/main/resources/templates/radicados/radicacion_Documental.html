@@ -241,7 +241,12 @@
                                 </select>
                             </div>
                             <div>
-                                <label>Responsable asignado</label>
+                                <div class="flex items-center justify-between mb-1">
+                                    <label class="mb-0">Responsable asignado</label>
+                                    <span id="badgeResponsable" class="text-xs px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-600">
+                                        <i class="fas fa-user-cog mr-1"></i>Por dependencia
+                                    </span>
+                                </div>
                                 <select id="selectResponsable" th:field="*{id_usuario}">
                                     <option value="">Seleccione funcionario o se asignará automáticamente...</option>
                                     <option th:each="u : ${usuarios}" th:value="${u.id_usuario}" th:text="${u.nombre}">Usuario</option>
@@ -249,15 +254,33 @@
                                 <p id="responsableFeedback" class="hint"></p>
                             </div>
                             <div>
-                                <label>Serie documental</label>
-                                <select th:field="*{codigo_serie}">
+                                <div class="flex items-center justify-between mb-1">
+                                    <label class="mb-0">Serie documental (automática)</label>
+                                    <span id="badgeSerie" class="text-xs px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-600">
+                                        <i class="fas fa-lock mr-1"></i>Solo lectura
+                                    </span>
+                                </div>
+                                <input type="text" id="serieVisible" readonly
+                                       class="bg-slate-100 text-slate-700 font-semibold cursor-not-allowed"
+                                       placeholder="Determinada automáticamente por trámite y tipo documental">
+                                <p id="serieFeedback" class="hint">Determinada automáticamente según el trámite y tipo documental (no editable).</p>
+                                <select th:field="*{codigo_serie}" style="display:none" id="selectSerieLegacy">
                                     <option value="">Seleccione...</option>
                                     <option th:each="s : ${series}" th:value="${s.codigo_serie}" th:text="${s.codigo_serie + ' - ' + s.nombre_serie}">Serie</option>
                                 </select>
                             </div>
                             <div>
-                                <label>Subserie</label>
-                                <select th:field="*{codigo_subserie}">
+                                <div class="flex items-center justify-between mb-1">
+                                    <label class="mb-0">Subserie documental (automática)</label>
+                                    <span id="badgeSubserie" class="text-xs px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-600">
+                                        <i class="fas fa-lock mr-1"></i>Solo lectura
+                                    </span>
+                                </div>
+                                <input type="text" id="subserieVisible" readonly
+                                       class="bg-slate-100 text-slate-700 font-semibold cursor-not-allowed"
+                                       placeholder="Determinada automáticamente por trámite y tipo documental">
+                                <p id="subserieFeedback" class="hint">Determinada automáticamente según el trámite y tipo documental (no editable).</p>
+                                <select th:field="*{codigo_subserie}" style="display:none" id="selectSubserieLegacy">
                                     <option value="">Seleccione...</option>
                                     <option th:each="ss : ${subseries}" th:value="${ss.codigo_subserie}" th:text="${ss.codigo_subserie + ' - ' + ss.nombre_subserie}">Subserie</option>
                                 </select>
@@ -487,6 +510,7 @@ function actualizarPrioridadAutomatica() {
 }
 
 function onTipoDocumentoChange(select) {
+    actualizarClasificacionAutomatica();
     actualizarPrioridadAutomatica();
 }
 
@@ -496,7 +520,8 @@ function onTramiteChange(select) {
     const inputVenc = document.getElementById('fechaVencimiento');
     const badge = document.getElementById('badgeDiasRestantes');
 
-    // 1. Asignar prioridad automática según trámite y tipo documental
+    // 1. Asignar prioridad y clasificación automática según trámite y tipo documental
+    actualizarClasificacionAutomatica();
     actualizarPrioridadAutomatica();
 
     if (!selected || !selected.value) {
@@ -568,7 +593,140 @@ function actualizarIndicadorDias(dias) {
     }
 }
 
+// --- CLASIFICACIÓN DOCUMENTAL AUTOMÁTICA (SERIE Y SUBSERIE TRD/CCD) ---
+function actualizarClasificacionAutomatica() {
+    const selTramite = document.getElementById('selectTramite');
+    const selTipoDoc = document.getElementById('selectTipoDocumento');
+    const inputSerieVis = document.getElementById('serieVisible');
+    const inputSubserieVis = document.getElementById('subserieVisible');
+    const selectSerieLegacy = document.getElementById('selectSerieLegacy');
+    const selectSubserieLegacy = document.getElementById('selectSubserieLegacy');
+    const badgeSerie = document.getElementById('badgeSerie');
+    const badgeSubserie = document.getElementById('badgeSubserie');
+    const fbSerie = document.getElementById('serieFeedback');
+    const fbSubserie = document.getElementById('subserieFeedback');
+
+    const idTramite = selTramite ? selTramite.value : '';
+    const tipoDoc = selTipoDoc ? selTipoDoc.value : '';
+
+    if (!idTramite && !tipoDoc) {
+        if (inputSerieVis) inputSerieVis.value = '';
+        if (inputSubserieVis) inputSubserieVis.value = '';
+        if (selectSerieLegacy) selectSerieLegacy.value = '';
+        if (selectSubserieLegacy) selectSubserieLegacy.value = '';
+        if (badgeSerie) {
+            badgeSerie.className = 'text-xs px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-600';
+            badgeSerie.innerHTML = '<i class="fas fa-lock mr-1"></i>Solo lectura';
+        }
+        if (badgeSubserie) {
+            badgeSubserie.className = 'text-xs px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-600';
+            badgeSubserie.innerHTML = '<i class="fas fa-lock mr-1"></i>Solo lectura';
+        }
+        if (fbSerie) fbSerie.textContent = 'Determinada automáticamente según el trámite y tipo documental (no editable).';
+        if (fbSubserie) fbSubserie.textContent = 'Determinada automáticamente según el trámite y tipo documental (no editable).';
+        return;
+    }
+
+    const url = '/api/radicados/clasificacion-automatica?idTramite=' + encodeURIComponent(idTramite) + '&tipoDocumento=' + encodeURIComponent(tipoDoc);
+
+    fetch(url)
+        .then(r => r.json())
+        .then(res => {
+            if (res.success && res.data) {
+                const d = res.data;
+                if (inputSerieVis) inputSerieVis.value = d.textoSerie || '';
+                if (inputSubserieVis) inputSubserieVis.value = d.textoSubserie || '';
+
+                if (selectSerieLegacy) {
+                    selectSerieLegacy.value = d.codigoSerie || '';
+                }
+                if (selectSubserieLegacy) {
+                    selectSubserieLegacy.value = d.codigoSubserie || '';
+                }
+
+                if (badgeSerie) {
+                    badgeSerie.className = 'text-xs px-2 py-0.5 rounded-full font-semibold ' +
+                        (d.codigoSerie ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600');
+                    badgeSerie.innerHTML = d.codigoSerie ? '<i class="fas fa-magic mr-1"></i>Automática' : '<i class="fas fa-lock mr-1"></i>Solo lectura';
+                }
+                if (badgeSubserie) {
+                    badgeSubserie.className = 'text-xs px-2 py-0.5 rounded-full font-semibold ' +
+                        (d.codigoSubserie ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600');
+                    badgeSubserie.innerHTML = d.codigoSubserie ? '<i class="fas fa-magic mr-1"></i>Automática' : '<i class="fas fa-lock mr-1"></i>Solo lectura';
+                }
+                if (fbSerie && d.criterio) {
+                    fbSerie.textContent = 'Clasificación automática: ' + d.criterio;
+                }
+                if (fbSubserie) {
+                    fbSubserie.textContent = d.codigoSubserie ? ('Subserie asignada: ' + d.nombreSubserie) : 'No requiere subserie para esta tipología.';
+                }
+            }
+        })
+        .catch(err => {
+            console.error('Error al consultar clasificación automática:', err);
+        });
+}
+
 // --- REACTIVIDAD DE DEPENDENCIA (BUSCA RESPONSABLE / ENCARGADO) ---
+function onDependenciaChange(select) {
+    const idDep = select ? select.value : '';
+    const selResp = document.getElementById('selectResponsable');
+    const feedback = document.getElementById('responsableFeedback');
+    const badgeResp = document.getElementById('badgeResponsable');
+
+    // 1. Limpiar inmediatamente cualquier responsable previamente asignado (Requisito 8)
+    if (selResp) selResp.value = '';
+    if (feedback) feedback.innerHTML = '';
+    if (badgeResp) {
+        badgeResp.className = 'text-xs px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-600';
+        badgeResp.innerHTML = '<i class="fas fa-user-cog mr-1"></i>Por dependencia';
+    }
+
+    if (!idDep) return;
+
+    if (feedback) {
+        feedback.innerHTML = '<span class="text-slate-400"><i class="fas fa-spinner fa-spin mr-1"></i>Consultando responsable de la dependencia...</span>';
+    }
+
+    fetch('/api/dependencias/' + encodeURIComponent(idDep) + '/responsable')
+        .then(response => response.json().then(data => ({ ok: response.ok, body: data })))
+        .then(res => {
+            if (res.ok && res.body && res.body.success && res.body.data && res.body.data.id_usuario) {
+                if (selResp) selResp.value = res.body.data.id_usuario;
+                if (badgeResp) {
+                    badgeResp.className = 'text-xs px-2 py-0.5 rounded-full font-semibold bg-emerald-100 text-emerald-800';
+                    badgeResp.innerHTML = '<i class="fas fa-user-check mr-1"></i>Asignado';
+                }
+                if (feedback) {
+                    feedback.innerHTML = `<span class="text-emerald-600 font-semibold"><i class="fas fa-check-circle mr-1"></i>Responsable asignado: ${res.body.data.nombre}</span>`;
+                }
+            } else {
+                if (selResp) selResp.value = '';
+                if (badgeResp) {
+                    badgeResp.className = 'text-xs px-2 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-800';
+                    badgeResp.innerHTML = '<i class="fas fa-exclamation-triangle mr-1"></i>Sin responsable';
+                }
+                const msg = (res.body && res.body.message)
+                    ? res.body.message
+                    : 'La dependencia seleccionada no tiene un responsable asignado actualmente.';
+                if (feedback) {
+                    feedback.innerHTML = `<span class="text-amber-600 font-semibold"><i class="fas fa-exclamation-triangle mr-1"></i>${msg}</span>`;
+                }
+            }
+        })
+        .catch(() => {
+            if (selResp) selResp.value = '';
+            if (badgeResp) {
+                badgeResp.className = 'text-xs px-2 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-800';
+                badgeResp.innerHTML = '<i class="fas fa-exclamation-triangle mr-1"></i>Sin responsable';
+            }
+            if (feedback) {
+                feedback.innerHTML = '<span class="text-amber-600 font-semibold"><i class="fas fa-exclamation-triangle mr-1"></i>No fue posible consultar el responsable de la dependencia.</span>';
+            }
+        });
+}
+
+/* legacy removed */ /*
 function onDependenciaChange(select) {
     const idDep = select.value;
     const feedback = document.getElementById('responsableFeedback');
@@ -585,10 +743,10 @@ function onDependenciaChange(select) {
                 if (feedback) feedback.textContent = '';
             }
         })
-        .catch(() => {});
+        .catch(() => {}); }); } */ /*
 }
 
-// --- GESTIÓN DE ARCHIVOS ADJUNTOS (DRAG & DROP, MÁXIMO 5) ---
+*/ // --- GESTIÓN DE ARCHIVOS ADJUNTOS (DRAG & DROP, MÁXIMO 5) ---
 let fileList = [];
 const MAX_FILES = 5;
 const MAX_BYTES = 15 * 1024 * 1024; // 15MB
@@ -666,7 +824,20 @@ function renderFileList() {
         container.appendChild(item);
     });
 }
-</script>
+
+// Inicialización automática al cargar el formulario
+document.addEventListener('DOMContentLoaded', function() {
+    actualizarClasificacionAutomatica();
+    const selDep = document.getElementById('selectDependencia');
+    const selResp = document.getElementById('selectResponsable');
+    if (selDep && selDep.value && (!selResp || !selResp.value)) {
+        onDependenciaChange(selDep);
+    }
+});
+/* fin */ /*
+    });
+}
+*/ </script>
 <script defer th:src="@{/js/script.js}"></script>
 <script defer th:src="@{/js/odin-ui.js}"></script>
 </body>

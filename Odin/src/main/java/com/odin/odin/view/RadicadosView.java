@@ -73,6 +73,9 @@ public class RadicadosView {
     private com.odin.odin.service.ConsecutivoRadicadoService consecutivoService;
 
     @Autowired
+    private com.odin.odin.service.ClasificacionDocumentalService clasificacionService;
+
+    @Autowired
     private com.odin.odin.repository.RemitentesExternosRepository remitentesRepository;
 
     @Autowired
@@ -325,6 +328,17 @@ public class RadicadosView {
         radicado.setFecha_radicado(LocalDateTime.now().toLocalDate().toString());
 
         /*
+         * SERIE Y SUBSERIE AUTOMÁTICAS (RF y Reglas CCD/TRD)
+         * Se determina y valida automáticamente en backend con base en el trámite
+         * y el tipo de documento, impidiendo que el cliente envíe valores inconsistentes.
+         */
+        var clasifAuto = clasificacionService.determinarClasificacion(radicado.getId_tramite(), radicado.getTipoDocumento());
+        if (clasifAuto.isDeterminada()) {
+            radicado.setCodigo_serie(clasifAuto.getCodigoSerie());
+            radicado.setCodigo_subserie(clasifAuto.getCodigoSubserie());
+        }
+
+        /*
          * Evita mandar "" hacia las FK
          * de serie y subserie.
          */
@@ -449,13 +463,14 @@ public class RadicadosView {
         );
 
         /*
-         * USUARIO RESPONSABLE
+         * USUARIO RESPONSABLE SEGÚN DEPENDENCIA
          */
         if (!tieneNumero(
                 radicado.getId_usuario()
         )) {
 
-            radicado.setId_usuario(
+            asignarResponsableSegunDependencia(radicado, idDepElegido, responsableId);
+            if (false) radicado.setId_usuario(
                     idValorODefecto(
                             responsableId,
                             2
@@ -707,6 +722,32 @@ public class RadicadosView {
         if (id2 != null && id2.longValue() > 0) return id2.longValue();
         if (id3 != null && id3.longValue() > 0) return id3.longValue();
         return idPorDefecto == null ? null : idPorDefecto.longValue();
+    }
+
+    private void asignarResponsableSegunDependencia(Radicados radicado, Long idDepElegido, Integer responsableId) {
+        if (idDepElegido != null) {
+            List<com.odin.odin.model.Usuarios> activos = usuariosRepository.findActivosByDependencia(idDepElegido);
+            if (!activos.isEmpty()) {
+                boolean pertenece = false;
+                if (tieneNumero(radicado.getId_usuario())) {
+                    for (var u : activos) {
+                        if (u.getId_usuario().equals(radicado.getId_usuario())) {
+                            pertenece = true;
+                            break;
+                        }
+                    }
+                }
+                if (!pertenece) {
+                    radicado.setId_usuario(activos.get(0).getId_usuario());
+                }
+            } else {
+                if (!tieneNumero(radicado.getId_usuario())) {
+                    radicado.setId_usuario(null);
+                }
+            }
+        } else if (!tieneNumero(radicado.getId_usuario())) {
+            radicado.setId_usuario(idValorODefecto(responsableId, null));
+        }
     }
 
     private Long idValorODefecto(Number valor, Number idPorDefecto) {
