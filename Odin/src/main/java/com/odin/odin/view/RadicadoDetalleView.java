@@ -69,7 +69,7 @@ public class RadicadoDetalleView {
         Map<Long, String> nombresEstado = new HashMap<>();
         estadosRepository.findAll().forEach(e -> {
             if (e.getId_estado() != null)
-                nombresEstado.put(e.getId_estado(), e.getNombre() != null ? e.getNombre() : String.valueOf(e.getId_estado()));
+                nombresEstado.put((long) e.getId_estado(), e.getNombre() != null ? e.getNombre() : String.valueOf(e.getId_estado()));
         });
         Map<Long, String> nombresDep = new HashMap<>();
         dependenciasRepository.findAll().forEach(d -> {

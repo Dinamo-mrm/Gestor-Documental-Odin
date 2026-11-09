@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface SubseriesRepository extends JpaRepository<Subseries, Long> {
 
-    @org.springframework.data.jpa.repository.Query("SELECT s FROM Subseries s WHERE s.codigo_subserie = :codigoSubserie")
+    @org.springframework.data.jpa.repository.Query("SELECT ss FROM Subseries ss WHERE ss.codigo_subserie = :codigoSubserie")
     Optional<Subseries> findByCodigoSubserie(@org.springframework.data.repository.query.Param("codigoSubserie") String codigoSubserie);
 }

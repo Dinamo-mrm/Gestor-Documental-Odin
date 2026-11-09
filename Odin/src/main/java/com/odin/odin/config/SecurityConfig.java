@@ -45,7 +45,8 @@ public class SecurityConfig {
                         "/auth/**", "/restablecer-password", "/restablecer-password/**",
                         "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**"
                 ).permitAll()
-                .requestMatchers("/view/usuarios/**", "/view/roles/**", "/api/usuarios/**", "/api/roles/**").hasAnyAuthority("admin_usuarios","admin_roles","ROLE_ADMIN","ROLE_ROOT")
+                .requestMatchers("/view/usuarios/**", "/api/usuarios/**").hasAnyAuthority("admin_usuarios","ROLE_ADMIN","ROLE_ROOT")
+                .requestMatchers("/view/roles/**", "/api/roles/**").hasAnyAuthority("admin_roles","ROLE_ADMIN","ROLE_ROOT")
                 .requestMatchers("/view/documentos/**", "/api/documentos/**", "/api/anexos/**", "/api/expedientes/**", "/api/firmas/**").hasAnyAuthority("gestionar_documentos","ROLE_ADMIN","ROLE_ROOT")
                 .requestMatchers("/view/tramites/**", "/api/tramites/**").hasAnyAuthority("ver_tramites","gestionar_tramites","ROLE_ADMIN","ROLE_ROOT")
                 .requestMatchers("/view/consulta").hasAnyAuthority("ver_radicados","ROLE_ADMIN","ROLE_ROOT")

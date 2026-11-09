@@ -229,6 +229,6 @@ public interface RadicadosRepository extends JpaRepository<Radicados, Long> {
                              @Param("usuario") Long usuario,
                              @Param("dependencia") Long dependencia);
 
-    @org.springframework.data.jpa.repository.Query(value = "SELECT COALESCE(MAX(id_radicado), 0) + 1 FROM radicados", nativeQuery = true)
+    @Query(value = "SELECT COALESCE(MAX(id_radicado), 0) + 1 FROM radicados", nativeQuery = true)
     Long nextNumeroRadicado();
 }

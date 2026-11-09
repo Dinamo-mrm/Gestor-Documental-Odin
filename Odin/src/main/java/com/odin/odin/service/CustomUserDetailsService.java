@@ -17,12 +17,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UsuariosRepository usuariosRepository;
     private final RolesRepository rolesRepository;
     private final RolPermisosRepository rolPermisosRepository;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public CustomUserDetailsService(UsuariosRepository usuariosRepository,
                                     RolesRepository rolesRepository,
@@ -94,6 +98,16 @@ public class CustomUserDetailsService implements UserDetailsService {
             // Tabla de permisos vacía o no disponible: se mantienen ROLE_*
         }
 
+        boolean debeCambiar = false;
+        if (usuario.getNum_identificacion() != null && !usuario.getNum_identificacion().isBlank()
+                && usuario.getPassword() != null && !usuario.getPassword().isBlank()) {
+            try {
+                debeCambiar = passwordEncoder.matches(usuario.getNum_identificacion().trim(), usuario.getPassword());
+            } catch (Exception ignored) {
+                debeCambiar = false;
+            }
+        }
+
         String correo = usuario.getCorreo() != null ? usuario.getCorreo() : q;
         return new OdinUserDetails(
                 correo,
@@ -102,7 +116,8 @@ public class CustomUserDetailsService implements UserDetailsService {
                 correo,
                 usuario.getId_usuario(),
                 autoridades,
-                true
+                true,
+                debeCambiar
         );
     }
 
