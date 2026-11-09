@@ -14,21 +14,20 @@ public interface UsuariosRepository extends JpaRepository<Usuarios, Long> {
 
     Optional<Usuarios> findByCorreoIgnoreCase(String correo);
 
-    /**
-     * Búsqueda nativa: evita problemas de JPQL con campos que tienen guión bajo
-     * (num_identificacion). Compara correo, identificación o nombre.
-     */
     @Query(value = """
             SELECT * FROM usuarios u
-            WHERE LOWER(TRIM(COALESCE(u.correo, ''))) = LOWER(TRIM(:login))
-               OR TRIM(COALESCE(u.num_identificacion, '')) = TRIM(:login)
-               OR LOWER(TRIM(COALESCE(u.nombre, ''))) = LOWER(TRIM(:login))
+            WHERE LOWER(TRIM(u.correo)) = LOWER(TRIM(:login))
+               OR LOWER(TRIM(u.num_identificacion)) = LOWER(TRIM(:login))
+               OR LOWER(TRIM(u.nombre)) = LOWER(TRIM(:login))
+            ORDER BY CASE
+                WHEN LOWER(TRIM(u.correo)) = LOWER(TRIM(:login)) THEN 1
+                WHEN LOWER(TRIM(u.num_identificacion)) = LOWER(TRIM(:login)) THEN 2
+                ELSE 3
+            END
             LIMIT 1
             """, nativeQuery = true)
     Optional<Usuarios> findByLoginFlexible(@Param("login") String login);
 
-    @Query(value = """
-            SELECT * FROM usuarios u
     @Query(value = """
             SELECT * FROM usuarios u
             WHERE u.id_dependencia = :idDep
