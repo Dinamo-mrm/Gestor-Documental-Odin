@@ -62,6 +62,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/radicados/**", "/view/radicados/**").hasAnyAuthority("ver_radicados","ROLE_ADMIN","ROLE_ROOT")
                 .requestMatchers("/api/reportes/**").hasAnyAuthority("ver_reportes","ROLE_ADMIN","ROLE_ROOT")
                 .requestMatchers("/api/notificaciones/**").authenticated()
+                .requestMatchers("/view/ayuda/**", "/api/ayuda/**").authenticated()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

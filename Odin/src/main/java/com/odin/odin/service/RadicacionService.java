@@ -215,13 +215,19 @@ public class RadicacionService {
 
     private void aplicarClasificacion(Radicados r) {
         if (texto(r.getCodigo_serie())) {
-            seriesRepository.findByCodigoSerie(r.getCodigo_serie())
+            var serie = seriesRepository.findByCodigoSerie(r.getCodigo_serie())
                     .orElseThrow(() -> new IllegalArgumentException("La serie documental seleccionada no existe"));
+            r.setCodigo_serie(serie.getCodigo_serie());
+        } else {
+            r.setCodigo_serie(null);
         }
 
         if (texto(r.getCodigo_subserie())) {
-            subseriesRepository.findByCodigoSubserie(r.getCodigo_subserie())
+            var subserie = subseriesRepository.findByCodigoSubserie(r.getCodigo_subserie())
                     .orElseThrow(() -> new IllegalArgumentException("La subserie documental seleccionada no existe"));
+            r.setCodigo_subserie(subserie.getCodigo_subserie());
+        } else {
+            r.setCodigo_subserie(null);
         }
     }
 
