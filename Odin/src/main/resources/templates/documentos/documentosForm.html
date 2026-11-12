@@ -6,9 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario Documento | ODIN</title>
 
-    
-    
-
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
@@ -18,6 +15,8 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/odin.css}">
     <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
+    <link rel="icon" type="image/png" th:href="@{/img/odin-logo.png}" href="/img/odin-logo.png">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}" href="/favicon.ico">
 </head>
 <body class="bg-[#f5f6f8] text-slate-800">
 
@@ -36,16 +35,16 @@
         <div th:replace="~{fragments/layout :: topbar('Documentos')}"></div>
 
         <main class="px-4 md:px-8 py-6 flex-1">
-<section class="mb-5">
+            <section class="mb-5">
                 <h1 class="odin-page-title">
                     Nuevo / Editar Documento
                 </h1>
                 <p class="text-sm text-slate-500 mt-1">
-                    Gestión institucional de usuarios del sistema ODIN
+                    Gestión institucional de documentos del sistema ODIN
                 </p>
             </section>
 
-            <form th:action="@{/view/usuarios/save}"
+            <form th:action="@{/view/documentos/save}"
                   th:object="${usuarios}"
                   method="post"
                   novalidate>
@@ -59,7 +58,7 @@
 
                         <div class="px-5 py-4 border-b border-slate-100">
                             <h2 class="text-sm font-extrabold text-slate-900 uppercase flex items-center gap-2">
-                                👤 Información del Usuario
+                                📄 Información del Documento
                             </h2>
                         </div>
 
@@ -67,16 +66,16 @@
 
                             <div class="md:col-span-2">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                    Nombre completo
+                                    Nombre del documento
                                 </label>
                                 <input type="text" th:field="*{nombre}" required
-                                       placeholder="Nombre / Razón social"
+                                       placeholder="Nombre / Descripción del documento"
                                        class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-green-600 focus:bg-white">
                             </div>
 
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                    Rol
+                                    Rol / Clasificación
                                 </label>
                                 <input type="number" th:field="*{id_rol}" required
                                        placeholder="ID rol"
@@ -108,7 +107,7 @@
 
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                    Número de identificación
+                                    Número de identificación / Radicado
                                 </label>
                                 <input type="text" th:field="*{num_identificacion}" required
                                        placeholder="Número de identificación"
@@ -123,7 +122,7 @@
 
                         <div class="px-5 py-4 border-b border-slate-100">
                             <h2 class="text-sm font-extrabold text-slate-900 uppercase flex items-center gap-2">
-                                🔐 Contacto y Acceso
+                                🔐 Metadatos y Acceso
                             </h2>
                         </div>
 
@@ -170,7 +169,7 @@
 
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                                    Dirección
+                                    Dirección / Ubicación física
                                 </label>
                                 <input type="text" th:field="*{direccion}" required
                                        placeholder="Dirección física"
@@ -184,21 +183,19 @@
 
                 <!-- BOTONES -->
                 <div class="flex justify-end gap-3 mt-5">
-                    <a th:href="@{/view/usuarios}"
+                    <a th:href="@{/view/documentos}"
                        class="rounded-lg border border-green-600 bg-white px-6 py-2.5 text-sm font-semibold text-green-700 hover:bg-green-50 transition">
                         Limpiar / Volver
                     </a>
 
                     <button type="submit"
                             class="rounded-lg bg-[#168500] px-7 py-2.5 text-sm font-bold text-white hover:bg-[#0f6d00] transition">
-                        ▶ Guardar Usuario
+                        ▶ Guardar Documento
                     </button>
                 </div>
 
             </form>
         </main>
-
-
 
     </div>
 </div>

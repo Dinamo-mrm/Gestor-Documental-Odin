@@ -40,6 +40,7 @@ public class SecurityConfig {
                 .requestMatchers(
                         "/", "/login", "/login/**",
                         "/css/**", "/js/**", "/images/**", "/img/**", "/webjars/**", "/favicon.ico",
+                        "/videos/**", "/videos_Odin/**",
                         "/error", "/error/**", "/403",
                         "/recuperar-password", "/recuperar-password/**",
                         "/auth/**", "/restablecer-password", "/restablecer-password/**",

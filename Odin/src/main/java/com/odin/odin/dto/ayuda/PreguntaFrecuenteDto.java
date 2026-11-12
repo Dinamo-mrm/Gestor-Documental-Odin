@@ -30,6 +30,18 @@ public class PreguntaFrecuenteDto implements Serializable {
         this.rutaAcceso = rutaAcceso;
     }
 
+    public PreguntaFrecuenteDto(String id, String categoria, String pregunta, String respuesta, String moduloRelacionado, String rutaAcceso, List<String> palabrasClave) {
+        this.id = id;
+        this.categoria = categoria;
+        this.pregunta = pregunta;
+        this.respuesta = respuesta;
+        this.moduloRelacionado = moduloRelacionado;
+        this.rutaAcceso = rutaAcceso;
+        if (palabrasClave != null) {
+            this.palabrasClave = new ArrayList<>(palabrasClave);
+        }
+    }
+
     public String getId() {
         return id;
     }
@@ -68,6 +80,13 @@ public class PreguntaFrecuenteDto implements Serializable {
 
     public void setPalabrasClave(List<String> palabrasClave) {
         this.palabrasClave = palabrasClave;
+    }
+
+    public String getPalabrasClaveTexto() {
+        if (palabrasClave == null || palabrasClave.isEmpty()) {
+            return "";
+        }
+        return String.join(" ", palabrasClave);
     }
 
     public String getModuloRelacionado() {

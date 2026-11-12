@@ -13,6 +13,8 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/odin.css}">
     <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
+    <link rel="icon" type="image/png" th:href="@{/img/odin-logo.png}" href="/img/odin-logo.png">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}" href="/favicon.ico">
 </head>
 <body class="bg-[#f5f6f8] text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen">
 <div class="min-h-screen flex">
@@ -97,7 +99,15 @@
 
                     <!-- Si tiene video configurado -->
                     <div th:if="${tutorial.tieneVideo}" class="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700 bg-black">
-                        <iframe class="w-full h-full"
+                        <video th:if="${#strings.contains(tutorial.embedVideoUrl, '.mp4')}"
+                               class="w-full h-full object-contain bg-black"
+                               controls
+                               preload="metadata">
+                            <source th:src="@{${tutorial.embedVideoUrl}}" type="video/mp4">
+                            Tu navegador no soporta la reproducción de video HTML5.
+                        </video>
+                        <iframe th:unless="${#strings.contains(tutorial.embedVideoUrl, '.mp4')}"
+                                class="w-full h-full"
                                 th:src="${tutorial.embedVideoUrl}"
                                 th:title="${'Tutorial ' + tutorial.moduloNombre}"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

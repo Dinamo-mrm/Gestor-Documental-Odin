@@ -128,4 +128,42 @@ class CentroAyudaViewTest {
         assertFalse(resultados.isEmpty());
         assertTrue(resultados.stream().anyMatch(r -> r.getTitulo().toLowerCase().contains("trámite") || r.getSnippet().toLowerCase().contains("trámite") || r.getModulo().toLowerCase().contains("trámite")));
     }
+    @Test
+    @DisplayName("faq() debe tener cobertura amplia de todos los modulos del sistema con mas de 30 preguntas")
+    void testFaqsCoberturaModulosCompleta() {
+        Model model = new ConcurrentModel();
+        view.faq(model);
+
+        @SuppressWarnings("unchecked")
+        List<PreguntaFrecuenteDto> faqs = (List<PreguntaFrecuenteDto>) model.getAttribute("faqs");
+        @SuppressWarnings("unchecked")
+        List<String> categorias = (List<String>) model.getAttribute("categorias");
+
+        assertNotNull(faqs);
+        assertTrue(faqs.size() >= 30, "Debe contener al menos 30 preguntas frecuentes documentadas");
+
+        assertNotNull(categorias);
+        assertTrue(categorias.size() >= 10, "Debe cubrir al menos 10 categorias tematicas");
+
+        // Validar que modulos criticos esten cubiertos
+        assertTrue(categorias.contains("Dashboard e Inicio"));
+        assertTrue(categorias.contains("Usuarios y Control de Acceso"));
+        assertTrue(categorias.contains("Dependencias Institucionales"));
+        assertTrue(categorias.contains("Radicación y Correspondencia"));
+        assertTrue(categorias.contains("Gestión de Trámites"));
+        assertTrue(categorias.contains("Reasignaciones y Traslados"));
+        assertTrue(categorias.contains("Documentos y Anexos"));
+        assertTrue(categorias.contains("Clasificación Documental (CCD)"));
+        assertTrue(categorias.contains("Consultas y Vencimientos"));
+        assertTrue(categorias.contains("Bitácora y Auditoría"));
+        assertTrue(categorias.contains("Reportes y Estadísticas"));
+        assertTrue(categorias.contains("Perfil y Seguridad"));
+
+        // Validar busqueda por tags clave
+        List<ResultadoBusquedaDto> resBitacora = view.buscarApi("bitacora");
+        assertFalse(resBitacora.isEmpty(), "La busqueda por 'bitacora' debe arrojar resultados");
+
+        List<ResultadoBusquedaDto> resSemaforo = view.buscarApi("semaforo");
+        assertFalse(resSemaforo.isEmpty(), "La busqueda por 'semaforo' debe arrojar resultados");
+    }
 }

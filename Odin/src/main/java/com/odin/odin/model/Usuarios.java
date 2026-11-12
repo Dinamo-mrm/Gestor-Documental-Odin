@@ -48,6 +48,14 @@ public class Usuarios
     @Column(name = "password")  // ← Cambiado de "clave" a "password"
     private String password;
 
+    public String getClave() {
+        return password;
+    }
+
+    public void setClave(String clave) {
+        this.password = clave;
+    }
+
     @NotBlank(message = "La dirección es obligatoria")
     @Column(name = "direccion")
     private String direccion;

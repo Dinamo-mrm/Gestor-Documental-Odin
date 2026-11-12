@@ -26,20 +26,20 @@ public class CentroAyudaService {
     // Ingrese aquí la URL de YouTube (ejemplo: https://youtu.be/xyz o https://www.youtube.com/watch?v=xyz)
     // Deje en blanco ("") para indicar contenido pendiente de producción.
     // =========================================================================
-    public static final String URL_VIDEO_INTRODUCTORIO = ""; // Marcador: Video General ODIN
+    public static final String URL_VIDEO_INTRODUCTORIO = "/videos/video_pagina_principal.mp4"; // Video General ODIN
 
-    public static final String URL_VIDEO_DASHBOARD = "";     // Marcador: Tutorial Dashboard
-    public static final String URL_VIDEO_USUARIOS = "";      // Marcador: Tutorial Usuarios
-    public static final String URL_VIDEO_ROLES = "";         // Marcador: Tutorial Roles y Permisos
-    public static final String URL_VIDEO_DEPENDENCIAS = "";  // Marcador: Tutorial Dependencias
-    public static final String URL_VIDEO_RADICADOS = "";     // Marcador: Tutorial Radicación
-    public static final String URL_VIDEO_SERIES = "";        // Marcador: Tutorial Series Documentales
-    public static final String URL_VIDEO_SUBSERIES = "";     // Marcador: Tutorial Subseries
-    public static final String URL_VIDEO_DOCUMENTOS = "";    // Marcador: Tutorial Documentos y Expedientes
-    public static final String URL_VIDEO_TRAMITES = "";      // Marcador: Tutorial Gestión de Trámites
-    public static final String URL_VIDEO_CONSULTA = "";      // Marcador: Tutorial Consulta y Seguimiento
-    public static final String URL_VIDEO_BITACORA = "";      // Marcador: Tutorial Bitácora y Auditoría
-    public static final String URL_VIDEO_REPORTES = "";      // Marcador: Tutorial Reportes y Estadísticas
+    public static final String URL_VIDEO_DASHBOARD = "/videos/video_pagina_principal.mp4";     // Tutorial Dashboard
+    public static final String URL_VIDEO_USUARIOS = "/videos/usuarios.mp4"; // Tutorial Usuarios
+    public static final String URL_VIDEO_ROLES = "/videos/roles_permisos.mp4";                 // Tutorial Roles y Permisos
+    public static final String URL_VIDEO_DEPENDENCIAS = "/videos/dependencias.mp4"; // Tutorial Dependencias
+    public static final String URL_VIDEO_RADICADOS = "/videos/radicacion.mp4";                 // Tutorial Radicación
+    public static final String URL_VIDEO_SERIES = "/videos/series_documentales.mp4";        // Tutorial Series Documentales
+    public static final String URL_VIDEO_SUBSERIES = "/videos/series_documentales.mp4";     // Tutorial Subseries
+    public static final String URL_VIDEO_DOCUMENTOS = "/videos/documentos.mp4"; // Tutorial Documentos y Expedientes
+    public static final String URL_VIDEO_TRAMITES = "/videos/tramites.mp4"; // Tutorial Gestión de Trámites
+    public static final String URL_VIDEO_CONSULTA = "/videos/consulta_seguimiento.mp4"; // Tutorial Consulta y Seguimiento
+    public static final String URL_VIDEO_BITACORA = "/videos/bitacora.mp4"; // Tutorial Bitácora y Auditoría
+    public static final String URL_VIDEO_REPORTES = "/videos/reportes.mp4"; // Tutorial Reportes y Estadísticas
 
     private final VideoIntroductorioDto videoGeneral;
     private final Map<String, TutorialModuloDto> tutorialesMap = new LinkedHashMap<>();
@@ -165,6 +165,9 @@ public class CentroAyudaService {
         }
 
         String url = rawUrl.trim();
+        if (url.startsWith("/") || url.endsWith(".mp4")) {
+            return url;
+        }
         String videoId = null;
 
         // Formatos soportados:
@@ -209,7 +212,7 @@ public class CentroAyudaService {
         VideoIntroductorioDto v = new VideoIntroductorioDto();
         v.setTitulo("Bienvenido a ODIN: Sistema Integral de Gestión Documental");
         v.setDescripcion("Conozca los pilares de la gestión de correspondencia y archivo en ODIN: radicación estandarizada, atención en bandeja de trámites, control del Cuadro de Clasificación Documental y trazabilidad en bitácora inmutable.");
-        v.setDuracionEstimada("08:30 min");
+        v.setDuracionEstimada("00:25 min");
         v.setVideoUrl(URL_VIDEO_INTRODUCTORIO);
         v.setEmbedVideoUrl(sanitizarEmbedUrl(URL_VIDEO_INTRODUCTORIO));
         v.setTemasTratados(Arrays.asList(
@@ -683,102 +686,394 @@ public class CentroAyudaService {
     }
 
     private void inicializarPreguntasFrecuentes() {
-        // Categoría 1: Radicación y Correspondencia
+        // =========================================================================
+        // CATEGORÍA 1: Dashboard y Panel de Inicio
+        // =========================================================================
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-dash-01",
+                "Dashboard e Inicio",
+                "¿Qué información y métricas muestra el Dashboard principal de ODIN?",
+                "El Dashboard consolida en tiempo real los indicadores clave de correspondencia institucional: total de radicados recibidos en el mes o período activo, volumen de trámites pendientes de atención, solicitudes en trámite, alertas tempranas de semáforo (por vencer y vencidos) y el número de radicados finalizados con éxito. Además, provee accesos directos hacia las acciones más frecuentes según los permisos del usuario.",
+                "Dashboard",
+                "/view/dashboard",
+                Arrays.asList("dashboard", "inicio", "metricas", "kpi", "indicadores", "resumen", "alertas", "contadores")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-dash-02",
+                "Dashboard e Inicio",
+                "¿Por qué no todos los usuarios visualizan los mismos indicadores o accesos en el Inicio?",
+                "La interfaz de ODIN aplica control de acceso basado en roles (RBAC). Los directores, coordinadores y administradores disponen de tarjetas con indicadores consolidados institucionales de todas las dependencias, mientras que los funcionarios operativos únicamente visualizan las estadísticas de su dependencia y los radicados asignados a su bandeja personal de trabajo.",
+                "Dashboard",
+                "/view/dashboard",
+                Arrays.asList("permisos", "visibilidad", "dashboard", "rbac", "roles", "perfil", "metricas", "seguridad")
+        ));
+
+        // =========================================================================
+        // CATEGORÍA 2: Usuarios y Control de Acceso
+        // =========================================================================
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-usr-01",
+                "Usuarios y Control de Acceso",
+                "¿Quién puede registrar un nuevo usuario y cuáles son los campos obligatorios?",
+                "Únicamente los usuarios con el permiso 'admin_usuarios' o con rol de Administrador pueden dar de alta nuevos usuarios en 'Gestión de Usuarios'. Son obligatorios: tipo y número de identificación, nombres y apellidos completos, correo electrónico institucional único, rol del sistema y la dependencia a la que quedará formalmente adscrito.",
+                "Usuarios",
+                "/view/usuarios",
+                Arrays.asList("crear usuario", "nuevo usuario", "registro", "datos obligatorios", "dependencia", "correo")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-usr-02",
+                "Usuarios y Control de Acceso",
+                "¿Cuál es la contraseña inicial asignada a un usuario recién creado?",
+                "Por directriz de seguridad de ODIN, la contraseña por defecto inicial corresponde al número de documento de identificación del usuario. Al iniciar sesión por primera vez, el sistema detecta de forma automática esta condición y despliega una alerta obligatoria que le exige crear una contraseña segura antes de permitirle operar.",
+                "Usuarios",
+                "/login",
+                Arrays.asList("contraseña temporal", "primer ingreso", "clave por defecto", "cedula", "seguridad", "cambio clave")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-usr-03",
+                "Usuarios y Control de Acceso",
+                "¿Por qué no se deben eliminar usuarios físicamente de la base de datos?",
+                "Para preservar la cadena de custodia y la validez probatoria de las actuaciones administrativas, ningún usuario puede ser borrado físicamente de ODIN. Para revocar el acceso a un exfuncionario, el Administrador debe cambiar su estado a 'Inactivo', lo que inhabilita sus credenciales de inmediato sin romper la trazabilidad histórica de sus radicados, traslados y firmas.",
+                "Usuarios",
+                "/view/usuarios",
+                Arrays.asList("eliminar usuario", "borrar cuenta", "inactivar usuario", "estado inactivo", "trazabilidad")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-usr-04",
+                "Usuarios y Control de Acceso",
+                "¿Cómo funciona la matriz RBAC de Roles y Permisos?",
+                "La matriz RBAC define los privilegios del sistema asignando permisos funcionales atómicos (tales como 'crear_radicado', 'editar_radicado', 'ver_radicados', 'trasladar_radicado', 'finalizar_radicado', 'admin_usuarios', 'admin_ccd', 'ver_reportes') a roles predefinidos. Cuando un Administrador modifica los permisos de un rol, el cambio surte efecto de inmediato para todos los usuarios vinculados.",
+                "Roles",
+                "/view/roles",
+                Arrays.asList("roles", "permisos", "rbac", "matriz", "privilegios", "administrador", "seguridad")
+        ));
+
+        // =========================================================================
+        // CATEGORÍA 3: Dependencias Institucionales
+        // =========================================================================
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-dep-01",
+                "Dependencias Institucionales",
+                "¿Cuál es el rol de las Dependencias en el flujo documental de ODIN?",
+                "Las dependencias representan la estructura orgánica formal de la entidad (Secretarías, Direcciones, Oficinas Asesoras, Subdirecciones). Cada radicado de entrada o comunicación interna debe direccionarse obligatoriamente a una dependencia responsable, la cual gestiona su propia bandeja de trámites y responde por los plazos de ley.",
+                "Dependencias",
+                "/view/dependencias",
+                Arrays.asList("dependencias", "estructura organica", "areas", "bandeja", "organigrama", "competencia")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-dep-02",
+                "Dependencias Institucionales",
+                "¿Qué se debe verificar antes de inactivar una Dependencia en el sistema?",
+                "Antes de inactivar una dependencia, es imperativo consultar en 'Consulta y Seguimiento' y confirmar que no existan trámites en estado 'Pendiente' o 'En Trámite'. Todos los radicados activos deben reasignarse o trasladarse formalmente a la dependencia que asuma la competencia, evitando así la pérdida de términos legales de cara al ciudadano.",
+                "Dependencias",
+                "/view/dependencias",
+                Arrays.asList("inactivar dependencia", "trasladar tramites", "radicados activos", "cierre de area", "terminos legales")
+        ));
+
+        // =========================================================================
+        // CATEGORÍA 4: Radicación y Correspondencia
+        // =========================================================================
         preguntasFrecuentes.add(new PreguntaFrecuenteDto(
                 "faq-rad-01",
                 "Radicación y Correspondencia",
                 "¿Cómo se genera el número consecutivo de un radicado?",
-                "El número de radicado es generado de manera automática y correlativa por el sistema en el instante exacto en que se presiona 'Guardar Radicado'. Ningún usuario puede ingresar o alterar manualmente este número, garantizando la transparencia y la normatividad de correspondencia oficial.",
+                "El número de radicado se genera de forma estrictamente correlativa, continua y atómica en el motor de base de datos en el instante exacto en que se presiona 'Guardar Radicado'. Cumpliendo con el Acuerdo 060 de 2001 del Archivo General de la Nación (AGN), ningún usuario puede asignar números manuales, reservar consecutivos ni alterar la secuencia.",
                 "Radicación",
-                "/view/radicados"
+                "/view/radicados",
+                Arrays.asList("consecutivo", "numero radicado", "acuerdo 060", "agn", "automatico", "inalterable", "legal")
         ));
         preguntasFrecuentes.add(new PreguntaFrecuenteDto(
                 "faq-rad-02",
                 "Radicación y Correspondencia",
-                "¿Puedo modificar el asunto o el remitente después de radicado?",
-                "Por seguridad jurídica y archivística, los datos principales de un radicado quedan blindados. Solo los usuarios con permisos especiales de edición ('editar_radicado' o Administradores) pueden ajustar metadatos descriptivos, y cualquier cambio genera automáticamente un registro inmutable en la Bitácora.",
+                "¿Qué tipos de comunicaciones oficiales se pueden radicar en ODIN?",
+                "ODIN soporta los tres flujos normados por el AGN:\n1. Comunicaciones de Entrada: Peticiones, solicitudes, PQRS y correspondencia de ciudadanos o entidades externas.\n2. Comunicaciones de Salida: Respuestas oficiales, oficios o circulares emitidos por la entidad a terceros.\n3. Comunicaciones Internas: Memorandos e informes que circulan entre dependencias institucionales.",
                 "Radicación",
-                "/view/radicados"
+                "/view/radicados",
+                Arrays.asList("tipo radicado", "entrada", "salida", "interna", "pqrs", "correspondencia oficial", "agn")
         ));
         preguntasFrecuentes.add(new PreguntaFrecuenteDto(
                 "faq-rad-03",
                 "Radicación y Correspondencia",
-                "¿Cuáles formatos y pesos máximos de anexos son permitidos?",
-                "ODIN admite archivos en formato PDF, imágenes (PNG, JPG) y documentos estándar de oficina. El peso máximo configurado por archivo es de 20 MB. Si requiere anexar archivos mayores, se recomienda comprimir o particionar el documento garantizando su legibilidad.",
-                "Documentos",
-                "/view/documentos"
+                "¿Cómo calcula ODIN la fecha límite legal de respuesta para una solicitud?",
+                "Al clasificar la tipología del radicado (ej: Petición de interés general: 15 días hábiles, Solicitud de información: 10 días, Petición entre autoridades: 10 días, Consulta técnica: 30 días, según Ley 1755 de 2015), el sistema proyecta automáticamente la fecha límite hábil, descontando sábados, domingos y días festivos nacionales de Colombia.",
+                "Radicación",
+                "/view/radicados",
+                Arrays.asList("fecha limite", "dias habiles", "festivos", "vencimiento", "ley 1755", "pqrs", "terminos legales")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-rad-04",
+                "Radicación y Correspondencia",
+                "¿Qué es el rótulo de radicación y cómo se entrega al solicitante?",
+                "El rótulo es el acuse formal que acredita la recepción del documento. Contiene número consecutivo, fecha y hora oficial con segundos, remitente, dependencia destino, asunto y cantidad de folios. Se puede imprimir como adhesivo térmico para el documento físico y se envía automáticamente en formato PDF al correo electrónico registrado del remitente.",
+                "Radicación",
+                "/view/radicados",
+                Arrays.asList("rotulo", "sticker", "acuse de recibo", "constancia", "impresion", "notificacion correo")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-rad-05",
+                "Radicación y Correspondencia",
+                "¿Puedo modificar el asunto o los datos principales después de radicado?",
+                "Por seguridad jurídica, el número de radicado, la fecha de radicación y el remitente principal son inalterables. Únicamente los usuarios con el permiso 'editar_radicado' o Administradores pueden actualizar observaciones o anexar nuevos soportes, quedando cada cambio registrado en la Bitácora de Auditoría.",
+                "Radicación",
+                "/view/radicados",
+                Arrays.asList("modificar radicado", "editar asunto", "permisos edicion", "bitacora", "seguridad documental")
         ));
 
-        // Categoría 2: Gestión de Trámites y Reasignaciones
+        // =========================================================================
+        // CATEGORÍA 5: Gestión de Trámites y Bandeja de Trabajo
+        // =========================================================================
         preguntasFrecuentes.add(new PreguntaFrecuenteDto(
                 "faq-tra-01",
                 "Gestión de Trámites",
-                "¿Qué significa cada estado de un radicado?",
-                "• Pendiente: El documento fue radicado y asignado a una dependencia, pero aún no se ha iniciado su análisis formal.\n• En Trámite: El funcionario responsable tomó el radicado para elaborar respuesta o ejecutar la actuación correspondiente.\n• Finalizado: Se emitió respuesta formal o se cerró satisfactoriamente el trámite administrativo.\n• Rechazado: Se desestimó la solicitud por incumplimiento formal o duplicidad, mediando justificación explícita.",
+                "¿Cuáles son los estados de un radicado a lo largo de su ciclo de vida?",
+                "• Pendiente: Registrado y direccionado a la dependencia, a la espera de ser asumido por un funcionario.\n• En Trámite: El funcionario asignado inició la gestión, análisis o redacción de la respuesta oficial.\n• Finalizado: Se cargó el documento de respuesta formal notificado, cerrando oportunamente el término de ley.\n• Rechazado: Se desestimó la solicitud por incumplimiento de requisitos formales o duplicidad flagrante, mediando justificación motivada.",
                 "Trámites",
-                "/view/tramites"
+                "/view/tramites",
+                Arrays.asList("estados del tramite", "pendiente", "en tramite", "finalizado", "rechazado", "ciclo de vida")
         ));
         preguntasFrecuentes.add(new PreguntaFrecuenteDto(
                 "faq-tra-02",
                 "Gestión de Trámites",
-                "¿Qué debo hacer si recibo un radicado que no corresponde a mi dependencia?",
-                "No debe finalizar ni archivar el documento. Ingrese a la opción 'Reasignar', seleccione la dependencia competente y detalle el motivo de la transferencia en el campo de justificación obligatoria. El radicado se trasladará inmediatamente a la nueva bandeja.",
+                "¿Cómo se finaliza correctamente un trámite en la plataforma?",
+                "Para finalizar un radicado en 'Gestión de Trámites', el funcionario responsable debe seleccionar el radicado, hacer clic en 'Finalizar Trámite', adjuntar el documento oficial de respuesta (en formato PDF firmado o con número de oficio de salida) y diligenciar el resumen de la respuesta emitida. Al confirmar, el radicado pasa a estado 'Finalizado' y se detiene el cómputo de términos.",
                 "Trámites",
-                "/view/reasignaciones"
-        ));
-
-        // Categoría 3: Consultas y Vencimientos
-        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
-                "faq-con-01",
-                "Consultas y Vencimientos",
-                "¿Cómo funciona el semáforo de días restantes?",
-                "El semáforo evalúa la fecha límite legal calculada al radicar:\n• Verde: El radicado cuenta con más de 3 días hábiles para su vencimiento.\n• Naranja (Alerta): Quedan 3 días o menos para el vencimiento.\n• Rojo (Vencido): Se ha superado el plazo normativo sin haber marcado el trámite como finalizado.",
-                "Consulta",
-                "/view/consulta"
+                "/view/tramites",
+                Arrays.asList("finalizar tramite", "cerrar radicado", "adjuntar respuesta", "oficio salida", "cumplimiento")
         ));
         preguntasFrecuentes.add(new PreguntaFrecuenteDto(
-                "faq-con-02",
-                "Consultas y Vencimientos",
-                "¿Quiénes pueden buscar y consultar radicados?",
-                "Todos los usuarios autenticados de ODIN pueden utilizar la pantalla de 'Consulta y Seguimiento' para ubicar radicados mediante palabras clave, estados, dependencias y fechas.",
-                "Consulta",
-                "/view/consulta"
+                "faq-tra-03",
+                "Gestión de Trámites",
+                "¿Qué consecuencias tiene que un radicado alcance la fecha límite sin finalizarse?",
+                "El semáforo del radicado pasa de forma automática a color Rojo (Vencido) y comienza a contabilizar días de mora. Dicho radicado se resalta con máxima prioridad en las bandejas institucionales y se refleja en los reportes de control interno y auditoría disciplinaria.",
+                "Trámites",
+                "/view/tramites",
+                Arrays.asList("radicado vencido", "mora", "semaforo rojo", "alerta critica", "disciplinario", "vencimiento")
         ));
 
-        // Categoría 4: Archivo y Clasificación Documental (CCD)
+        // =========================================================================
+        // CATEGORÍA 6: Reasignaciones y Traslado de Radicados
+        // =========================================================================
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-rea-01",
+                "Reasignaciones y Traslados",
+                "¿Qué debo hacer si recibo en mi bandeja un radicado que no es competencia de mi área?",
+                "No debe finalizarlo ni archivarlo. Ingrese a la opción 'Reasignar' o 'Trasladar', seleccione en el catálogo la dependencia que tenga la competencia funcional sobre el tema y describa claramente el motivo técnico o legal del traslado. El radicado pasará de inmediato a la bandeja de la nueva dependencia.",
+                "Reasignaciones",
+                "/view/reasignaciones",
+                Arrays.asList("trasladar radicado", "reasignacion", "competencia", "cambiar area", "bandeja destino")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-rea-02",
+                "Reasignaciones y Traslados",
+                "¿Por qué es obligatoria la justificación al reasignar un radicado?",
+                "El traslado administrativo transfiere formalmente la responsabilidad disciplinaria y legal de responder al ciudadano dentro del término. La justificación queda grabada en la Bitácora inmutable con el usuario que la ordenó, fecha y hora, constituyendo prueba legal de la remisión.",
+                "Reasignaciones",
+                "/view/reasignaciones",
+                Arrays.asList("justificacion obligatoria", "motivo traslado", "bitacora", "responsabilidad", "cadena custodia")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-rea-03",
+                "Reasignaciones y Traslados",
+                "¿El traslado de un radicado reinicia el conteo de días para dar respuesta?",
+                "No. El término de ley se computa sin interrupción a partir de la fecha y hora de la radicación original de entrada. Por ello, los traslados deben realizarse de inmediato (preferiblemente el mismo día o al día hábil siguiente) para no vulnerar el derecho de respuesta del peticionario.",
+                "Reasignaciones",
+                "/view/reasignaciones",
+                Arrays.asList("reinicio terminos", "plazo legal", "terminos ininterrumpidos", "traslado oportuno", "ley 1755")
+        ));
+
+        // =========================================================================
+        // CATEGORÍA 7: Documentos, Expedientes y Anexos
+        // =========================================================================
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-doc-01",
+                "Documentos y Anexos",
+                "¿Cuáles formatos y tamaños máximos de archivo admite el módulo de Documentos?",
+                "ODIN admite archivos en formato PDF (estándar para preservación a largo plazo), imágenes (PNG, JPG) y documentos ofimáticos. El peso máximo configurado por archivo es de 20 MB. Para expedientes de mayor volumen, se recomienda optimizar la compresión o escanear a 200-300 DPI conforme a las directrices de AGN.",
+                "Documentos",
+                "/view/documentos",
+                Arrays.asList("formatos admitidos", "tamano maximo", "20mb", "pdf", "imagenes", "escaneo", "resolucion", "dpi")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-doc-02",
+                "Documentos y Anexos",
+                "¿Cómo protege ODIN la integridad de los documentos y anexos almacenados?",
+                "El sistema valida el tipo MIME binario real en el backend impidiendo extensiones ejecutables peligrosas (.exe, .php, .sh). Los archivos se renombran siguiendo la convención institucional normalizada (combinando prefijo, número de radicado, fecha y hash criptográfico) y se almacenan en directorios con ejecución de scripts deshabilitada.",
+                "Documentos",
+                "/view/documentos",
+                Arrays.asList("seguridad archivos", "tipo mime", "hash", "renombrado", "integridad", "antivirus", "expedientes")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-doc-03",
+                "Documentos y Anexos",
+                "¿Se puede eliminar un anexo digital una vez radicado el documento?",
+                "Por norma de custodia documental, los archivos vinculados a un radicado formal no se eliminan arbitrariamente. En caso de una carga errónea, un funcionario autorizado puede adjuntar la versión correcta acompañada de una fe de erratas formal, quedando registradas ambas actuaciones en el expediente y la bitácora.",
+                "Documentos",
+                "/view/documentos",
+                Arrays.asList("eliminar anexo", "fe de erratas", "sustituir archivo", "expediente digital", "correccion soporte")
+        ));
+
+        // =========================================================================
+        // CATEGORÍA 8: Clasificación Documental (CCD: Series y Subseries / TRD)
+        // =========================================================================
         preguntasFrecuentes.add(new PreguntaFrecuenteDto(
                 "faq-ccd-01",
                 "Clasificación Documental (CCD)",
-                "¿Cuál es la diferencia entre una Serie y una Subserie?",
-                "Una Serie Documental es una categoría amplia correspondiente a una función institucional (ej: 100 - Actas). La Subserie es una subdivisión específica dentro de esa función que agrupa tipos documentales semejantes (ej: 100.1 - Actas de Comité Directivo).",
+                "¿Cuál es la diferencia entre una Serie Documental y una Subserie Documental?",
+                "Una Serie Documental es una categoría amplia que agrupa documentos producidos por una dependencia en cumplimiento de una función esencial (ej: 100 - Actas). La Subserie es una división de la serie que particulariza tipos documentales específicos (ej: 100.01 - Actas de Comité de Dirección, 100.02 - Actas de Comité de Contratación).",
                 "Series",
-                "/view/series"
+                "/view/series",
+                Arrays.asList("serie", "subserie", "ccd", "diferencia", "definicion", "trd", "clasificacion documental")
         ));
         preguntasFrecuentes.add(new PreguntaFrecuenteDto(
                 "faq-ccd-02",
                 "Clasificación Documental (CCD)",
-                "¿Por qué no puedo eliminar una Serie o Subserie?",
-                "Si una Serie o Subserie ya tiene radicados o expedientes vinculados, el sistema bloquea su eliminación para proteger la integridad del archivo histórico. En su lugar, puede inactivarla para que no se use en nuevos registros.",
-                "Series",
-                "/view/subseries"
+                "¿Por qué el sistema no permite eliminar una Serie o Subserie existente?",
+                "Si una Serie o Subserie ya cuenta con radicados o expedientes vinculados, el sistema bloquea su eliminación física para garantizar la integridad referencial y las directrices archivísticas del AGN. En su lugar, el administrador puede inactivarla para que no se use en futuros radicados sin perjudicar el archivo histórico.",
+                "Subseries",
+                "/view/subseries",
+                Arrays.asList("eliminar serie", "borrar subserie", "integridad referencial", "estado inactivo", "historicos", "agn")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-ccd-03",
+                "Clasificación Documental (CCD)",
+                "¿Cómo se configuran los tiempos de retención documental (TRD) en las Subseries?",
+                "En el formulario de Subseries se configuran los años de retención en el Archivo de Gestión (oficina de origen), los años en el Archivo Central institucional y la disposición final requerida (Conservación Total, Eliminación o Digitalización/Microfilmación), garantizando el cumplimiento del ciclo vital del documento.",
+                "Subseries",
+                "/view/subseries",
+                Arrays.asList("trd", "retencion documental", "archivo gestion", "archivo central", "disposicion final", "ciclo vital")
         ));
 
-        // Categoría 5: Seguridad, Cuenta y Aspectos Generales
+        // =========================================================================
+        // CATEGORÍA 9: Consultas, Seguimiento y Semáforos
+        // =========================================================================
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-con-01",
+                "Consultas y Vencimientos",
+                "¿Cómo funciona e interpreta el semáforo institucional de tiempos de respuesta?",
+                "El semáforo evalúa los días hábiles restantes antes de la fecha límite:\n• Verde (En Término): Faltan más de 3 días hábiles para el vencimiento.\n• Naranja / Amarillo (Por Vencer): Quedan 3 días hábiles o menos; requiere priorización.\n• Rojo (Vencido): Se superó la fecha límite sin finalizar; indica mora crítica.\n• Azul / Gris (Finalizado): El trámite culminó oportunamente y el contador se detuvo.",
+                "Consulta",
+                "/view/consulta",
+                Arrays.asList("semaforo", "colores semaforo", "verde", "naranja", "rojo", "dias restantes", "vencimiento", "alertas")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-con-02",
+                "Consultas y Vencimientos",
+                "¿Qué filtros de búsqueda avanzada están disponibles en Consulta y Seguimiento?",
+                "El módulo de búsqueda avanzada permite filtrar por número exacto o parcial de radicado, rango de fechas de radicación, estado actual del trámite, dependencia responsable, tipo de radicado (Entrada, Salida, Interna), número de identificación del solicitante y palabras clave en el asunto del documento.",
+                "Consulta",
+                "/view/consulta",
+                Arrays.asList("consulta avanzada", "filtros", "buscar radicado", "rango fechas", "asunto", "remitente", "criterios")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-con-03",
+                "Consultas y Vencimientos",
+                "¿Cualquier usuario puede buscar y consultar radicados en ODIN?",
+                "Sí, todos los usuarios autenticados con permiso 'ver_radicados' tienen acceso al módulo de 'Consulta y Seguimiento' para localizar expedientes y verificar el estado y los tiempos de atención documental en la entidad.",
+                "Consulta",
+                "/view/consulta",
+                Arrays.asList("buscar radicado", "acceso consulta", "permiso ver radicados", "trazabilidad pública interna")
+        ));
+
+        // =========================================================================
+        // CATEGORÍA 10: Bitácora y Auditoría Forense
+        // =========================================================================
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-bit-01",
+                "Bitácora y Auditoría",
+                "¿Qué información registra la Bitácora de Auditoría en cada evento?",
+                "La Bitácora registra de forma cronológica e inmutable: fecha y hora exacta con segundos, nombre y documento del usuario ejecutor, dirección IP de origen, tipo de acción efectuada (radicación, modificación, traslado, cambio de estado, visualización o descarga de anexo) y el detalle descriptivo del estado anterior y posterior.",
+                "Bitácora",
+                "/view/bitacora",
+                Arrays.asList("bitacora", "auditoria", "ip", "fecha hora", "trazabilidad", "cadena custodia", "eventos")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-bit-02",
+                "Bitácora y Auditoría",
+                "¿Puede un Administrador o perfil de TI modificar o borrar registros de la Bitácora?",
+                "Bajo ninguna circunstancia. La Bitácora está estructurada bajo el principio de sólo inserción ('append-only'). No existen opciones ni endpoints para editar o eliminar registros, asegurando su validez probatoria ante investigaciones judiciales, requerimientos de la Procuraduría o auditorías de la Contraloría.",
+                "Bitácora",
+                "/view/bitacora",
+                Arrays.asList("inmutabilidad", "no borrar bitacora", "append only", "procuraduria", "contraloria", "valor probatorio")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-bit-03",
+                "Bitácora y Auditoría",
+                "¿Cómo aislar el historial completo de un radicado específico en la Bitácora?",
+                "En la vista de 'Bitácora', ingrese el número consecutivo en el campo 'Filtrar por Radicado' y presione Enter o Buscar. El sistema aislará de inmediato toda la línea de tiempo del expediente, desde su radicación de entrada hasta su respuesta final.",
+                "Bitácora",
+                "/view/bitacora",
+                Arrays.asList("filtrar radicado bitacora", "historial radicado", "linea de tiempo", "seguimiento radicado")
+        ));
+
+        // =========================================================================
+        // CATEGORÍA 11: Reportes y Estadísticas
+        // =========================================================================
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-rep-01",
+                "Reportes y Estadísticas",
+                "¿Cuáles reportes gerenciales se pueden generar en ODIN?",
+                "El módulo de reportes ofrece analítica sobre: volumen mensual de radicados por tipo (Entrada, Salida, Interna), balance de carga y solicitudes por dependencia, porcentaje de cumplimiento normativo (radicados a tiempo vs. radicados vencidos) y tiempos promedio de trámite por área institucional.",
+                "Reportes",
+                "/view/reportes",
+                Arrays.asList("reportes", "estadisticas", "kpi gerencial", "volumen mensual", "cumplimiento", "indicadores gestion")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-rep-02",
+                "Reportes y Estadísticas",
+                "¿En qué formatos se pueden exportar los datos e informes?",
+                "ODIN permite exportar la información en dos formatos estándar:\n• Formato Excel (.xlsx / .csv): Tablas dinámicas y datos sin procesar para cruces y análisis estadístico profundo.\n• Formato PDF Oficial: Informes diseñados con membrete institucional, gráficos y resúmenes ejecutivos listos para rendición de cuentas.",
+                "Reportes",
+                "/view/reportes",
+                Arrays.asList("exportar excel", "exportar pdf", "descargar reporte", "informe gerencial", "rendicion cuentas")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-rep-03",
+                "Reportes y Estadísticas",
+                "¿Cómo filtrar las estadísticas por un rango de fechas personalizado?",
+                "En el encabezado del módulo de Reportes, defina los campos 'Fecha Inicial' y 'Fecha Final' y seleccione la dependencia deseada o 'Todas'. Al presionar 'Generar Reporte', los gráficos y tablas consolidadas se actualizarán en tiempo real con las operaciones del período seleccionado.",
+                "Reportes",
+                "/view/reportes",
+                Arrays.asList("rango fechas reportes", "periodo", "fecha inicial", "fecha final", "filtrar estadisticas")
+        ));
+
+        // =========================================================================
+        // CATEGORÍA 12: Perfil, Seguridad y Preferencias
+        // =========================================================================
         preguntasFrecuentes.add(new PreguntaFrecuenteDto(
                 "faq-seg-01",
-                "Seguridad y Usuarios",
-                "¿Cómo cambio entre modo claro y modo oscuro en ODIN?",
-                "En la barra superior (topbar), al lado de las notificaciones, encontrará un botón con el icono de sol/luna. Al presionarlo, la interfaz cambiará inmediatamente de modo, y su preferencia se conservará para futuros accesos en ese navegador.",
-                "General",
-                "/view/dashboard"
+                "Perfil y Seguridad",
+                "¿Cómo actualizo mis datos de contacto o cambio mi contraseña en ODIN?",
+                "Haga clic en su nombre o foto de perfil en la esquina superior o en la barra lateral para abrir el modal o pantalla de 'Perfil de Usuario'. Para cambiar su clave, ingrese su contraseña actual por seguridad y digite la nueva contraseña confirmándola. Al guardar, el sistema cifrará la clave con BCrypt.",
+                "Perfil",
+                "/perfil",
+                Arrays.asList("cambiar contrasena", "perfil usuario", "datos contacto", "bcrypt", "seguridad cuenta")
         ));
         preguntasFrecuentes.add(new PreguntaFrecuenteDto(
                 "faq-seg-02",
-                "Seguridad y Usuarios",
-                "¿Qué debo hacer si olvido mi contraseña de acceso?",
-                "En la pantalla de ingreso (/login), haga clic en '¿Olvidó su contraseña?'. Digite su correo institucional registrado y el sistema le enviará un enlace de un solo uso para configurar una nueva clave.",
+                "Perfil y Seguridad",
+                "¿Qué debo hacer si olvidé mi contraseña de acceso al sistema?",
+                "En la pantalla de inicio de sesión (/login), presione el enlace '¿Olvidó su contraseña?'. Escriba su correo electrónico institucional registrado; el sistema verificará su cuenta y le enviará un enlace temporal seguro de un solo uso para que establezca una nueva contraseña de forma autónoma.",
                 "Seguridad",
-                "/login"
+                "/login",
+                Arrays.asList("olvide contrasena", "recuperar cuenta", "restablecer clave", "correo recuperacion", "login")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-seg-03",
+                "Perfil y Seguridad",
+                "¿Cómo alternar entre Modo Claro y Modo Oscuro?",
+                "En la barra de navegación superior (topbar) encontrará el botón con icono de sol/luna. Al hacer clic, la interfaz conmuta inmediatamente entre tema claro y tema oscuro con paleta de alto contraste. Su preferencia se guarda en el navegador (localStorage) para que se mantenga activa en futuros inicios de sesión.",
+                "General",
+                "/view/dashboard",
+                Arrays.asList("modo oscuro", "modo claro", "dark mode", "tema visual", "accesibilidad", "localstorage")
+        ));
+        preguntasFrecuentes.add(new PreguntaFrecuenteDto(
+                "faq-seg-04",
+                "Perfil y Seguridad",
+                "¿Qué significa la pantalla de 'Error 403 - Acceso Denegado' y cómo se soluciona?",
+                "El mensaje 'Error 403' indica que su sesión está activa pero el rol que tiene asignado carece del permiso específico requerido para ver la pantalla o ejecutar la acción solicitada. Para habilitar el acceso, consulte con el Administrador institucional de ODIN para que actualice los permisos en la matriz RBAC.",
+                "Seguridad",
+                "/view/dashboard",
+                Arrays.asList("error 403", "acceso denegado", "forbidden", "permisos insuficientes", "rbac", "soporte")
         ));
     }
 }
