@@ -10,6 +10,122 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/odin.css}">
     <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
+<style id="odin-core-layout-style">
+/* ===== MENÚ LATERAL: STICKY, SCROLL INDEPENDIENTE Y COLAPSO FLUIDO ===== */
+#main-sidebar {
+    transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+                min-width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+                max-width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.2s ease,
+                visibility 0.2s ease;
+}
+
+@media (min-width: 768px) {
+    #main-sidebar {
+        position: sticky !important;
+        top: 0 !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        align-self: flex-start !important;
+        width: 16rem !important;
+    }
+
+    #main-sidebar.sidebar-collapsed,
+    #main-sidebar[data-collapsed="true"],
+    body.odin-sidebar-collapsed #main-sidebar {
+        display: none !important;
+        width: 0 !important;
+        min-width: 0 !important;
+        max-width: 0 !important;
+        overflow: hidden !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+}
+
+@media (max-width: 767px) {
+    #main-sidebar {
+        position: fixed !important;
+        inset-block: 0 !important;
+        left: 0 !important;
+        z-index: 50 !important;
+        width: 16rem !important;
+        max-width: 80vw !important;
+        height: 100vh !important;
+        overflow-y: auto !important;
+        transform: translateX(-100%);
+        transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    #main-sidebar.mobile-open,
+    #main-sidebar[data-mobile-open="true"] {
+        transform: translateX(0) !important;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35) !important;
+    }
+}
+
+/* ===== DIMENSIONES UNIFORMES Y CALIBRADAS DE LOGO Y NOMBRE ODIN ===== */
+.odin-brand-header {
+    height: 72px !important;
+    min-height: 72px !important;
+}
+
+.odin-nav-logo {
+    display: block !important;
+    width: auto !important;
+    height: 48px !important;
+    max-height: 50px !important;
+    max-width: 50px !important;
+    object-fit: contain !important;
+    transition: filter 0.25s ease !important;
+}
+
+.odin-brand-title {
+    display: inline-block !important;
+    font-weight: 800 !important;
+    font-size: 1.5rem !important;
+    letter-spacing: 0.05em !important;
+    line-height: 1 !important;
+    color: #00304D !important;
+    text-transform: uppercase !important;
+    transition: color 0.25s ease !important;
+}
+
+.odin-brand-subtitle {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+    line-height: 1.2 !important;
+}
+
+/* ===== CONTRASTE DEFINITIVO EN MODO OSCURO (COLOR BLANCO PURO) ===== */
+html.dark .odin-brand-title,
+html[data-theme="dark"] .odin-brand-title,
+body.dark .odin-brand-title {
+    color: #FFFFFF !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
+}
+
+html.dark .odin-brand-subtitle,
+html[data-theme="dark"] .odin-brand-subtitle {
+    color: #94a3b8 !important;
+}
+
+html.dark .odin-nav-logo,
+html[data-theme="dark"] .odin-nav-logo {
+    filter: brightness(0) invert(1) !important;
+}
+</style>
+
+    <link rel="icon" type="image/png" th:href="@{/img/odin-logo.png}" href="/img/odin-logo.png">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}" href="/favicon.ico">
 </head>
 <body>
 
@@ -20,15 +136,32 @@
      aria-label="Menú principal"
      class="fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-slate-200
             flex flex-col h-screen overflow-y-auto
-            transform -translate-x-full transition-transform duration-300 ease-in-out
-            md:sticky md:top-0 md:translate-x-0 md:shrink-0 md:h-screen md:overflow-y-auto">
+            transform -translate-x-full transition-all duration-300 ease-in-out
+            md:sticky md:top-0 md:translate-x-0 md:shrink-0 md:h-screen">
 
-    <!-- LOGO -->
-    <div class="h-16 flex items-center justify-between border-b border-slate-200 px-4 shrink-0">
-        <div class="flex items-center gap-2.5">
-            <img class="odin-odin-logo" th:src="@{/img/odinti-logo.png}" alt="SENA">
+        <script>
+        try {
+            if (window.innerWidth >= 768 && localStorage.getItem('odin-sidebar-desktop') === 'collapsed') {
+                var sbEarly = document.getElementById('main-sidebar');
+                if (sbEarly) {
+                    sbEarly.classList.add('sidebar-collapsed');
+                    sbEarly.setAttribute('data-collapsed', 'true');
+                    sbEarly.style.display = 'none';
+                }
+                document.body.classList.add('odin-sidebar-collapsed');
+            }
+        } catch(e) {}
+    </script>
+        <!-- LOGO Y MARCA ODIN -->
+    <div class="odin-brand-header flex items-center justify-between border-b border-slate-200 dark:border-slate-700 px-4 shrink-0">
+        <div class="flex items-center gap-3 min-w-0">
+            <img class="odin-nav-logo" th:src="@{/img/odin-nav-logo.png}" alt="SENA ODIN">
+            <div class="flex flex-col leading-tight min-w-0 sidebar-brand-text">
+                <span class="odin-brand-title">ODIN</span>
+                <span class="odin-brand-subtitle truncate">Gestión Documental</span>
+            </div>
         </div>
-        <button type="button" id="btn-close-sidebar" onclick="closeSidebar()"
+        <button type="button" id="btn-close-sidebar" onclick="window.closeSidebar && window.closeSidebar()"
                 class="md:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition"
                 aria-label="Cerrar menú">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5" aria-hidden="true">
@@ -154,8 +287,7 @@
         </a>
 
         <!-- 8. BITÁCORA -->
-        <a th:if="${puedeBitacora}"
-           th:href="@{/view/bitacora}"
+        <a th:href="@{/view/bitacora}"
            th:classappend="${activeMenu == 'bitacora' or activeMenu == 'plantilla'} ? 'bg-green-50 text-green-700 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75" aria-hidden="true">
@@ -174,45 +306,125 @@
             </svg>
             <span>Reportes y Estadísticas</span>
         </a>
+
+        <!-- 10. CENTRO DE AYUDA -->
+        <div class="pt-2 border-t border-slate-200/70 dark:border-slate-700/70 my-2"></div>
+        <a th:href="@{/view/ayuda}"
+           th:classappend="${activeMenu == 'ayuda'} ? 'bg-green-50 text-green-700 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 opacity-75" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+            </svg>
+            <span>Centro de Ayuda</span>
+        </a>
     </nav>
 
-    <script th:inline="none">
+            <script th:inline="none">
         (function () {
             if (window.__odinNavInit) return;
             window.__odinNavInit = true;
-            var MD = 768;
 
-            function isMobile() { return window.innerWidth < MD; }
+            function isMobile() { return window.innerWidth < 768; }
             function getSidebar() { return document.getElementById('main-sidebar'); }
             function getOverlay() { return document.getElementById('overlay'); }
             function getHamburger() { return document.getElementById('btn-hamburger'); }
 
-            function setOpen(open) {
-                var sidebar = getSidebar(), overlay = getOverlay(), btn = getHamburger();
+            window.odinToggleSidebar = function (ev) {
+                if (ev) {
+                    if (ev.preventDefault) ev.preventDefault();
+                    if (ev.stopPropagation) ev.stopPropagation();
+                }
+                var sidebar = getSidebar();
+                var btn = getHamburger();
+                var overlay = getOverlay();
                 if (!sidebar) return;
-                if (open) {
-                    sidebar.classList.remove('-translate-x-full');
-                    sidebar.setAttribute('data-open', 'true');
-                    if (overlay) { overlay.classList.remove('hidden'); overlay.setAttribute('aria-hidden', 'false'); }
-                    if (btn) { btn.setAttribute('aria-expanded', 'true'); btn.setAttribute('aria-label', 'Cerrar menú'); }
-                    if (isMobile()) document.body.style.overflow = 'hidden';
+
+                if (window.innerWidth >= 768) {
+                    // MODO ESCRITORIO: Ocultar / Mostrar
+                    var isCollapsed = sidebar.classList.contains('sidebar-collapsed') ||
+                                      document.body.classList.contains('odin-sidebar-collapsed') ||
+                                      sidebar.style.display === 'none';
+                    if (isCollapsed) {
+                        sidebar.classList.remove('sidebar-collapsed');
+                        sidebar.setAttribute('data-collapsed', 'false');
+                        sidebar.style.display = '';
+                        document.body.classList.remove('odin-sidebar-collapsed');
+                        if (btn) {
+                            btn.setAttribute('aria-expanded', 'true');
+                            btn.setAttribute('aria-label', 'Ocultar menú lateral');
+                        }
+                        try { localStorage.setItem('odin-sidebar-desktop', 'expanded'); } catch(e) {}
+                    } else {
+                        sidebar.classList.add('sidebar-collapsed');
+                        sidebar.setAttribute('data-collapsed', 'true');
+                        sidebar.style.display = 'none';
+                        document.body.classList.add('odin-sidebar-collapsed');
+                        if (btn) {
+                            btn.setAttribute('aria-expanded', 'false');
+                            btn.setAttribute('aria-label', 'Mostrar menú lateral');
+                        }
+                        try { localStorage.setItem('odin-sidebar-desktop', 'collapsed'); } catch(e) {}
+                    }
                 } else {
-                    sidebar.classList.add('-translate-x-full');
-                    sidebar.setAttribute('data-open', 'false');
-                    if (overlay) { overlay.classList.add('hidden'); overlay.setAttribute('aria-hidden', 'true'); }
-                    if (btn) { btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-label', 'Abrir menú'); }
+                    // MODO MÓVIL: Panel superpuesto
+                    var isOpen = sidebar.classList.contains('mobile-open') ||
+                                 sidebar.getAttribute('data-mobile-open') === 'true';
+                    if (isOpen) {
+                        sidebar.classList.remove('mobile-open');
+                        sidebar.setAttribute('data-mobile-open', 'false');
+                        sidebar.style.transform = 'translateX(-100%)';
+                        if (overlay) { overlay.classList.add('hidden'); overlay.setAttribute('aria-hidden', 'true'); }
+                        if (btn) btn.setAttribute('aria-expanded', 'false');
+                        document.body.style.overflow = '';
+                    } else {
+                        sidebar.classList.add('mobile-open');
+                        sidebar.setAttribute('data-mobile-open', 'true');
+                        sidebar.style.transform = 'translateX(0)';
+                        if (overlay) { overlay.classList.remove('hidden'); overlay.setAttribute('aria-hidden', 'false'); }
+                        if (btn) btn.setAttribute('aria-expanded', 'true');
+                        document.body.style.overflow = 'hidden';
+                    }
+                }
+            };
+            window.toggleSidebar = window.odinToggleSidebar;
+
+            window.openSidebar = function () {
+                var sidebar = getSidebar();
+                if (!sidebar) return;
+                if (window.innerWidth >= 768) {
+                    sidebar.classList.remove('sidebar-collapsed');
+                    sidebar.setAttribute('data-collapsed', 'false');
+                    sidebar.style.display = '';
+                    document.body.classList.remove('odin-sidebar-collapsed');
+                    try { localStorage.setItem('odin-sidebar-desktop', 'expanded'); } catch(e) {}
+                } else {
+                    sidebar.classList.add('mobile-open');
+                    sidebar.setAttribute('data-mobile-open', 'true');
+                    sidebar.style.transform = 'translateX(0)';
+                    var ov = getOverlay();
+                    if (ov) { ov.classList.remove('hidden'); ov.setAttribute('aria-hidden', 'false'); }
+                    document.body.style.overflow = 'hidden';
+                }
+            };
+
+            window.closeSidebar = function () {
+                var sidebar = getSidebar();
+                if (!sidebar) return;
+                if (window.innerWidth >= 768) {
+                    sidebar.classList.add('sidebar-collapsed');
+                    sidebar.setAttribute('data-collapsed', 'true');
+                    sidebar.style.display = 'none';
+                    document.body.classList.add('odin-sidebar-collapsed');
+                    try { localStorage.setItem('odin-sidebar-desktop', 'collapsed'); } catch(e) {}
+                } else {
+                    sidebar.classList.remove('mobile-open');
+                    sidebar.setAttribute('data-mobile-open', 'false');
+                    sidebar.style.transform = 'translateX(-100%)';
+                    var ov = getOverlay();
+                    if (ov) { ov.classList.add('hidden'); ov.setAttribute('aria-hidden', 'true'); }
                     document.body.style.overflow = '';
                 }
-            }
-
-            function isOpen() {
-                var s = getSidebar();
-                return s && s.getAttribute('data-open') === 'true';
-            }
-
-            window.openSidebar = function () { setOpen(true); };
-            window.closeSidebar = function () { setOpen(false); };
-            window.toggleSidebar = function () { setOpen(!isOpen()); };
+            };
 
             window.toggleDropdown = function (dropdownId) {
                 var dropdown = document.getElementById(dropdownId);
@@ -231,7 +443,6 @@
             function initMenuState() {
                 var path = window.location.pathname || '';
 
-                // Abrir dropdowns según ruta
                 if (path.indexOf('/usuarios') !== -1 || path.indexOf('/roles') !== -1) {
                     var dp = document.getElementById('dropdown-acceso');
                     var ar = document.getElementById('arrow-dropdown-acceso');
@@ -245,34 +456,78 @@
                     if (ar2) ar2.style.transform = 'rotate(180deg)';
                 }
 
-                if (!isMobile()) {
-                    var sb = getSidebar();
-                    if (sb) { sb.classList.remove('-translate-x-full'); sb.setAttribute('data-open', 'false'); }
-                    document.body.style.overflow = '';
-                    var ov = getOverlay();
-                    if (ov) { ov.classList.add('hidden'); ov.setAttribute('aria-hidden', 'true'); }
-                } else {
-                    setOpen(false);
-                }
-
-                var overlay = getOverlay();
-                if (overlay && !overlay.dataset.bound) {
-                    overlay.dataset.bound = '1';
-                    overlay.addEventListener('click', closeSidebar);
-                }
-
                 var sidebar = getSidebar();
+                var btn = getHamburger();
+
+                if (window.innerWidth >= 768) {
+                    if (sidebar) {
+                        sidebar.classList.remove('mobile-open');
+                        sidebar.setAttribute('data-mobile-open', 'false');
+                        sidebar.style.transform = '';
+                    }
+                    var overlay = getOverlay();
+                    if (overlay) { overlay.classList.add('hidden'); overlay.setAttribute('aria-hidden', 'true'); }
+                    document.body.style.overflow = '';
+
+                    var pref = 'expanded';
+                    try { pref = localStorage.getItem('odin-sidebar-desktop') || 'expanded'; } catch (e) {}
+                    if (pref === 'collapsed') {
+                        if (sidebar) {
+                            sidebar.classList.add('sidebar-collapsed');
+                            sidebar.setAttribute('data-collapsed', 'true');
+                            sidebar.style.display = 'none';
+                        }
+                        document.body.classList.add('odin-sidebar-collapsed');
+                        if (btn) btn.setAttribute('aria-expanded', 'false');
+                    } else {
+                        if (sidebar) {
+                            sidebar.classList.remove('sidebar-collapsed');
+                            sidebar.setAttribute('data-collapsed', 'false');
+                            sidebar.style.display = '';
+                        }
+                        document.body.classList.remove('odin-sidebar-collapsed');
+                        if (btn) btn.setAttribute('aria-expanded', 'true');
+                    }
+                } else {
+                    if (sidebar) {
+                        sidebar.classList.remove('sidebar-collapsed');
+                        sidebar.setAttribute('data-collapsed', 'false');
+                        sidebar.style.display = '';
+                        sidebar.classList.remove('mobile-open');
+                        sidebar.setAttribute('data-mobile-open', 'false');
+                        sidebar.style.transform = 'translateX(-100%)';
+                    }
+                    document.body.classList.remove('odin-sidebar-collapsed');
+                    document.body.style.overflow = '';
+                }
+
+                var ov = getOverlay();
+                if (ov && !ov.dataset.bound) {
+                    ov.dataset.bound = '1';
+                    ov.addEventListener('click', window.closeSidebar);
+                }
+
                 if (sidebar && !sidebar.dataset.linksBound) {
                     sidebar.dataset.linksBound = '1';
                     sidebar.addEventListener('click', function (e) {
-                        if (e.target.closest('a[href]') && isMobile()) setTimeout(closeSidebar, 150);
+                        if (e.target.closest('a[href]') && isMobile()) setTimeout(window.closeSidebar, 150);
                     });
                 }
 
                 if (!window.__odinEscBound) {
                     window.__odinEscBound = true;
                     document.addEventListener('keydown', function (e) {
-                        if (e.key === 'Escape' && isOpen()) closeSidebar();
+                        if (e.key === 'Escape') window.closeSidebar();
+                    });
+                }
+
+                if (!window.__odinClickDelegated) {
+                    window.__odinClickDelegated = true;
+                    document.addEventListener('click', function (e) {
+                        var hBtn = e.target.closest('#btn-hamburger');
+                        if (hBtn) {
+                            window.odinToggleSidebar(e);
+                        }
                     });
                 }
 
@@ -281,15 +536,7 @@
                     var t;
                     window.addEventListener('resize', function () {
                         clearTimeout(t);
-                        t = setTimeout(function () {
-                            if (!isMobile()) {
-                                var sb2 = getSidebar();
-                                if (sb2) { sb2.classList.remove('-translate-x-full'); sb2.setAttribute('data-open', 'false'); }
-                                document.body.style.overflow = '';
-                                var ov2 = getOverlay();
-                                if (ov2) { ov2.classList.add('hidden'); ov2.setAttribute('aria-hidden', 'true'); }
-                            } else if (!isOpen()) setOpen(false);
-                        }, 100);
+                        t = setTimeout(initMenuState, 100);
                     });
                 }
             }
@@ -307,66 +554,63 @@
 <div th:fragment="topbar(title)" class="sticky top-0 z-30 shrink-0">
     <div class="h-16 bg-green-700 text-white flex items-center justify-between px-4 sm:px-6 shadow-sm font-sans overflow-visible">
 
-        <div class="flex items-center gap-3 min-w-0">
-            <button type="button" id="btn-hamburger" onclick="toggleSidebar()"
-                    class="md:hidden flex flex-col justify-center items-center w-10 h-10 rounded-lg
-                           text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-white/40 transition shrink-0"
-                    aria-label="Abrir menú" aria-expanded="false" aria-controls="main-sidebar">
-                <span class="block w-5 h-0.5 bg-current rounded mb-1" aria-hidden="true"></span>
-                <span class="block w-5 h-0.5 bg-current rounded mb-1" aria-hidden="true"></span>
-                <span class="block w-5 h-0.5 bg-current rounded" aria-hidden="true"></span>
+    <div class="flex items-center gap-3 min-w-0">
+                <button type="button" id="btn-hamburger" onclick="window.odinToggleSidebar && window.odinToggleSidebar(event)"
+                class="inline-flex items-center justify-center w-10 h-10 rounded-lg text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-white/50 transition cursor-pointer shrink-0"
+                aria-label="Alternar menú lateral" title="Alternar menú lateral (☰)" aria-expanded="true" aria-controls="main-sidebar">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+        </button>
+        <span class="font-bold text-base sm:text-lg tracking-tight truncate" th:text="${title}">ODIN</span>
+    </div>
+
+    <div class="flex items-center gap-3 sm:gap-5 shrink-0">
+        <!-- Notificaciones -->
+        <div class="relative" id="odinNotifWrap">
+            <button type="button" id="btnNotif" onclick="window.odinToggleNotif && window.odinToggleNotif(event)"
+                    class="relative text-white/90 hover:text-white transition p-1.5 rounded-full hover:bg-green-800/50"
+                    aria-label="Notificaciones" aria-expanded="false" aria-controls="odinNotifPanel">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                </svg>
+                <span th:if="${notifCount != null and notifCount > 0}"
+                      class="absolute -top-0.5 -right-0.5 min-w-[1rem] h-4 px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center ring-2 ring-green-700"
+                      th:text="${notifCount > 9 ? '9+' : notifCount}">2</span>
             </button>
-            <span class="font-bold text-base sm:text-lg tracking-tight truncate" th:text="${title}">ODIN</span>
+            <div id="odinNotifPanel" style="display:none" class="hidden absolute right-0 mt-2 w-80 max-w-[90vw] rounded-xl border border-slate-200 bg-white shadow-xl z-50 overflow-hidden text-slate-800">
+                <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                    <span class="text-sm font-bold">Notificaciones</span>
+                    <a th:href="@{/view/tramites(vencimiento='vencidos')}" class="text-xs font-semibold text-green-700 hover:underline">Ver vencidos</a>
+                </div>
+                <ul id="odinNotifList" class="max-h-64 overflow-y-auto divide-y divide-slate-100">
+                    <li class="px-4 py-3 text-sm text-slate-500">Cargando notificaciones…</li>
+                </ul>
+            </div>
         </div>
 
-        <div class="flex items-center gap-3 sm:gap-5 shrink-0">
-            <!-- Notificaciones -->
-            <div class="relative" id="odinNotifWrap">
-                <button type="button" id="btnNotif" onclick="window.odinToggleNotif && window.odinToggleNotif(event)"
-                        class="relative text-white/90 hover:text-white transition p-1.5 rounded-full hover:bg-green-800/50"
-                        aria-label="Notificaciones" aria-expanded="false" aria-controls="odinNotifPanel">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-                    </svg>
-                    <span th:if="${notifCount != null and notifCount > 0}"
-                          class="absolute -top-0.5 -right-0.5 min-w-[1rem] h-4 px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center ring-2 ring-green-700"
-                          th:text="${notifCount > 9 ? '9+' : notifCount}">2</span>
-                </button>
-                <div id="odinNotifPanel" style="display:none" class="hidden absolute right-0 mt-2 w-80 max-w-[90vw] rounded-xl border border-slate-200 bg-white shadow-xl z-50 overflow-hidden text-slate-800">
-                    <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-                        <span class="text-sm font-bold">Notificaciones</span>
-                        <a th:href="@{/view/tramites(vencimiento='vencidos')}" class="text-xs font-semibold text-green-700 hover:underline">Ver vencidos</a>
-                    </div>
-                    <ul id="odinNotifList" class="max-h-64 overflow-y-auto divide-y divide-slate-100">
-                        <li class="px-4 py-3 text-sm text-slate-500">Cargando notificaciones…</li>
-                    </ul>
+        <button type="button" id="btnTheme" onclick="window.odinToggleTheme && window.odinToggleTheme(event)"
+                class="text-white/90 hover:text-white transition p-1.5 rounded-full hover:bg-green-800/50"
+                title="Cambiar tema" aria-label="Modo oscuro">
+            <svg id="iconSun" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"/></svg>
+            <svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"/></svg>
+        </button>
+
+        <div class="flex items-center gap-2 min-w-0" title="Usuario autenticado">
+            <div class="w-9 h-9 rounded-xl bg-white text-green-700 flex items-center justify-center font-bold shadow-sm shrink-0"
+                 th:text="${inicialUsuario != null ? inicialUsuario : 'U'}">A</div>
+            <div class="hidden sm:flex flex-col leading-tight min-w-0 max-w-[12rem]">
+                <span class="text-sm font-semibold text-white truncate"
+                      th:text="${nombreUsuario != null ? nombreUsuario : 'Usuario'}">Administrador</span>
+                <div class="flex items-center gap-2 text-[11px] text-white/75 truncate">
+                    <span th:text="${correoUsuario != null ? correoUsuario : ''}">admin@senacali.edu.co</span>
+                    <a th:href="@{/view/perfil/cambiar-password}" class="text-green-200 hover:text-white underline text-[10px]" title="Cambiar mi contraseña">Cambiar clave</a>
                 </div>
             </div>
-
-            <button type="button" id="btnTheme" onclick="window.odinToggleTheme && window.odinToggleTheme(event)"
-                    class="text-white/90 hover:text-white transition p-1.5 rounded-full hover:bg-green-800/50"
-                    title="Cambiar tema" aria-label="Modo oscuro">
-                <svg id="iconSun" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"/></svg>
-                <svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"/></svg>
-            </button>
-
-            <div class="flex items-center gap-2 min-w-0" title="Usuario autenticado">
-                <div class="w-9 h-9 rounded-xl bg-white text-green-700 flex items-center justify-center font-bold shadow-sm shrink-0"
-                     th:text="${inicialUsuario != null ? inicialUsuario : 'U'}">A</div>
-                <div class="hidden sm:flex flex-col leading-tight min-w-0 max-w-[12rem]">
-                    <span class="text-sm font-semibold text-white truncate"
-                          th:text="${nombreUsuario != null ? nombreUsuario : 'Usuario'}">Administrador</span>
-                    <div class="flex items-center gap-2 text-[11px] text-white/75 truncate">
-                        <span th:text="${correoUsuario != null ? correoUsuario : ''}">admin@senacali.edu.co</span>
-                        <a th:href="@{/view/perfil/cambiar-password}" class="text-green-200 hover:text-white underline text-[10px]" title="Cambiar mi contraseña">Cambiar clave</a>
-                    </div>
-                </div>
-                <form th:action="@{/logout}" method="post" class="m-0">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                    <button type="submit" class="text-xs sm:text-sm font-semibold text-white/90 hover:text-white px-2 py-1 rounded-md hover:bg-green-800/50 transition">Cerrar sesión</button>
-                </form>
-            </div>
-
+            <form th:action="@{/logout}" method="post" class="m-0">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button type="submit" class="text-xs sm:text-sm font-semibold text-white/90 hover:text-white px-2 py-1 rounded-md hover:bg-green-800/50 transition">Cerrar sesión</button>
+            </form>
         </div>
     </div>
 

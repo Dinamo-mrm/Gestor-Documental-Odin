@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Usuario | ODIN Gestión Documental</title>
+    <script>
+      try { if (localStorage.getItem('odin-theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/globals.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/odin.css}">
+    <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
+    <link rel="icon" type="image/png" th:href="@{/img/odin-logo.png}" href="/img/odin-logo.png">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}" href="/favicon.ico">
+</head>
+<body class="bg-[#f5f6f8] text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen">
+<div class="min-h-screen flex">
+    <div th:replace="~{fragments/layout :: sidebar('ayuda')}"></div>
+    <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay" aria-hidden="true"></div>
+
+    <div class="flex-1 min-w-0 flex flex-col">
+        <div th:replace="~{fragments/layout :: topbar('Manual de Usuario')}"></div>
+
+        <main class="p-4 sm:p-6 lg:p-8 flex-1">
+            <div class="max-w-7xl mx-auto space-y-6">
+
+                <!-- Breadcrumb y Cabecera -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <nav class="flex text-xs text-slate-500 dark:text-slate-400 mb-2" aria-label="Breadcrumb">
+                            <ol class="inline-flex items-center space-x-1 sm:space-x-2">
+                                <li>
+                                    <a th:href="@{/view/ayuda}" class="hover:text-emerald-600 dark:hover:text-emerald-400">Centro de Ayuda</a>
+                                </li>
+                                <li class="flex items-center">
+                                    <svg class="w-3 h-3 text-slate-400 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    <span class="text-slate-700 dark:text-slate-300 font-semibold">Manual de Usuario</span>
+                                </li>
+                            </ol>
+                        </nav>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Manual de Usuario ODIN</h1>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Guías procedimentales paso a paso para la operación formal de correspondencia y archivo.</p>
+                    </div>
+
+                    <a th:href="@{/view/ayuda}"
+                       class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        <span>Volver al Inicio</span>
+                    </a>
+                </div>
+
+                <!-- Índice Rápido de Procedimientos -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm space-y-4">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                        </svg>
+                        <span>Índice de Procedimientos Documentados</span>
+                    </h2>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <a th:each="proc : ${manuales}" th:href="@{'#' + ${proc.id}}"
+                           class="p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/40 hover:border-emerald-500 dark:hover:border-emerald-500 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/30 transition flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-200">
+                            <span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300 font-mono font-bold text-[10px]" th:text="${proc.codigo}">COD</span>
+                            <span class="truncate font-semibold" th:text="${proc.nombreProcedimiento}">Procedimiento</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Listado Detallado de Procedimientos -->
+                <div class="space-y-8">
+                    <article th:each="proc : ${manuales}" th:id="${proc.id}"
+                             class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8 shadow-sm space-y-6 scroll-mt-20">
+
+                        <!-- Encabezado del Procedimiento -->
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-700">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300"
+                                          th:text="${proc.codigo}">MAN-01</span>
+                                    <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold" th:text="${proc.modulo}">Módulo</span>
+                                </div>
+                                <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white" th:text="${proc.nombreProcedimiento}">Nombre</h2>
+                            </div>
+
+                            <a th:if="${proc.rutaSistema != null}" th:href="@{${proc.rutaSistema}}"
+                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 dark:hover:text-white transition shrink-0 self-start sm:self-center">
+                                <span>Ejecutar en Sistema</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                            </a>
+                        </div>
+
+                        <!-- 1. Objetivo -->
+                        <div class="space-y-1">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">1. Objetivo</h3>
+                            <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed" th:text="${proc.objetivo}">Objetivo del procedimiento...</p>
+                        </div>
+
+                        <!-- 2. Requisitos Previos -->
+                        <div class="space-y-2">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">2. Requisitos Previos</h3>
+                            <ul class="space-y-1.5">
+                                <li th:each="req : ${proc.requisitosPrevios}" class="flex items-start gap-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-2 shrink-0"></span>
+                                    <span th:text="${req}">Requisito previo</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- 3. Instrucciones Numeradas -->
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">3. Instrucciones Numeradas</h3>
+                            <div class="space-y-3">
+                                <div th:each="paso : ${proc.pasos}"
+                                     class="flex gap-3.5 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30">
+                                    <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center shrink-0 text-xs"
+                                         th:text="${paso.numero}">1</div>
+                                    <div class="flex-1 space-y-1">
+                                        <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white" th:text="${paso.titulo}">Paso</h4>
+                                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed" th:text="${paso.instruccion}">Instrucción...</p>
+                                        <div th:if="${paso.nota != null and !#strings.isEmpty(paso.nota)}"
+                                             class="text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 p-2 rounded border-l-2 border-amber-500">
+                                            <span class="font-semibold">Nota: </span><span th:text="${paso.nota}">Consejo</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Resultado Esperado -->
+                        <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 flex items-start gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                            <div>
+                                <span class="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">4. Resultado Esperado:</span>
+                                <p class="text-xs sm:text-sm text-emerald-900 dark:text-emerald-200 mt-0.5" th:text="${proc.resultadoEsperado}">Resultado institucional esperado...</p>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>

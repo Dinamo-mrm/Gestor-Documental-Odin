@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${'Búsqueda: ' + query + ' | Centro de Ayuda ODIN'}">Resultados de Búsqueda | ODIN</title>
+    <script>
+      try { if (localStorage.getItem('odin-theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/globals.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/odin.css}">
+    <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
+    <link rel="icon" type="image/png" th:href="@{/img/odin-logo.png}" href="/img/odin-logo.png">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}" href="/favicon.ico">
+</head>
+<body class="bg-[#f5f6f8] text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen">
+<div class="min-h-screen flex">
+    <div th:replace="~{fragments/layout :: sidebar('ayuda')}"></div>
+    <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay" aria-hidden="true"></div>
+
+    <div class="flex-1 min-w-0 flex flex-col">
+        <div th:replace="~{fragments/layout :: topbar('Resultados de Búsqueda')}"></div>
+
+        <main class="p-4 sm:p-6 lg:p-8 flex-1">
+            <div class="max-w-4xl mx-auto space-y-6">
+
+                <!-- Breadcrumb y Cabecera -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <nav class="flex text-xs text-slate-500 dark:text-slate-400 mb-2" aria-label="Breadcrumb">
+                            <ol class="inline-flex items-center space-x-1 sm:space-x-2">
+                                <li>
+                                    <a th:href="@{/view/ayuda}" class="hover:text-emerald-600 dark:hover:text-emerald-400">Centro de Ayuda</a>
+                                </li>
+                                <li class="flex items-center">
+                                    <svg class="w-3 h-3 text-slate-400 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    <span class="text-slate-700 dark:text-slate-300 font-semibold">Búsqueda</span>
+                                </li>
+                            </ol>
+                        </nav>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Resultados de Búsqueda</h1>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                            Se encontraron <span class="font-bold text-slate-900 dark:text-white" th:text="${totalResultados}">0</span> coincidencias para:
+                            <span class="font-semibold text-emerald-600 dark:text-emerald-400" th:text="${'«' + query + '»'}">«término»</span>
+                        </p>
+                    </div>
+
+                    <a th:href="@{/view/ayuda}"
+                       class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        <span>Volver al Inicio</span>
+                    </a>
+                </div>
+
+                <!-- Campo de Búsqueda Rápida para reintentar -->
+                <form th:action="@{/view/ayuda/buscar}" method="get" class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" name="q" th:value="${query}"
+                           placeholder="Buscar nuevamente..."
+                           class="w-full pl-11 pr-28 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <button type="submit"
+                            class="absolute right-2 top-2 bottom-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium text-xs transition">
+                        Buscar
+                    </button>
+                </form>
+
+                <!-- Lista de Resultados -->
+                <div th:if="${totalResultados > 0}" class="space-y-4">
+                    <div th:each="r : ${resultados}"
+                         class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:border-emerald-500 dark:hover:border-emerald-500 transition">
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold px-2.5 py-0.5 rounded-full"
+                                  th:classappend="${r.colorBadge}"
+                                  th:text="${r.tipo}">Tipo</span>
+                            <span class="text-xs text-slate-400 dark:text-slate-500" th:text="${r.modulo}">Módulo</span>
+                        </div>
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                            <a th:href="@{${r.url}}" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition" th:text="${r.titulo}">Título</a>
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1 leading-relaxed" th:text="${r.snippet}">Snippet...</p>
+                        <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex justify-end">
+                            <a th:href="@{${r.url}}" class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
+                                <span>Consultar contenido</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estado Vacío -->
+                <div th:unless="${totalResultados > 0}"
+                     class="bg-white dark:bg-slate-800 p-8 sm:p-12 rounded-2xl border border-slate-200 dark:border-slate-700 text-center space-y-4 shadow-sm">
+                    <div class="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-700/50 text-slate-400 mx-auto flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-white">Sin coincidencias para esta búsqueda</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+                        Intente utilizar términos más generales como "radicación", "trámite", "vencimiento", "series" o consulte las secciones principales:
+                    </p>
+                    <div class="flex flex-wrap justify-center gap-3 pt-2">
+                        <a th:href="@{/view/ayuda/tutoriales}" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 hover:bg-emerald-600 hover:text-white transition">Ver todos los Tutoriales</a>
+                        <a th:href="@{/view/ayuda/manual}" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-600 hover:text-white transition">Abrir Manual de Usuario</a>
+                        <a th:href="@{/view/ayuda/faq}" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 hover:bg-amber-600 hover:text-white transition">Revisar Preguntas Frecuentes</a>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>

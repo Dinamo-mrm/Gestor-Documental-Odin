@@ -50,6 +50,7 @@ public class RadicacionService {
     private final SubseriesRepository subseriesRepository;
     private final SeriesRepository seriesRepository;
     private final DocumentosRepository documentosRepository;
+    private final ClasificacionDocumentalService clasificacionDocumentalService;
 
     @Value("${app.upload-dir:uploads}")
     private String uploadDir;
@@ -61,7 +62,8 @@ public class RadicacionService {
             UsuariosRepository usuariosRepository,
             SubseriesRepository subseriesRepository,
             SeriesRepository seriesRepository,
-            DocumentosRepository documentosRepository) {
+            DocumentosRepository documentosRepository,
+            ClasificacionDocumentalService clasificacionDocumentalService) {
         this.radicadosRepository = radicadosRepository;
         this.tramitesRepository = tramitesRepository;
         this.dependenciasRepository = dependenciasRepository;
@@ -69,6 +71,7 @@ public class RadicacionService {
         this.subseriesRepository = subseriesRepository;
         this.seriesRepository = seriesRepository;
         this.documentosRepository = documentosRepository;
+        this.clasificacionDocumentalService = clasificacionDocumentalService;
     }
 
     @Transactional
@@ -132,6 +135,15 @@ public class RadicacionService {
         }
         if (!texto(r.getAsunto())) {
             throw new IllegalArgumentException("El asunto es obligatorio");
+        }
+        if (r.getId_usuario() == null || r.getId_usuario() <= 0) {
+            Long dep = r.getId_dependencia() != null ? r.getId_dependencia() : tramite.getIdDependenciaResponsable();
+            if (dep != null) {
+                var activos = usuariosRepository.findActivosByDependencia(dep);
+                if (!activos.isEmpty()) {
+                    r.setId_usuario(activos.get(0).getId_usuario());
+                }
+            }
         }
         if (r.getId_usuario() == null || r.getId_usuario() <= 0) {
             throw new IllegalArgumentException("Debe seleccionar un responsable");
@@ -214,14 +226,25 @@ public class RadicacionService {
     }
 
     private void aplicarClasificacion(Radicados r) {
+        var clasifAuto = clasificacionDocumentalService.determinarClasificacion(r.getId_tramite(), r.getTipoDocumento());
+        if (clasifAuto.isDeterminada()) {
+            r.setCodigo_serie(clasifAuto.getCodigoSerie());
+            r.setCodigo_subserie(clasifAuto.getCodigoSubserie());
+        }
         if (texto(r.getCodigo_serie())) {
-            seriesRepository.findByCodigoSerie(r.getCodigo_serie())
+            var serie = seriesRepository.findByCodigoSerie(r.getCodigo_serie())
                     .orElseThrow(() -> new IllegalArgumentException("La serie documental seleccionada no existe"));
+            r.setCodigo_serie(serie.getCodigo_serie());
+        } else {
+            r.setCodigo_serie(null);
         }
 
         if (texto(r.getCodigo_subserie())) {
-            subseriesRepository.findByCodigoSubserie(r.getCodigo_subserie())
+            var subserie = subseriesRepository.findByCodigoSubserie(r.getCodigo_subserie())
                     .orElseThrow(() -> new IllegalArgumentException("La subserie documental seleccionada no existe"));
+            r.setCodigo_subserie(subserie.getCodigo_subserie());
+        } else {
+            r.setCodigo_subserie(null);
         }
     }
 

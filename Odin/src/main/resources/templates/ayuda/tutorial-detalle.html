@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${tutorial.titulo + ' | Centro de Ayuda ODIN'}">Tutorial | ODIN</title>
+    <script>
+      try { if (localStorage.getItem('odin-theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/globals.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/odin.css}">
+    <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
+    <link rel="icon" type="image/png" th:href="@{/img/odin-logo.png}" href="/img/odin-logo.png">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}" href="/favicon.ico">
+</head>
+<body class="bg-[#f5f6f8] text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen">
+<div class="min-h-screen flex">
+    <div th:replace="~{fragments/layout :: sidebar('ayuda')}"></div>
+    <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay" aria-hidden="true"></div>
+
+    <div class="flex-1 min-w-0 flex flex-col">
+        <div th:replace="~{fragments/layout :: topbar(${tutorial.moduloNombre + ' - Tutorial'})}"></div>
+
+        <main class="p-4 sm:p-6 lg:p-8 flex-1">
+            <div class="max-w-7xl mx-auto space-y-6">
+
+                <!-- Breadcrumb y Acciones -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <nav class="flex text-xs text-slate-500 dark:text-slate-400" aria-label="Breadcrumb">
+                        <ol class="inline-flex items-center space-x-1 sm:space-x-2">
+                            <li>
+                                <a th:href="@{/view/ayuda}" class="hover:text-emerald-600 dark:hover:text-emerald-400">Centro de Ayuda</a>
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-3 h-3 text-slate-400 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                <a th:href="@{/view/ayuda/tutoriales}" class="hover:text-emerald-600 dark:hover:text-emerald-400">Tutoriales</a>
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-3 h-3 text-slate-400 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                <span class="text-slate-700 dark:text-slate-300 font-semibold" th:text="${tutorial.moduloNombre}">Módulo</span>
+                            </li>
+                        </ol>
+                    </nav>
+
+                    <div class="flex items-center gap-2">
+                        <a th:href="@{/view/ayuda/tutoriales}"
+                           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                            <span>Volver a Tutoriales</span>
+                        </a>
+
+                        <a th:if="${tutorial.rutaSistema != null}" th:href="@{${tutorial.rutaSistema}}"
+                           class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-sm">
+                            <span>Ir al Módulo</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Encabezado del Tutorial -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8 shadow-sm space-y-4">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full"
+                              th:classappend="${tutorial.colorBadge}"
+                              th:text="${tutorial.categoria}">Categoría</span>
+                        <span class="text-xs font-medium text-slate-400 dark:text-slate-500">•</span>
+                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400" th:text="${'Módulo: ' + tutorial.moduloNombre}">Módulo</span>
+                    </div>
+
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white" th:text="${tutorial.titulo}">Título del Tutorial</h1>
+                    <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-4xl" th:text="${tutorial.descripcionDetallada}">Descripción completa...</p>
+
+                    <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/60 flex items-start gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                        </svg>
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">Objetivo del Aprendizaje:</span>
+                            <p class="text-xs sm:text-sm text-emerald-900 dark:text-emerald-200 mt-0.5" th:text="${tutorial.objetivo}">Objetivo pedagógico...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reproductor de Video del Módulo o Estado Pendiente -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8 shadow-sm">
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-600 dark:text-emerald-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                        </svg>
+                        <span>Video Explicativo del Módulo</span>
+                    </h2>
+
+                    <!-- Si tiene video configurado -->
+                    <div th:if="${tutorial.tieneVideo}" class="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700 bg-black">
+                        <video th:if="${#strings.contains(tutorial.embedVideoUrl, '.mp4')}"
+                               class="w-full h-full object-contain bg-black"
+                               controls
+                               preload="metadata">
+                            <source th:src="@{${tutorial.embedVideoUrl}}" type="video/mp4">
+                            Tu navegador no soporta la reproducción de video HTML5.
+                        </video>
+                        <iframe th:unless="${#strings.contains(tutorial.embedVideoUrl, '.mp4')}"
+                                class="w-full h-full"
+                                th:src="${tutorial.embedVideoUrl}"
+                                th:title="${'Tutorial ' + tutorial.moduloNombre}"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen
+                                loading="lazy">
+                        </iframe>
+                    </div>
+
+                    <!-- Estado Pendiente cuando no hay video configurado -->
+                    <div th:unless="${tutorial.tieneVideo}"
+                         class="relative w-full aspect-video max-h-[380px] rounded-xl border-2 border-dashed border-emerald-300 dark:border-emerald-700/60 bg-emerald-50/40 dark:bg-slate-900/40 flex flex-col items-center justify-center p-6 text-center shadow-inner">
+                        <div class="w-14 h-14 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h4 class="font-bold text-slate-800 dark:text-slate-100 text-base">Video del Módulo en Producción</h4>
+                        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mt-1">
+                            El video explicativo para este módulo se encuentra en fase de grabación. Puede ser vinculado mediante la constante <code class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 font-mono text-[11px]" th:text="${'URL_VIDEO_' + #strings.toUpperCase(tutorial.slug)}">URL_VIDEO_X</code> en <code class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 font-mono text-[11px]">CentroAyudaService.java</code>.
+                        </p>
+                        <span class="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Pendiente de enlace oficial
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Funcionalidades Explicadas -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8 shadow-sm space-y-4">
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-white">Funcionalidades Explicadas en este Módulo</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div th:each="func : ${tutorial.funcionalidadesExplicadas}"
+                             class="flex items-start gap-2.5 p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
+                            <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span class="text-xs sm:text-sm text-slate-700 dark:text-slate-200" th:text="${func}">Funcionalidad</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guía Paso a Paso -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8 shadow-sm space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Guía Escrita Paso a Paso</h2>
+                        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Siga estas instrucciones para operar correctamente la funcionalidad.</p>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div th:each="paso : ${tutorial.pasos}"
+                             class="flex gap-4 p-5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30">
+                            <!-- Número de Paso -->
+                            <div class="w-9 h-9 rounded-full bg-emerald-600 text-white font-extrabold flex items-center justify-center shrink-0 shadow-sm text-sm"
+                                 th:text="${paso.numero}">1</div>
+
+                            <div class="flex-1 space-y-2">
+                                <h3 class="font-bold text-base text-slate-900 dark:text-white" th:text="${paso.titulo}">Título del Paso</h3>
+                                <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed" th:text="${paso.instruccion}">Instrucción detallada...</p>
+
+                                <!-- Alerta o Nota del paso (si existe) -->
+                                <div th:if="${paso.nota != null and !#strings.isEmpty(paso.nota)}"
+                                     class="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/40 border-l-4 border-amber-500 text-xs text-amber-900 dark:text-amber-200">
+                                    <span class="font-bold">Nota operativa: </span>
+                                    <span th:text="${paso.nota}">Consejo o nota</span>
+                                </div>
+
+                                <!-- Resultado Esperado -->
+                                <div class="pt-1 flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                                    <span class="font-semibold text-emerald-700 dark:text-emerald-400">Resultado esperado:</span>
+                                    <span th:text="${paso.resultadoEsperado}">Resultado</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Otros Tutoriales Recomendados -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8 shadow-sm space-y-4">
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-white">Continuar Explorando Otros Módulos</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <a th:each="otro : ${otrosTutoriales}" th:href="@{'/view/ayuda/tutoriales/' + ${otro.slug}}"
+                           class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 hover:border-emerald-500 dark:hover:border-emerald-500 transition group flex flex-col justify-between">
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                                      th:classappend="${otro.colorBadge}" th:text="${otro.categoria}">Cat</span>
+                                <h4 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition mt-2"
+                                    th:text="${otro.moduloNombre}">Módulo</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-1" th:text="${otro.descripcionCorta}">Desc</p>
+                            </div>
+                            <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 pt-3 flex items-center gap-1">
+                                Ver tutorial →
+                            </span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>

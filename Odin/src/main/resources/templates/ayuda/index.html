@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Ayuda | ODIN</title>
+    <script>
+      try { if (localStorage.getItem('odin-theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/globals.css}">
+    <link rel="stylesheet" th:href="@{/css/styleguide.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/odin.css}">
+    <link rel="stylesheet" th:href="@{/css/odin-dark.css}">
+    <link rel="icon" type="image/png" th:href="@{/img/odin-logo.png}" href="/img/odin-logo.png">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}" href="/favicon.ico">
+</head>
+<body class="bg-[#f5f6f8] text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen">
+<div class="min-h-screen flex">
+    <!-- Sidebar fragment -->
+    <div th:replace="~{fragments/layout :: sidebar('ayuda')}"></div>
+    <div class="fixed inset-0 bg-black/40 z-20 hidden" id="overlay" aria-hidden="true"></div>
+
+    <div class="flex-1 min-w-0 flex flex-col">
+        <!-- Topbar fragment -->
+        <div th:replace="~{fragments/layout :: topbar('Centro de Ayuda')}"></div>
+
+        <main class="p-4 sm:p-6 lg:p-8 flex-1">
+            <div class="max-w-7xl mx-auto space-y-8">
+
+                <!-- 1. HERO BANNER PRINCIPAL CON BIENVENIDA Y BUSCADOR -->
+                <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-800 via-green-700 to-teal-800 text-white shadow-lg p-6 sm:p-10">
+                    <div class="relative z-10 max-w-3xl space-y-4">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm text-xs font-semibold tracking-wide uppercase">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>Plataforma de Capacitación y Soporte</span>
+                        </div>
+                        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">Centro de Ayuda ODIN</h1>
+                        <p class="text-emerald-100 text-sm sm:text-base leading-relaxed">
+                            Bienvenido a su espacio integral de aprendizaje. Aquí encontrará videos explicativos, guías paso a paso, manuales de usuario y respuestas a preguntas frecuentes sobre cada uno de los módulos de Gestión Documental.
+                        </p>
+
+                        <!-- Buscador Global del Centro de Ayuda -->
+                        <div class="pt-2 relative">
+                            <form th:action="@{/view/ayuda/buscar}" method="get" class="relative flex items-center">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <input type="text" id="ayudaSearchInput" name="q" autocomplete="off"
+                                       placeholder="Buscar tutoriales, trámites, radicación, preguntas frecuentes..."
+                                       class="w-full pl-11 pr-28 py-3.5 rounded-xl text-slate-800 bg-white shadow-md focus:outline-none focus:ring-4 focus:ring-emerald-400/50 text-sm sm:text-base transition">
+                                <button type="submit"
+                                        class="absolute right-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium text-xs sm:text-sm transition shadow-sm">
+                                    Buscar
+                                </button>
+                            </form>
+
+                            <!-- Dropdown de Sugerencias en Vivo -->
+                            <div id="searchResultsDropdown"
+                                 class="hidden absolute left-0 right-0 mt-2 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 z-50 max-h-96 overflow-y-auto text-slate-800 dark:text-slate-100 divide-y divide-slate-100 dark:divide-slate-700/60">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Decoración de fondo suave -->
+                    <div class="absolute -right-12 -bottom-12 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
+                </div>
+
+                <!-- 2. ACCESOS DIRECTOS / METRICAS -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <a th:href="@{/view/ayuda/tutoriales}"
+                       class="flex items-center gap-4 p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500 shadow-sm hover:shadow-md transition group">
+                        <div class="w-12 h-12 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-900 dark:text-white text-base group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">Tutoriales por Módulos</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400" th:text="${totalTutoriales} + ' módulos documentados'">12 módulos documentados</p>
+                        </div>
+                    </a>
+
+                    <a th:href="@{/view/ayuda/manual}"
+                       class="flex items-center gap-4 p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500 shadow-sm hover:shadow-md transition group">
+                        <div class="w-12 h-12 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-900 dark:text-white text-base group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">Manual de Usuario</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400" th:text="${totalManuales} + ' procedimientos paso a paso'">Procedimientos paso a paso</p>
+                        </div>
+                    </a>
+
+                    <a th:href="@{/view/ayuda/faq}"
+                       class="flex items-center gap-4 p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500 shadow-sm hover:shadow-md transition group">
+                        <div class="w-12 h-12 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-900 dark:text-white text-base group-hover:text-amber-600 dark:group-hover:text-amber-400 transition">Preguntas Frecuentes</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400" th:text="${totalFaqs} + ' respuestas detalladas'">Respuestas detalladas</p>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- 3. VIDEO INTRODUCTORIO DESTACADO -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div class="p-6 sm:p-8 border-b border-slate-100 dark:border-slate-700/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                                </svg>
+                                <span>Video General de Introducción</span>
+                            </div>
+                            <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white" th:text="${videoGeneral.titulo}">Bienvenido a ODIN</h2>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 mt-1 max-w-2xl" th:text="${videoGeneral.descripcion}">Descripción general del sistema...</p>
+                        </div>
+                        <div class="shrink-0 text-xs font-medium text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-700/40 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600">
+                            Duración: <span class="font-bold text-slate-700 dark:text-slate-200" th:text="${videoGeneral.duracionEstimada}">08:30 min</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 sm:p-8 items-center bg-slate-50/50 dark:bg-slate-800/50">
+                        <!-- Reproductor o Marcador Pendiente -->
+                        <div class="lg:col-span-7">
+                            <div th:if="${videoGeneral.tieneVideo}" class="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700 bg-black">
+                                <video th:if="${#strings.contains(videoGeneral.embedVideoUrl, '.mp4')}"
+                                       class="w-full h-full object-contain bg-black"
+                                       controls
+                                       preload="metadata">
+                                    <source th:src="@{${videoGeneral.embedVideoUrl}}" type="video/mp4">
+                                    Tu navegador no soporta la reproducción de video HTML5.
+                                </video>
+                                <iframe th:unless="${#strings.contains(videoGeneral.embedVideoUrl, '.mp4')}"
+                                        class="w-full h-full"
+                                        th:src="${videoGeneral.embedVideoUrl}"
+                                        title="Video introductorio de ODIN"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen
+                                        loading="lazy">
+                                </iframe>
+                            </div>
+
+                            <!-- Estado Pendiente cuando no hay URL configurada -->
+                            <div th:unless="${videoGeneral.tieneVideo}"
+                                 class="relative w-full aspect-video rounded-xl border-2 border-dashed border-emerald-300 dark:border-emerald-700/60 bg-emerald-50/40 dark:bg-slate-900/40 flex flex-col items-center justify-center p-6 text-center shadow-inner">
+                                <div class="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3 shadow-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <h4 class="font-bold text-slate-800 dark:text-slate-100 text-base">Video Introductorio en Producción</h4>
+                                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-sm mt-1">
+                                    El material audiovisual está siendo preparado por el equipo de gestión documental. Puede configurarse en <code class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 font-mono text-[11px]">CentroAyudaService.java</code>.
+                                </p>
+                                <span class="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    Disponible Próximamente
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Temario abordado en el video -->
+                        <div class="lg:col-span-5 space-y-3">
+                            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Temas explicados en este video:</h3>
+                            <ul class="space-y-2.5">
+                                <li th:each="tema : ${videoGeneral.temasTratados}" class="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-200">
+                                    <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <span th:text="${tema}">Punto clave explicado</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. REJILLA DE TUTORIALES ORGANIZADOS POR MÓDULOS REALES -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Tutoriales por Módulos</h2>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">Guías detalladas para dominar cada herramienta del sistema ODIN.</p>
+                        </div>
+                        <a th:href="@{/view/ayuda/tutoriales}" class="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
+                            Ver todos
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                        <div th:each="tut : ${tutoriales}"
+                             class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-emerald-500 dark:hover:border-emerald-500 transition-all duration-200 flex flex-col justify-between p-5 group">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                                          th:classappend="${tut.colorBadge}"
+                                          th:text="${tut.categoria}">Categoría</span>
+                                    <span th:if="${tut.tieneVideo}" class="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                                        </svg>
+                                        Video
+                                    </span>
+                                </div>
+                                <h3 class="font-bold text-lg text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition"
+                                    th:text="${tut.titulo}">Título del Módulo</h3>
+                                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 line-clamp-3 leading-relaxed"
+                                   th:text="${tut.descripcionCorta}">Resumen breve...</p>
+                            </div>
+
+                            <div class="pt-4 mt-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+                                <span class="text-xs text-slate-400 dark:text-slate-500"
+                                      th:text="${#lists.size(tut.pasos)} + ' pasos detallados'">3 pasos</span>
+                                <a th:href="@{'/view/ayuda/tutoriales/' + ${tut.slug}}"
+                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 dark:hover:text-white transition">
+                                    <span>Ver Tutorial</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. PREGUNTAS FRECUENTES (VISTA RÁPIDA) -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Preguntas Frecuentes Destacadas</h2>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">Respuestas directas a las consultas operativas más comunes.</p>
+                        </div>
+                        <a th:href="@{/view/ayuda/faq}" class="text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
+                            Ver todas las preguntas →
+                        </a>
+                    </div>
+
+                    <div class="space-y-3" id="faqAccordion">
+                        <div th:each="faq, stat : ${faqs}" th:if="${stat.index < 8}"
+                             class="faq-item border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden bg-slate-50/50 dark:bg-slate-900/30 transition hover:border-emerald-300 dark:hover:border-emerald-700/60">
+                            <button type="button"
+                                    class="faq-toggle-btn w-full text-left p-4 sm:p-5 flex items-center justify-between gap-4 font-semibold text-slate-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer"
+                                    onclick="toggleFaq(this)">
+                                <div class="flex items-center gap-2.5 flex-wrap">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+                                          th:text="${faq.categoria}">Categoría</span>
+                                    <span th:if="${faq.moduloRelacionado != null}"
+                                          class="text-[10px] font-medium px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50"
+                                          th:text="${faq.moduloRelacionado}">Módulo</span>
+                                    <span class="text-sm sm:text-base font-semibold text-slate-900 dark:text-white" th:text="${faq.pregunta}">¿Cómo funciona?</span>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <span class="text-xs text-emerald-600 dark:text-emerald-400 font-medium hidden sm:inline faq-status-text">Ver respuesta</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-400 transition-transform duration-200 shrink-0 faq-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                            </button>
+                            <div class="faq-content hidden p-5 pt-0 text-sm text-slate-600 dark:text-slate-300 border-t border-slate-100 dark:border-slate-800/70 leading-relaxed space-y-3"
+                                 style="display: none;">
+                                <div class="p-4 rounded-lg bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 text-sm whitespace-pre-line leading-relaxed mt-3"
+                                     th:text="${faq.respuesta}">
+                                    Respuesta explicativa...
+                                </div>
+                                <div th:if="${faq.rutaAcceso != null}" class="pt-1">
+                                    <a th:href="@{${faq.rutaAcceso}}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 hover:underline">
+                                        <span>Ir al módulo relacionado en el sistema</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Script del Buscador en Vivo y Acordeón -->
+<script>
+    // Toggle de Acordeón FAQ
+    function toggleFaq(target) {
+        if (!target) return;
+        var btn = (target.tagName === 'BUTTON') ? target : target.closest('button');
+        if (!btn) btn = target;
+        var container = btn.closest('.faq-item') || btn.parentElement;
+        var body = container.querySelector('.faq-content') || btn.nextElementSibling;
+        var arrow = container.querySelector('.faq-arrow') || btn.querySelector('svg');
+        var statusText = container.querySelector('.faq-status-text');
+
+        if (!body) return;
+
+        var isHidden = body.classList.contains('hidden') || body.style.display === 'none';
+
+        if (isHidden) {
+            body.classList.remove('hidden');
+            body.style.display = 'block';
+            if (arrow) arrow.style.transform = 'rotate(180deg)';
+            if (statusText) statusText.textContent = 'Ocultar respuesta';
+        } else {
+            body.classList.add('hidden');
+            body.style.display = 'none';
+            if (arrow) arrow.style.transform = 'rotate(0deg)';
+            if (statusText) statusText.textContent = 'Ver respuesta';
+        }
+    }
+
+    // Buscador Instantáneo asíncrono
+    (function() {
+        var input = document.getElementById('ayudaSearchInput');
+        var dropdown = document.getElementById('searchResultsDropdown');
+        var debounceTimer;
+
+        if (!input || !dropdown) return;
+
+        input.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            var q = input.value.trim();
+            if (q.length < 2) {
+                dropdown.classList.add('hidden');
+                dropdown.innerHTML = '';
+                return;
+            }
+
+            debounceTimer = setTimeout(function() {
+                fetch('/api/ayuda/buscar?q=' + encodeURIComponent(q))
+                    .then(function(res) { return res.json(); })
+                    .then(function(items) {
+                        if (!items || items.length === 0) {
+                            dropdown.innerHTML = '<div class="p-4 text-center text-sm text-slate-500 dark:text-slate-400">No se encontraron resultados para "' + escapeHtml(q) + '"</div>';
+                            dropdown.classList.remove('hidden');
+                            return;
+                        }
+
+                        var html = '';
+                        items.slice(0, 6).forEach(function(it) {
+                            html += '<a href="' + it.url + '" class="block p-3.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">';
+                            html += '  <div class="flex items-center justify-between gap-2 mb-1">';
+                            html += '    <span class="text-xs font-bold px-2 py-0.5 rounded-full ' + it.colorBadge + '">' + escapeHtml(it.tipo) + '</span>';
+                            html += '    <span class="text-[11px] text-slate-400 dark:text-slate-500">' + escapeHtml(it.modulo) + '</span>';
+                            html += '  </div>';
+                            html += '  <div class="text-sm font-semibold text-slate-800 dark:text-slate-100">' + escapeHtml(it.titulo) + '</div>';
+                            if (it.snippet) {
+                                html += '  <div class="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">' + escapeHtml(it.snippet) + '</div>';
+                            }
+                            html += '</a>';
+                        });
+
+                        html += '<a href="/view/ayuda/buscar?q=' + encodeURIComponent(q) + '" class="block p-3 text-center text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-slate-50 dark:bg-slate-800/80 hover:underline">Ver todos los resultados →</a>';
+
+                        dropdown.innerHTML = html;
+                        dropdown.classList.remove('hidden');
+                    })
+                    .catch(function(err) {
+                        console.error('Error buscando:', err);
+                    });
+            }, 250);
+        });
+
+        // Cerrar al hacer clic afuera
+        document.addEventListener('click', function(e) {
+            if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            var div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    })();
+</script>
+</body>
+</html>

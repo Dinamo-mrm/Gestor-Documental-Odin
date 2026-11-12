@@ -40,6 +40,7 @@ public class SecurityConfig {
                 .requestMatchers(
                         "/", "/login", "/login/**",
                         "/css/**", "/js/**", "/images/**", "/img/**", "/webjars/**", "/favicon.ico",
+                        "/videos/**", "/videos_Odin/**",
                         "/error", "/error/**", "/403",
                         "/recuperar-password", "/recuperar-password/**",
                         "/auth/**", "/restablecer-password", "/restablecer-password/**",
@@ -62,6 +63,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/radicados/**", "/view/radicados/**").hasAnyAuthority("ver_radicados","ROLE_ADMIN","ROLE_ROOT")
                 .requestMatchers("/api/reportes/**").hasAnyAuthority("ver_reportes","ROLE_ADMIN","ROLE_ROOT")
                 .requestMatchers("/api/notificaciones/**").authenticated()
+                .requestMatchers("/view/ayuda/**", "/api/ayuda/**").authenticated()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
